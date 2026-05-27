@@ -699,8 +699,8 @@ export default function App() {
           {/* Logo element left side */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className={`p-1.5 rounded-lg bg-[#0c1523] border ${styleProfile.borderAccent} flex items-center justify-center`}>
-                <Cpu className={`w-5.5 h-5.5 ${styleProfile.textAccent}`} />
+              <div className={`p-0.5 rounded-lg bg-[#0c1523] border ${styleProfile.borderAccent} flex items-center justify-center overflow-hidden`}>
+                <img src="/icon.png" alt="Neon Pro Logo" className="w-8 h-8 rounded-md object-cover" referrerPolicy="no-referrer" />
               </div>
               <div className="text-left">
                 <h1 id="app-logo" className="text-xl font-bold tracking-tight text-white leading-none font-sans">
