@@ -1,0 +1,6 @@
+{
+  "name": "iloveyoubd.com",
+  "description": "A high-fidelity 2040 Cyber-inspired community blog portal and monetization platform featuring AI Workspace Agents, NID Maker, and an interactive learning hub.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

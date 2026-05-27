@@ -1,0 +1,379 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+body.login {
+    background: #05080a !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+#login {
+    width: 380px !important;
+    margin: auto !important;
+}
+
+/* লোগো ফিক্স */
+#login h1 a {
+    background-image: url('https://iloveyoubd.com/wp-content/uploads/your-logo.png') !important;
+    background-size: contain !important;
+    width: 100% !important;
+    height: 100px !important;
+    display: block !important;
+    margin-bottom: 0 !important;
+}
+
+/* ওয়েবসাইটের নাম */
+.login h1:after {
+    content: 'iLoveYouBD.Com';
+    display: block;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+    background: linear-gradient(45deg, #00d2ff, #00ff41);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 15px 0;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.4);
+}
+
+/* ফর্ম বক্স ডিজাইন */
+.login form {
+    background: rgba(15, 23, 42, 0.98) !important;
+    border: 2px solid #00ff41 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.2) !important;
+    padding: 30px !important;
+    position: relative;
+    z-index: 10;
+}
+
+/* সিকিউরিটি কোড টেক্সট কালার ফিক্স */
+.captcha-label {
+    color: #00ff41 !important; /* উজ্জ্বল সবুজ যাতে ডার্ক মোডে দেখা যায় */
+    font-size: 16px !important;
+    font-weight: bold !important;
+    margin-top: 15px !important;
+    display: block !important;
+}
+
+.login label { color: #e2e8f0 !important; }
+
+.login input[type="text"], .login input[type="password"], .login input[type="number"], .login input[type="email"] {
+    background: #0f172a !important;
+    border: 1px solid #1e293b !important;
+    color: #00ff41 !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    width: 100% !important;
+    outline: none;
+    box-shadow: none;
+    transition: all 0.3s;
+}
+
+.login input[type="text"]:focus, .login input[type="password"]:focus, .login input[type="number"]:focus, .login input[type="email"]:focus {
+    border-color: #00ff41 !important;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.4) !important;
+}
+
+/* বাটন */
+.wp-core-ui .button-primary {
+    background: linear-gradient(45deg, #00ff41, #00e5ff) !important;
+    border: none !important;
+    color: #000 !important;
+    text-shadow: none !important;
+    width: 100% !important;
+    height: 50px !important;
+    border-radius: 10px !important;
+    font-weight: 900 !important;
+    font-size: 16px !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    margin-top: 20px !important;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3) !important;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.wp-core-ui .button-primary:hover {
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+/* নিচের লিঙ্কগুলো */
+.login #nav, .login #backtoblog {
+    font-size: 14px !important;
+    text-align: center !important;
+    padding: 10px !important;
+    z-index: 10;
+}
+
+.login #nav a, .login #backtoblog a {
+    color: #00e5ff !important;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.login #nav a:hover, .login #backtoblog a:hover {
+    color: #00ff41 !important;
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+/* ================= EXTRA AUTH INTEGRATION STYLES ================= */
+.cyber-login-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #8b949e;
+    margin: 25px 0 20px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.cyber-login-separator::before, .cyber-login-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px dashed rgba(255,255,255,0.15);
+}
+.cyber-login-separator:not(:empty)::before { margin-right: .5em; }
+.cyber-login-separator:not(:empty)::after { margin-left: .5em; }
+
+.cyber-auth-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.cyber-auth-btn {
+    background: #161b22;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.cyber-auth-btn:hover {
+    background: #21262d;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.cyber-auth-btn.btn-google:hover {
+    border-color: #ea4335;
+    box-shadow: 0 0 12px rgba(234,67,53,0.3);
+    color: #ea4335;
+}
+.cyber-auth-btn.btn-facebook:hover {
+    border-color: #1877f2;
+    box-shadow: 0 0 12px rgba(24,119,242,0.3);
+    color: #1877f2;
+}
+.cyber-auth-btn.btn-bio:hover {
+    border-color: #00ff41;
+    box-shadow: 0 0 12px rgba(0,255,65,0.3);
+    color: #00ff41;
+}
+.cyber-auth-btn.btn-phone:hover {
+    border-color: #00e5ff;
+    box-shadow: 0 0 12px rgba(0,229,255,0.3);
+    color: #00e5ff;
+}
+
+/* Modal overlays */
+.cyber-portal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(4, 6, 11, 0.95);
+    backdrop-filter: blur(12px);
+    z-index: 1000000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: portalFadeIn 0.3s ease forwards;
+}
+
+@keyframes portalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.cyber-portal-card {
+    background: #0f172a;
+    border: 2px solid #30363d;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    animation: portalCardIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes portalCardIn {
+    from { opacity: 0; transform: scale(0.8) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.portal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #8b949e;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.portal-close-btn:hover {
+    background: rgba(255,0,0,0.1);
+    color: #ff3c3c;
+    border-color: rgba(255,0,0,0.3);
+}
+
+/* Fingerprint Scanning FX */
+.scanner-zone {
+    width: 160px;
+    height: 160px;
+    margin: 25px auto;
+    position: relative;
+    border-radius: 50%;
+    border: 2px dashed rgba(0, 255, 65, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(0,255,65,0.01);
+}
+
+.scanner-circles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: #00ff41;
+    border-bottom-color: #00e5ff;
+    animation: spinScanner 3s linear infinite;
+}
+
+@keyframes spinScanner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fingerprint-icon {
+    font-size: 70px;
+    color: #00ff41;
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+    transition: all 0.3s;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.scanner-zone.scanning .fingerprint-icon {
+    color: #00e5ff;
+    text-shadow: 0 0 30px rgba(0, 229, 255, 0.8);
+    animation: pulseScannerFinger 0.4s infinite alternate;
+}
+
+@keyframes pulseScannerFinger {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+.scanning-bar {
+    position: absolute;
+    width: 80%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #00ff41, transparent);
+    box-shadow: 0 0 10px #00ff41;
+    top: 10%;
+    animation: barScan 2s ease-in-out infinite alternate;
+    pointer-events: none;
+    display: none;
+}
+
+.scanner-zone.scanning .scanning-bar {
+    display: block;
+}
+
+@keyframes barScan {
+    0% { top: 15%; }
+    100% { top: 85%; }
+}
+
+.cyber-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 260px;
+    margin: 20px auto 10px auto;
+}
+.keypad-btn {
+    background: #161b22;
+    border: 1px solid #30363d;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12.5px;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    margin: 0 auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s;
+    user-select: none;
+}
+.keypad-btn:hover {
+    background: #00e5ff;
+    color: #000;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+    border-color: #00e5ff;
+}
+.keypad-btn:active {
+    transform: scale(0.9);
+}
+
+.otp-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 15px auto;
+}
+.otp-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #30363d;
+    transition: 0.2s;
+}
+.otp-dot.filled {
+    background: #00e5ff;
+    border-color: #00e5ff;
+    box-shadow: 0 0 10px #00e5ff;
+}

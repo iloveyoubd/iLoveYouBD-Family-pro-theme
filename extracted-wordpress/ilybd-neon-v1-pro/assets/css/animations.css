@@ -1,0 +1,99 @@
+/*
+ * ILYBD Neon Pro - Advanced VFX Motion Engine
+ * FIXED: Comment Body Glow Removal
+ */
+
+/* =========================
+   STRICT FIX: NO GLOW FOR COMMENTS
+========================= */
+/* এই অংশটি কমেন্ট বক্সের সব ধরণের গ্লো বা এনিমেশন বন্ধ করে দিবে */
+.comment-body, 
+.comment-list .comment-body, 
+#comments .comment-body {
+    animation: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    -webkit-filter: none !important;
+}
+
+/* =========================
+   GLOBAL NEON BREATH
+========================= */
+@keyframes neon-breathe {
+    0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 5px var(--primary-neon)); }
+    50% { opacity: 1; filter: drop-shadow(0 0 20px var(--primary-neon)); }
+}
+
+/* শুধুমাত্র নির্দিষ্ট এলিমেন্টে এনিমেশন কাজ করবে */
+.neon-breathe {
+    animation: neon-breathe 2.5s ease-in-out infinite;
+}
+
+/* =========================
+   BORDER ENERGY FLOW
+========================= */
+@keyframes border-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.cyber-border {
+    position: relative;
+    border: 1px solid transparent;
+    background: linear-gradient(#0d1117, #0d1117) padding-box,
+                linear-gradient(90deg, #00ff41, #ff003c, #00ff41) border-box;
+    background-size: 200% 100%;
+    animation: border-flow 3s linear infinite;
+}
+
+/* বাকি সব এনিমেশন আগের মতোই থাকবে... */
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+.glitch { position: relative; animation: glitch 0.3s infinite; }
+
+@keyframes lift { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
+.hover-lift:hover { animation: lift 0.2s forwards; box-shadow: 0 0 25px rgba(0,255,65,0.2); }
+
+@keyframes scan { 0% { top: -100%; } 100% { top: 100%; } }
+.scan-loader { position: relative; overflow: hidden; }
+.scan-loader::after {
+    content: ""; position: absolute; left: 0; width: 100%; height: 40%;
+    background: linear-gradient(to bottom, transparent, var(--primary-neon), transparent);
+    animation: scan 1.5s linear infinite;
+}
+
+@keyframes click-pulse { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
+.clickable:active { animation: click-pulse 0.2s ease; }
+
+@keyframes float-up { 0% { transform: translateY(0); opacity: 0.3; } 50% { opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
+.float-effect { animation: float-up 3s infinite ease-in-out; }
+
+@keyframes text-pulse { 0%,100% { text-shadow: 0 0 5px var(--primary-neon); } 50% { text-shadow: 0 0 20px var(--primary-neon); } }
+.text-neon { animation: text-pulse 2s infinite; }
+
+@keyframes chase { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.chase-effect { position: relative; overflow: hidden; }
+.chase-effect::after {
+    content: ""; position: absolute; top: 0; left: 0; width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--primary-neon), transparent);
+    animation: chase 1.8s linear infinite; opacity: 0.7;
+}
+
+.active-glow { box-shadow: 0 0 15px rgba(0,255,65,0.25); border-color: var(--primary-neon); }
+
+@keyframes alert-blink { 0%,100% { border-color: #ff003c; } 50% { border-color: transparent; } }
+.alert { animation: alert-blink 1s infinite; }
+
+@keyframes grid-move { 0% { background-position: 0 0; } 100% { background-position: 50px 50px; } }
+.cyber-grid {
+    background-image: linear-gradient(rgba(0,255,65,0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,255,65,0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: grid-move 10s linear infinite;
+}

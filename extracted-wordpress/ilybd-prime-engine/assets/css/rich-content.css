@@ -1,0 +1,7 @@
+.ibd-rich-post-container { color: #e0e0e0; line-height: 1.8; font-size: 17px; }
+.ibd-rich-post-container h2 { color: #00ff41; border-left: 4px solid #00ff41; padding-left: 15px; text-shadow: 0 0 10px rgba(0,255,65,0.3); }
+.ibd-read-more { background: #0a0a0a; border: 1px solid #00ff41; padding: 15px; margin: 25px 0; }
+.ibd-read-more h4 { color: #00ff41; margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; }
+.ibd-read-more ul { list-style: square; color: #00ff41; }
+.ibd-read-more a { color: #fff; text-decoration: none; }
+.ibd-read-more a:hover { color: #00ff41; text-decoration: underline; }
