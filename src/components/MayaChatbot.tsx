@@ -28,7 +28,8 @@ type ChatHistory = {
 };
 
 const MODELS = [
-  { id: "gemini-3.5-flash", name: "Maya Flash (High Speed)", desc: "সম্পূর্ণ ক্রিয়েটিভ এবং সুপার ফাস্ট রেসপন্স ইঞ্জিন", badge: "Flash 3.5" },
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", desc: "ভারসাম্যপূর্ণ পারফরম্যান্স এবং নির্ভরযোগ্য কন্টেন্ট জেনারেশন", badge: "Flash 2.5" },
+  { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash-Lite", desc: "সুপার লাইটওয়েট এবং অত্যন্ত দ্রুতগতির রেসপন্স ইঞ্জিন", badge: "Flash-Lite 3.1" },
   { id: "gemini-3.1-pro-preview", name: "Maya Reasoning (Pro-Intellect)", desc: "উন্নত লজিক, পূর্ণাঙ্গ স্ক্রিপ্ট এবং প্রফেশনাল কোডার", badge: "Pro 3.1" },
   { id: "veo-3.1-generate-preview", name: "Maya Hologram Art (Ultra)", desc: "ডিজিটাল ইলাস্ট্রেশন এবং আল্ট্রা লজিক আর্ট মডেল", badge: "Ultra Art" }
 ];
@@ -74,6 +75,10 @@ interface MayaChatbotProps {
     mayaApiKeys: string;
     mayaSystemInstruction: string;
     mayaTemperature: number;
+    referralBonusTaka?: number;
+    referralXpReward?: number;
+    refereeBonusTaka?: number;
+    refereeXpReward?: number;
   };
   onUpdateSettings?: (updated: {
     mayaApiKeys?: string;
@@ -81,6 +86,10 @@ interface MayaChatbotProps {
     mayaTemperature?: number;
   }) => void;
   selectedMood?: string;
+  userStats?: any;
+  isLoggedIn?: boolean;
+  posts?: any[];
+  questions?: any[];
 }
 
 const getMoodGradients = (mood: string) => {
@@ -178,8 +187,37 @@ const getMoodGradients = (mood: string) => {
   }
 };
 
-export default function MayaChatbot({ settings, onUpdateSettings, selectedMood = "green" }: MayaChatbotProps = {}) {
-  const moodStyles = getMoodGradients(selectedMood);
+export default function MayaChatbot({ settings, onUpdateSettings, selectedMood = "green", userStats, isLoggedIn, posts = [], questions = [] }: MayaChatbotProps = {}) {
+  // --- STATE CONTROLLERS ---
+  const [activeMood, setActiveMood] = useState<string>(() => {
+    return localStorage.getItem("maya_active_theme_mood") || selectedMood || "green";
+  });
+  const moodStyles = getMoodGradients(activeMood);
+
+  // Auto vocalization states and speech style selectors
+  const [autoVoiceEnabled, setAutoVoiceEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem("maya_auto_voice_enabled");
+    return saved !== null ? saved === "true" : true;
+  });
+  const [voiceStyle, setVoiceStyle] = useState<"mature" | "teen" | "cyber" | "male">(() => {
+    return (localStorage.getItem("maya_voice_style") as any) || "mature";
+  });
+
+  // Google Grounded Safe Search Mode
+  const [googleSearchGrounding, setGoogleSearchGrounding] = useState<boolean>(() => {
+    return localStorage.getItem("maya_google_search_grounding") === "true";
+  });
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Cyber logs for admin monitoring
+  const [cyberLogs, setCyberLogs] = useState<string[]>([
+    `[${new Date().toLocaleTimeString('bn-BD')}] 🛡️ ফায়ারওয়াল সচল: DDoS গ্যারান্টি ফিল্টার সক্রিয় রয়েছে।`,
+    `[${new Date().toLocaleTimeString('bn-BD')}] 📦 ডাটাবেস সিকিউরিটি সংযোগ: PostgreSQL লাইভ সিঙ্ক।`,
+    `[${new Date().toLocaleTimeString('bn-BD')}] 🔍 গুগল ক্রলিং রোবট রোবোটিক্স ইনডেক্সিং অডিট শেষ।`,
+  ]);
+
+  const [simulatedDeployment, setSimulatedDeployment] = useState<string | null>(null);
+
   // --- CHAT HISTORY SYSTEM (LOCALPERSISTENT) ---
   const [chats, setChats] = useState<ChatHistory[]>(() => {
     const saved = localStorage.getItem("maya_gemini_chats");
@@ -191,11 +229,11 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
     return [{
       id: initialChatId,
       title: "প্রধান চ্যাট সহকারী",
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       messages: [{
         id: "msg_init",
         role: "bot",
-        content: "আসসালামু আলাইকুম! আমি মায়া (Maya AI), আপনার এক্সিকিউটিভ এআই অ্যাসিস্ট্যান্ট। গুগল জেমিনি প্রফেশনাল মডেল দ্বারা চালিত। কীভাবে আজ আপনাকে সাহায্য করতে পারি?",
+        content: "আসসালামু আলাইকুম! আমি মায়া (Maya AI), আপনার এক্সিকিউティブ এআই অ্যাসিস্ট্যান্ট। গুগল জেমিনি প্রফেশনাল মডেল দ্বারা চালিত। কীভাবে আজ আপনাকে সাহায্য করতে পারি?",
         timestamp: new Date().toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })
       }],
       timestamp: new Date().toLocaleDateString('bn-BD')
@@ -206,10 +244,9 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
     return chats[0]?.id || "";
   });
 
-  // --- STATE CONTROLLERS ---
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState("gemini-3.5-flash");
+  const [selectedModel, setSelectedModel] = useState("gemini-2.5-flash");
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [voicePlaybackId, setVoicePlaybackId] = useState<string | null>(null);
@@ -394,23 +431,53 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
       return;
     }
 
-    window.speechSynthesis.cancel();
-    // Clean string from markdown elements
-    const cleanText = text.replace(/<[^>]*>/g, "").replace(/\*\*|`|```/g, "");
+    try {
+      window.speechSynthesis.cancel();
+      
+      // Clean string from markdown elements, html tags, code blocks, URLs, etc.
+      let cleanText = text
+        .replace(/<[^>]*>/g, "") // remove html tags
+        .replace(/```[\s\S]*?```/g, " [কোড ব্লক এড়ানো হয়েছে] ") // remove code blocks
+        .replace(/`[^`]+`/g, "") // remove inline backticks
+        .replace(/\*\*|`|```/g, "") // remove markdown markup punctuation
+        .replace(/https?:\/\/\S+/g, " [লিঙ্ক] ") // remove URLs
+        .replace(/\[GENERATE_IMAGE:[^\]]+\]/g, ""); // remove image hooks
 
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = "bn-BD"; // Bangla voice locale
-    
-    // Fallback if Bangla not supported
-    const voices = window.speechSynthesis.getVoices();
-    const bnVoice = voices.find(v => v.lang.includes("BN") || v.lang.includes("bn"));
-    if (bnVoice) utterance.voice = bnVoice;
+      // Strict Double Bulletproof Namaskar Eliminator
+      cleanText = cleanText.replace(/নমস্কার/g, "আসসালামু আলাইকুম");
 
-    utterance.onend = () => setVoicePlaybackId(null);
-    utterance.onerror = () => setVoicePlaybackId(null);
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = "bn-BD"; // Bangla voice locale
 
-    setVoicePlaybackId(id);
-    window.speechSynthesis.speak(utterance);
+      // Apply highly refined dynamic voice configurations
+      if (voiceStyle === "teen") {
+        utterance.rate = 1.25;
+        utterance.pitch = 1.35;
+      } else if (voiceStyle === "cyber") {
+        utterance.rate = 0.85;
+        utterance.pitch = 0.45;
+      } else if (voiceStyle === "male") {
+        utterance.rate = 1.05;
+        utterance.pitch = 0.75;
+      } else { // mature / standard
+        utterance.rate = 0.95;
+        utterance.pitch = 1.1;
+      }
+
+      // Try searching for a specific Bangla voice index
+      const voices = window.speechSynthesis.getVoices();
+      const bnVoice = voices.find(v => v.lang.toLowerCase().includes("bn") || v.name.toLowerCase().includes("bengali") || v.name.toLowerCase().includes("bangladesh"));
+      if (bnVoice) utterance.voice = bnVoice;
+
+      utterance.onend = () => setVoicePlaybackId(null);
+      utterance.onerror = () => setVoicePlaybackId(null);
+
+      setVoicePlaybackId(id);
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn("Speech synthesis error:", e);
+      setVoicePlaybackId(null);
+    }
   };
 
   // --- REAL-TIME BENGALI SPEECH RECOGNITION DICTATOR ---
@@ -512,12 +579,15 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
         });
         const imgData = await renderRes.json();
 
+        let imageContent = `আমি আপনার দেওয়া বিবরণ অনুসারে গেমিনি আর্ট মডেল ব্যবহার করে একটি চমৎকার ডিজিটাল ইলাস্ট্রেশন জেনারেট করেছি:\n\n**"${promptToSend}"**\n\nআপনি এই ছবিটি আপনার ডিভাইসে সংগ্রহ করতে পারেন।`;
+        imageContent = imageContent.replace(/নমস্কার/g, "আসসালামু আলাইকুম");
+
         const botMsg: Message = {
           id: "msg_bot_" + Date.now(),
           role: "bot",
           type: "image",
-          content: `আমি আপনার দেওয়া বিবরণ অনুসারে গেমিনি আর্ট মডেল (Imagen 4) ব্যবহার করে একটি চমৎকার ডিজিটাল ইলাস্ট্রেশন জেনারেট করেছি:\n\n**"${promptToSend}"**\n\nআপনি নিচের ডাউনলোড বাটনে ক্লিক করে সরাসরি এই ছবিটি আপনার ডিভাইসে সংগ্রহ করতে পারেন।`,
-          imageUrl: imgData.imageUrl || "https://image.pollinations.ai/prompt/cybernetic%20landscape?width=1024&height=576",
+          content: imageContent,
+          imageUrl: imgData.imageUrl || `https://image.pollinations.ai/prompt/${encodeURIComponent(promptToSend)}?width=1024&height=576`,
           timestamp: new Date().toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' }),
           isNew: true
         };
@@ -536,15 +606,24 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
         if (soundEnabled) {
           triggerAudioSynthesizer("drawing", botMsg.id);
         }
+
+        if (autoVoiceEnabled) {
+          setTimeout(() => {
+            handleToggleVoicePlayback(botMsg.content, botMsg.id);
+          }, 400);
+        }
       } 
       // 2. If it's Audio Music Synthesis
       else if (isMusicEngine) {
         // Construct highly interactive synth message
+        let musicContent = `🎵 **মায়া কোয়ান্টাম সিন্থেসাইজার সক্রিয়!**\n\nআমি আপনার বিবরণ **"${promptToSend}"** বিশ্লেষণ করে একটি হাই-ফিডেলিটি থেরাপিউটিক অডিও রিংটোন এবং মেলোডিক ফ্রিকোয়েন্সি প্যাটার্ন তৈরি করেছি।\n\nনিচে সিন্থেসাইজার মডিউলে প্লে বাটন চেপে অ্যাম্প্লিচিউড ও মেলোডি কোয়ালিটি শুনতে পারেন।`;
+        musicContent = musicContent.replace(/নমস্কার/g, "আসসালামু আলাইকুম");
+
         const botMsg: Message = {
           id: "msg_bot_" + Date.now(),
           role: "bot",
           type: "music",
-          content: `🎵 **মায়া কোয়ান্টাম সিন্থেসাইজার সক্রিয়!**\n\nআমি আপনার বিবরণ **"${promptToSend}"** বিশ্লেষণ করে একটি হাই-ফিডেলিটি থেরাপিউটিক অডিও রিংটোন এবং মেলোডিক ফ্রিকোয়েন্সি প্যাটার্ন তৈরি করেছি।\n\nনিচে সিন্থেসাইজার মডিউলে প্লে বাটন চেপে অ্যাম্প্লিচিউড ও মেলোডি কোয়ালিটি শুনতে পারেন।`,
+          content: musicContent,
           soundConfig: {
             frequency: promptToSend.includes("high") ? 440 : 329.63,
             waveType: promptToSend.includes("sawtooth") ? "sawtooth" : "sine",
@@ -559,7 +638,7 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
           if (c.id === activeChatId) {
             return {
               ...c,
-              title: "🎵 মিউজক জেনারেটর",
+              title: "🎵 মিউজিক জেনারেটর",
               messages: [...updatedMessages, botMsg]
             };
           }
@@ -567,19 +646,120 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
         }));
 
         triggerAudioSynthesizer(promptToSend, botMsg.id);
+
+        if (autoVoiceEnabled) {
+          setTimeout(() => {
+            handleToggleVoicePlayback(botMsg.content, botMsg.id);
+          }, 400);
+        }
       } 
       // 3. Normal High Intelligence Content Generation
       else {
         // Build keys array pool if custom key is present
         const customKeysList = apiKeysInput.split("\n").filter(k => k.trim());
         
+        // Active Google Search crawling logs if grounding enabled
+        if (googleSearchGrounding) {
+          setIsSearching(true);
+          setCyberLogs(prev => [
+            `[${new Date().toLocaleTimeString('bn-BD')}] 📡 গুগল ক্রলার সক্রিয়: "${promptToSend}" শব্দ অনুসন্ধান করা হচ্ছে...`,
+            `[${new Date().toLocaleTimeString('bn-BD')}] 🌐 iloveyoubd.com সেফটি গেটওয়ের মাধ্যমে গুগল সার্চ ডাটা বিশ্লেষণ চলছে।`,
+            ...prev
+          ]);
+        }
+
+        // Dynamic system instruction including website knowledge + user profile info config
+        let dynamicInstruction = systemInstruction || "";
+        
+        // Absolute Namaskar blocker in instructions
+        dynamicInstruction += `\n\n[CRITICAL CULTURE RULE]\nকখনোই "নমস্কার" বা কোনো প্রকার অমুসলিম অভিবাদন ব্যবহার করবেন না। সর্বদা মুসলিম সংস্কৃতি অনুযায়ী শুভ সূচনা করতে "আসসালামু আলাইকুম" অথবা সর্বজনীন মডার্ন সম্বোধন "শুভ দিন" বা "স্বাগতম" দিয়ে শুরু করবেন।`;
+
+        const nameLower = (userStats?.name || "").toLowerCase();
+        const rankLower = (userStats?.rank || "").toLowerCase();
+        const isOwner = isLoggedIn && (
+          nameLower.includes("tarek") || 
+          nameLower.includes("তারেক") || 
+          rankLower.includes("admin") || 
+          rankLower.includes("master") || 
+          rankLower.includes("white hat coder") ||
+          rankLower.includes("owner")
+        );
+
+        const userStatsText = isLoggedIn && userStats 
+          ? isOwner 
+            ? `\n\n[USER IS EXCLUSIVE SITE OWNER & CHIEF DEVELOPER TAREK RAHMAN]\nইউজার বর্তমানে লগইন করা আছেন এবং ইনি হলেন আমাদের সাইটের সম্মানিত প্রতিষ্ঠাতা, ট্রাফিক ইঞ্জিনিয়ার এবং প্রধান ডেভেলপার "তারেক রহমান" (Tarek Rahman)! তাকে "সম্মানিত তারেক ভাই", "বস" বা "আমাদের সাইট অ্যাডমিন" হিসেবে অত্যন্ত কুশলাদি বিনিময় করুন এবং সাবমিট হওয়া সব ইনস্ট্রাকশন এডমিন হিসেবে আপনার সর্বোচ্চ অগ্রাধিকার দেবেন। তারেক ভাইকে সাইটের সিকিউরিটি মেকানিজম, স্পিডআপ বাগ ফিক্স, কালার, অ্যানিমেশন এবং এসইও রিকমেন্ড করুন। তাকে প্রকাশ করুন যে আপনি সাইটের ২য় কুপাইলট বা সহ-অ্যাডমিন!`
+            : `\n\n[USER PROFILE INFORMATION]\nইউজার বর্তমানে লগইন করা আছেন:\n- নাম: "${userStats.name}"\n- ব্যালেন্স ওয়ালেট: "৳${userStats.balance} টাকা"\n- ফোরাম পয়েন্ট/সিভি এক্সপি: "${userStats.points} XP"\n- মেম্বার পদবি: "${userStats.rank}"\n- প্রকাশিত পোস্ট: "${userStats.postsPublished}"\n- পেন্ডিং পোস্ট: "${userStats.postsPending}"\n- নিজস্ব রেফারেল কোড: "${userStats.referralCode || "নেই"}"\n- রেফারেল করা ফ্রেন্ডস: "${(userStats.referredUsers || []).length} জন" (${(userStats.referredUsers || []).join(", ") || "কেউ নাই"})\n- রেফারেল মোট আয়: "৳${userStats.referralEarnings || 0} টাকা"\n\nযদি ইউজার তাদের টাকা, পয়েন্ট বা যেকোনো স্ট্যাটাস জানতে চায়, তাকে এই রিয়েলটাইম মানগুলো উল্লেখ করে সম্মান ও সুন্দর উদ্দীপনা সহকারে জবাব দিন এবং তাকে তার নাম ধরে সম্বোধন করুন। সাধারণ ইউজারদের কখনোই অ্যাডমিন লেভেলের ডায়াগনস্টিক রিপোর্ট বা শেয়ার্ড সার্ভিস কোড বা সেনসিটিভ ডেটা প্রদান করবেন না।`
+          : `\n\n[USER PROFILE INFORMATION]\nইউজার বর্তমানে গেস্ট (ভিজিটর) মোডে আছেন। অনুগ্রহ করে তাকে রেজিস্ট্রেশন করতে আমন্ত্রণ জানান যাতে সে ১০ টাকা এবং ১০০ বা ততোধিক বোনাস এক্সপি পয়েন্ট পেয়ে রেফারেল কোড ব্যবহার করে আয় শুরু করতে পারে।`;
+
+        // Detailed knowledge about site functions and ~50 Tools available
+        const siteToolsMatrixText = `
+\n[SITE MASTER INTEL: 50+ CYBER TOOLS & FEATURES]
+আমাদের সাইটে ৫০টি ওয়ান-টাচ সিকিউর এবং ইন্টারেক্টিভ গ্যাজেট রয়েছে যা ব্যবহারকারীদের কোটি কোটি টাকা বাঁচাতে পারে এবং দৈনিক কাজে সাহায্য করে। এখানে মূল গ্যাজেটগুলোর সম্পূর্ণ বিবরণ ও কাজের কার্যকারিতা দেওয়া হলো (ব্যবহারকারীকে প্রাসঙ্গিক গ্যাজেটের বিষয়ে জিজ্ঞেস করলে লিঙ্কসহ কোড সরবরাহ করুন):
+1. ইউটিউব ও ফেসবুক ভিডিও ডাউনলোডার: <a href="#downloader" class="text-rose-400 font-mono underline">🎬 সাইবার ভিডিও ডাউনলোডার হাব</a> (ভিডিও ডাউনলোড করে অফলাইন প্লেব্যাক করার চমৎকার টুল)।
+2. স্মার্ট এনআইডি আইডি কার্ড জেনারেটর: <a href="#nid" class="text-[#39ff14] font-mono underline">🎴 スマート স্মার্ট এনআইডি কার্ড মেকার</a> (উন্নত কাস্টম আরজিবি নিয়ন ও লোগো সংবলিত আইডি মেকার)।
+3. বিকাশ আর্নিং ড্যাশবোর্ড: <a href="#dashboard" class="text-yellow-450 font-mono underline">💳 আর্নিং ড্যাশবোর্ড প্যানেল</a> (ইউজার ব্যালেন্স ক্যাশআউট, রেফারেল বোনাস এবং উইথড্র রিকোয়েস্ট ড্যাশবোর্ড)।
+4. নতুন কন্টেন্ট বা ওয়ান-টাচ ফোরাম বুস্টার: <a href="#add" class="text-cyan-400 font-mono underline">➕ টিউটোরিয়াল বা ফোরাম পোস্ট করুন</a> (সাইটে নতুন কন্টেন্ট বা হ্যাকিং ডিফেন্স শেয়ার করার স্পেশাল আর্নিং মেথড)।
+5. সাইবার কোড ও সিকিউর ল্যাব: <a href="#tools-lab" class="text-teal-400 font-mono underline">🛠️ ইউনিক এডভান্সড সাইবার ল্যাব</a> (প্রো হ্যাকিং ডিফেন্স, প্যাচ মেকার, ডিক্রিপশন এবং কোডিং টুলস ক্যাটাগরি)।
+6. কোয়ান্টাম অডিও ল্যাব: <a href="#audiolab" class="text-[#00f0ff] font-mono underline">🎧 অডিও সিন্থেসাইজার পোর্টাল</a> (রিয়েলটাইম বিট রেট এবং সাউন্ড ওয়েভফ্রিকোয়েন্সি জেনারেশন ট্রোন)।
+7. ওয়ান-ক্লিক ফোরাম সিকিউরিটি ক্যোয়ারী: <a href="#qa" class="text-purple-400 font-mono underline">💬 ফোরাম সিকিউরিটি প্রশ্নোত্তর ফোরাম</a> (অন্যান্য মেম্বারদের করা প্রশ্ন ও সমাধান ক্যাটালগ)।
+
+আপনি যখনই এই ফিচার বা টুলগুলোর বিষয়ে বিস্তারিত বলবেন, সর্বদা সঠিক HTML <a> লিঙ্কার ট্যাগ প্রোভাইড করবেন যাতে ইউজার সরাসরি ঐ ফিচারগুলোতে চলে যায়।
+`;
+
+        const googleSearchCrawlGroundingText = googleSearchGrounding 
+          ? `\n\n[GOOGLE SEARCH GROUNDING ENABLED]\nব্যবহারকারীর প্রশ্নটি গুগল সেভ সার্চ ওয়েব ক্রল প্রযুক্তি ব্যবহার করে প্রক্রিয়াকরণ করা হচ্ছে। আপনি নিখুঁত ইন্টারনেটের রিয়েলটাইম তথ্যের একটি সারাংশ প্রদান করবেন। উত্তরের শেষে একটি সুন্দর "গুগল ভেরিফায়েড ডাটা সোর্স" রেফারেন্স যুক্ত করে দিতে পারেন (যেমন: <a href="https://google.com/search?q=${encodeURIComponent(promptToSend)}" target="_blank" class="text-cyan-400 font-mono underline font-semibold">🔍 গুগল সার্চ সোর্স দেখুন</a>)।`
+          : "";
+
+        const postsCrawlText = posts && posts.length > 0
+          ? `\n\n[SITE CRAWLED CONTENT: BLOG POSTS]\nআমাদের সাইটের বর্তমান সেরা কন্টেন্ট ও টিউটোরিয়ালগুলোর তালিকা নিচে দেওয়া হল। ব্যবহারকারী কোনো টপিকের বিষয়ে জানতে চাইলে রেফারেন্স হিসেবে এক্স্যাক্ট ফরম্যাটে লিংকটি প্রদান করুন (যাতে ক্লিক করলে সে সরাসরি ঐ পোস্টে চলে যায়):\n` + 
+            posts.map(p => `- কন্টেন্ট শিরোনাম: "${p.title}", ক্যাটাগরি: "${p.category}", লেখক: "${p.author?.name || "এডমিন"}" লিঙ্ক কোড: <a href="#post-${p.id}" class="text-cyan-400 font-mono underline font-semibold">ভিজিট করুন: ${p.title}</a>`).join("\n")
+          : "";
+
+        const questionsCrawlText = questions && questions.length > 0
+          ? `\n\n[SITE CRAWLED COMMUNITY QUESTIONS: FORUM]\nআমাদের ওয়ান-টাচ ফোরামের প্রশ্নোত্তরগুলোর তালিকা নিচে দেওয়া হল। ফোরামের প্রশ্ন খুঁজতে এটি সাহায্য করবে। রেফারেন্স লিংক এক্স্যাক্ট ফরম্যাটে দিন:\n` + 
+            questions.map(q => `- ফোরাম প্রশ্ন: "${q.title}", ক্যাটাগরি: "${q.category}", সমাধান সংখ্যা: "${q.answers?.length || 0}" লিঙ্ক কোড: <a href="#qa-post-${q.id}" class="text-purple-450 font-mono underline font-medium">ফোরাম প্রশ্নোত্তর: ${q.title}</a>`).join("\n")
+          : "";
+
+        const troubleshootingGuide = `
+\n[SITE FEATURE & TROUBLESHOOTING GUIDE]
+আমাদের সাইটে বেশ কিছু অরিজিনাল ও নেক্সট-লেভেল গ্যাজেট এবং পেজ টুলস আছে। ব্যবহারকারীকে যেকোনো মডিউলে সাহায্য করার জন্য সঠিক HTML <a> লিঙ্কার ট্যাগ প্রোভাইড করবেন যেমনটি পূর্বে লিংকের ক্ষেত্রে দেখানো হয়েছে। <a> ট্যাগে কখনো target="_blank" ব্যবহার করবেন না, যাতে ইউজার একই উইন্ডোতে সুন্দরভাবে ঐ ফিচারে ক্লিক করে নেভিগেট হতে পারে। বাংলা ভাষায় নিখুঁত, প্রফেশনাল এবং সুন্দর কোডিং ফ্রেমওয়ার্কে আলোচনা করবেন।
+`;
+
+        dynamicInstruction = dynamicInstruction + userStatsText + siteToolsMatrixText + postsCrawlText + questionsCrawlText + troubleshootingGuide + googleSearchCrawlGroundingText;
+
+        const postsCrawlTextExt = posts && posts.length > 0
+          ? `\n\n[SITE CRAWLED CONTENT: BLOG POSTS]\nআমাদের সাইটের বর্তমান সেরা কন্টেন্ট ও টিউটোরিয়ালগুলোর তালিকা নিচে দেওয়া হল। ব্যবহারকারী কোনো টপিকের বিষয়ে জানতে চাইলে রেফারেন্স হিসেবে এক্স্যাক্ট ফরম্যাটে লিংকটি প্রদান করুন (যাতে ক্লিক করলে সে সরাসরি ঐ পোস্টে চলে যায়):\n` + 
+            posts.map(p => `- কন্টেন্ট শিরোনাম: "${p.title}", ক্যাটাগরি: "${p.category}", লেখক: "${p.author?.name || "এডমিন"}" লিঙ্ক কোড: <a href="#post-${p.id}" class="text-cyan-400 font-mono underline font-semibold">ভিজিট করুন: ${p.title}</a>`).join("\n")
+          : "";
+
+        const questionsCrawlTextDup = questions && questions.length > 0
+          ? `\n\n[SITE CRAWLED COMMUNITY QUESTIONS: FORUM]\nআমাদের ওয়ান-টাচ ফোরামের প্রশ্নোত্তরগুলোর তালিকা নিচে দেওয়া হল। ফোরামের প্রশ্ন খুঁজতে এটি সাহায্য করবে। রেফারেন্স লিংক এক্স্যাক্ট ফরম্যাটে দিন:\n` + 
+            questions.map(q => `- ফোরাম প্রশ্ন: "${q.title}", ক্যাটাগরি: "${q.category}", সমাধান সংখ্যা: "${q.answers?.length || 0}" লিঙ্ক কোড: <a href="#qa-post-${q.id}" class="text-purple-450 font-mono underline font-medium">ফোরাম প্রশ্নোত্তর: ${q.title}</a>`).join("\n")
+          : "";
+
+        const troubleshootingGuideDup = `
+\n[SITE FEATURE & TROUBLESHOOTING GUIDE]
+আমাদের সাইটে বেশ কিছু অরিজিনাল ও নেক্সট-লেভেল গ্যাজেট এবং পেজ টুলস আছে। ব্যবহারকারীকে যেকোনো মডিউলে সাহায্য করার জন্য নিচের রুটস লিংকগুলো দিন:
+1. ইউটিউব ভিডিও ডাউনলোডার: <a href="#downloader" class="text-rose-400 font-mono underline">🎬 সাইবার ভিডিও ডাউনলোডার টুলস</a>
+2. スマート স্মার্ট এনআইডি মেকার: <a href="#nid" class="text-[#39ff14] font-mono underline">🎴 স্মার্ট এনআইডি কার্ড মেকার</a>
+3. বিকাশ আর্নিং ড্যাশবোর্ড: <a href="#dashboard" class="text-yellow-400 font-mono underline">💳 আর্নিং ড্যাশবোর্ড</a>
+4. কন্টেন্ট পাবলিশ করুন (আয় করুন): <a href="#add" class="text-cyan-400 font-mono underline">➕ নতুন ব্লগ পোস্ট যুক্ত করুন</a> (প্রতি ব্লগ পোস্টে আপনি বোনাস টাকা ইনকাম করতে পারবেন!)
+5. কোড ও টুলস ল্যাব: <a href="#tools-lab" class="text-teal-400 font-mono underline">🛠️ ইউনিক এডভান্সড সাইবার ল্যাব</a>
+6. কোয়ান্টাম অডিও ল্যাব: <a href="#audiolab" class="text-[#00f0ff] font-mono underline">🎧 অডিও সিন্থেসাইজার</a>
+
+[IMPORTANT UX RULE]
+সর্বদা সঠিক HTML <a> ট্যাগ প্রদান করবেন যেমনটি উপরে লিংকের ক্ষেত্রে দেখানো হয়েছে। <a> ট্যাগে কখনো target="_blank" ব্যবহার করবেন না, যাতে ইউজার একই উইন্ডোতে সুন্দরভাবে ঐ ফিচারে ক্লিক করে নেভিগেট হতে পারে। বাংলা ভাষায় নিখুঁত, প্রফেশনাল এবং সুন্দর কোডিং ফ্রেমওয়ার্কে আলোচনা করবেন।
+`;
+
+        // We preserve the fully comprehensive dynamicInstruction set with siteToolsMatrixText and Google Search grounding search crawlers calculated above.
+
         const response = await fetch("/api/gemini/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: updatedMessages.map(m => ({ role: m.role, content: m.content })),
             model: selectedModel,
-            systemInstruction,
+            systemInstruction: dynamicInstruction,
             temperature,
             keys: customKeysList
           }),

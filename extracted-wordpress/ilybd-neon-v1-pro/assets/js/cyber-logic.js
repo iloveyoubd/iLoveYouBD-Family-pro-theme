@@ -97,21 +97,29 @@ jQuery(document).ready(function($) {
     // =========================
     // 🔊 6. NOTIFICATION SYSTEM
     // =========================
-    function showNotification(msg) {
+    function showNotification(msg, link) {
         let box = $('#noti-box');
         if (!box.length) {
             $('body').append('<div id="noti-box" style="position:fixed; bottom:20px; right:20px; z-index:9999;"></div>');
             box = $('#noti-box');
         }
 
+        let cursorStyle = link ? 'cursor:pointer;' : '';
         let item = $(`
-            <div class="noti-item" style="background:#161b22; color:${neonPrimary}; padding:12px 20px; margin-top:10px; border:1px solid ${neonPrimary}; border-radius:8px; box-shadow:0 0 15px ${neonPrimary}55; font-size:13px; font-weight:bold; animation: slideIn 0.3s ease-out;">
+            <div class="noti-item" style="background:#090e1a; color:#00ff99; padding:12px 20px; margin-top:10px; border:1px solid #00f0ff; border-radius:8px; box-shadow:0 0 15px rgba(0,240,255,0.3); font-size:13px; font-weight:bold; animation: slideIn 0.3s ease-out; transition: transform 0.2s; ${cursorStyle}" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                 🔔 ${msg}
+                ${link ? '<div style="font-size:11px; color:#00f0ff; margin-top:5px; text-decoration:underline; font-weight: normal;"><i class="fa-solid fa-arrow-up-right-from-square"></i> নির্দিষ্ট পেজে যেতে ক্লিক করুন (View Content)</div>' : ''}
             </div>
         `);
 
+        if (link) {
+            item.on('click', function() {
+                window.location.href = link;
+            });
+        }
+
         box.append(item);
-        setTimeout(() => { item.fadeOut(500, function() { $(this).remove(); }); }, 4000);
+        setTimeout(() => { item.fadeOut(500, function() { $(this).remove(); }); }, 6000);
     }
 
     // =========================
@@ -122,7 +130,10 @@ jQuery(document).ready(function($) {
         if (typeof ilybd_vfx === 'undefined') return;
         $.post(ilybd_vfx.ajax_url, { action: 'ilybd_get_notifications' }, function(res) {
             if (res.success && res.data.count > lastNotiCount) {
-                res.data.items.forEach(n => showNotification(n.message));
+                res.data.items.forEach(n => showNotification(n.text || n.message, n.link));
+                if (typeof playNotiSound === 'function') {
+                    playNotiSound();
+                }
                 lastNotiCount = res.data.count;
             }
         });

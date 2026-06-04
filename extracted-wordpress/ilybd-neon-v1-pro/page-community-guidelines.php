@@ -43,6 +43,17 @@ $neon = get_option('ilybd_main_color', '#00ff41');
                         <h3>📜 4. Moderation & Enforcement</h3>
                         <p>Our engineering coordinators and volunteer moderators possess full control to flag spam, edit inaccurate code tags, or permanently suspend user nodes that breach these terms. To dispute moderation decisions, please contact support via formal encrypted channels.</p>
                     </div>
+
+                    <div class="policy-card" style="grid-column: span 2; border-color: <?php echo $neon; ?>44; background: rgba(0, 255, 65, 0.02);">
+                        <h3 style="color: <?php echo $neon; ?>;"><i class="fa-solid fa-hand-holding-dollar"></i> 💸 ৫. কন্টেন্ট পাবলিশ এবং উইথড্র গাইডলাইন (Publishing & Withdrawal Protocol)</h3>
+                        <p style="margin-bottom: 15px; color: #fff;">আমাদের প্ল্যাটফর্মে প্রযুক্তিভিত্তিক অরিজিনাল কন্টেন্ট বা পোস্ট পাবলিশ করার বিনিময়ে লেখকদের অ্যাকাউন্টে রিয়েল-টাইম টাকা জমা হয়। এই প্রক্রিয়ার জন্য নিম্নলিখিত নিয়মাবলী অনুসরণ করতে হবে:</p>
+                        <ul style="color: #a0aec0; font-size: 13.5px; line-height: 1.8; padding-left: 20px; list-style-type: decimal;">
+                            <li><strong style="color: #fff;">অরিজিনাল কন্টেন্ট প্রকাশ:</strong> প্রতিটি পোস্ট অবশ্যই শিক্ষামূলক এবং ইউনিক হতে হবে। কপি-পেস্ট কন্টেন্টের জন্য কোনো রিওয়ার্ড যোগ হবে না এবং অ্যাকাউন্ট বাতিল হতে পারে।</li>
+                            <li><strong style="color: #fff;">পেমেন্ট জমা:</strong> কন্টেন্ট মডারেশন পার করে সফলভাবে পাবলিশ হওয়ার সাথে সাথে আপনার ওয়ালেট নোডে স্বয়ংক্রিয়ভাবে টাকা জমা হয়।</li>
+                            <li><strong style="color: #fff;">উইথড্র সিস্টেম:</strong> ইউজার প্যানেল থেকে অর্জিত ব্যালেন্স মোবাইল ব্যাংকিং (বিকাশ, রকেট, নগদ) এর মাধ্যমে উত্তোলন করা যাবে।</li>
+                            <li><strong style="color: #fff;">প্রসেসিং টাইম:</strong> উইথড্রয়াল রিকোয়েস্ট সাবমিট করার ২৪ থেকে ৭২ ঘণ্টার মধ্যে যথাযথ ভেরিফিকেশন সাপেক্ষে পেমেন্ট সম্পূর্ণ করা হয়।</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="policy-footer-note">

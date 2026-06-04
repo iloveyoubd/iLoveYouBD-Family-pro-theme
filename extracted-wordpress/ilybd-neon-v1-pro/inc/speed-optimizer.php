@@ -88,7 +88,8 @@ add_filter('style_loader_tag', function($html, $handle, $href, $media) {
     $async_styles = [
         'font-awesome',
         'dashicons',
-        'swiper-bundle'
+        'swiper-bundle',
+        'ilybd-google-fonts'
     ];
     
     if (in_array($handle, $async_styles)) {

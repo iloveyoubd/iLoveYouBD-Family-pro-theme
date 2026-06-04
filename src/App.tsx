@@ -2,7 +2,9 @@ import React, { useState, useEffect, FormEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Terminal, ShieldCheck, HelpCircle, User, LogIn, Plus, 
-  Wallet, Bell, Home, Layout, Cpu, RefreshCw, LogOut, CheckCircle, Search, Clock, Award, Tv
+  Wallet, Bell, Home, Layout, Cpu, RefreshCw, LogOut, CheckCircle, Search, Clock, Award, Tv,
+  Music, Video, Wrench, Sparkles, QrCode, Gamepad2, Mic, MicOff, ThumbsUp, Eye,
+  Gift, Copy, Share2, TrendingUp
 } from "lucide-react";
 
 import type { Post, Question, NotificationItem, UserStats, AdminSettings } from "./types";
@@ -14,6 +16,10 @@ import AdminPanel from "./components/AdminPanel";
 import AICrew from "./components/AICrew";
 import LiveTV from "./components/LiveTV";
 import MayaChatbot from "./components/MayaChatbot";
+import AudioLab from "./components/AudioLab";
+import VideoDownloader from "./components/VideoDownloader";
+import UnifiedTools from "./components/UnifiedTools";
+import ToolsLabHub from "./components/ToolsLabHub";
 
 // Helper keys for localStorage
 const LOCAL_POSTS_KEY = "iloveyoubd_posts_db";
@@ -130,7 +136,11 @@ const INITIAL_STATS: UserStats = {
   points: 420,
   rank: "WHITE HAT CODER",
   postsPublished: 3,
-  postsPending: 1
+  postsPending: 1,
+  referralCode: "REF-TAREK420",
+  referredBy: undefined,
+  referredUsers: ["সাইবার বাপ্পি", "শাওন আহমেদ"],
+  referralEarnings: 20.00
 };
 
 const DEFAULT_SETTINGS: AdminSettings = {
@@ -147,7 +157,14 @@ const DEFAULT_SETTINGS: AdminSettings = {
   advertisementSnippet: `<div class="bg-cyan-950/20 border border-cyan-800/40 border-dashed rounded-lg p-3 text-center text-xs font-mono text-cyan-400">⚡ Google ADS: Active & High-CPC Optimized Banner Place</div>`,
   mayaApiKeys: "AlzaSyBAcwAPXPzNfeGQ6XHDR-EaNRsHqhkTro8",
   mayaSystemInstruction: "You are Maya (মায়া), the highly professional, helpful, and extremely competent executive AI assistant of iloveyoubd.com. Write in flawless Bangla. Answer users with high intelligence, deep reasoning, and immense professionalism.",
-  mayaTemperature: 0.7
+  mayaTemperature: 0.7,
+  autopilotInterval: "custom_smart",
+  autopilotCategories: "SEO Guide,Hacking,Online Earning",
+  autopilotKeywords: "গুগল অ্যাডসেন্স এপ্রুভাল স্পেশাল টিপস ২০৪০\nকোডিং ক্রাশ ২০৪০ এআই ট্রিক্স\nঅ্যান্ড্রয়েড সিকিউর হ্যাকিং ডিফেন্স\nঅনলাইন আর্নিং বিকাশ রিকোয়েস্ট ট্রিকস\nগুগল সার্চ কনসোল দ্রুত ইনডেক্সিং ২০৪০",
+  referralBonusTaka: 10,
+  referralXpReward: 50,
+  refereeBonusTaka: 10,
+  refereeXpReward: 100
 };
 
 const INITIAL_NOTIFS: NotificationItem[] = [
@@ -172,13 +189,132 @@ const INITIAL_WITHDRAWALS = [
   { id: "w-2", author: "সাইবার রনি", wallet: "01941258745 (নগদ)", amount: 80, status: "pending" }
 ];
 
+const PLAY_STORE_APPS_LIST = [
+  {
+    packageId: "com.whatsapp",
+    title: "WhatsApp Messenger",
+    developer: "WhatsApp LLC",
+    category: "Communication / মেসেঞ্জার",
+    rating: "4.3",
+    size: "৪৮ MB",
+    downloads: "5B+",
+    icon: "https://play-lh.googleusercontent.com/bYtqbV8Zg6pIi66S7oYm686B6fN6Yg00f0ff",
+    description: "সহজ, নিরাপদ ও ব্যক্তিগত মেসেজিং এবং ভয়েস কলার গ্লোবাল সমাধান।"
+  },
+  {
+    packageId: "com.bKash.customerapp",
+    title: "bKash - বিকাশ অ্যাপ",
+    developer: "bKash Limited",
+    category: "Finance / মোবাইল ব্যাংকিং",
+    rating: "4.6",
+    size: "৫৬ MB",
+    downloads: "50M+",
+    icon: "https://play-lh.googleusercontent.com/w9ZgY3pI9e7q7snv3qfN6Yg",
+    description: "বাংলাদেশে দ্রুত, সুরক্ষিত ও সবচেয়ে বড় উপায়ে টাকা লেনদেন এবং বিল পেমেন্ট।"
+  },
+  {
+    packageId: "com.konasl.nagad",
+    title: "Nagad - নকদ অ্যাপ",
+    developer: "Nagad Limited",
+    category: "Finance / মোবাইল ওয়ালেট",
+    rating: "4.5",
+    size: "৪৫ MB",
+    downloads: "50M+",
+    icon: "https://play-lh.googleusercontent.com/8_Q9itYV396Eul6HSf78In969hsnv3qfN6Yg",
+    description: "ডাক বিভাগের নির্ভরযোগ্য ওয়ালেট ও ক্যাশ আউট সুবিধা।"
+  },
+  {
+    packageId: "com.zhiliaoapp.musically",
+    title: "TikTok - ভিডিও কন্টেন্ট",
+    developer: "TikTok Pte. Ltd.",
+    category: "Social / এন্টারটেইনমেন্ট",
+    rating: "4.4",
+    size: "৮২ MB",
+    downloads: "1B+",
+    icon: "https://play-lh.googleusercontent.com/ccWneaY7Zf380Zg6pIi66S7oYm686B6fN6Yg",
+    description: "রিলস ও ছোট ভিডিও ক্লিপের মাধ্যমে মেকার রিঅ্যাকশন এবং লাইভ এন্টারটেইনমেন্ট।"
+  },
+  {
+    packageId: "com.facebook.orca",
+    title: "Messenger - মেসেঞ্জার",
+    developer: "Meta Platforms, Inc.",
+    category: "Communication / চ্যাটিং",
+    rating: "4.1",
+    size: "৫২ MB",
+    downloads: "5B+",
+    icon: "https://play-lh.googleusercontent.com/LDY30_zSu9gKn6S6YVvCuasv3QfH4v9V39_e-vL_0Q",
+    description: "ফেসবুক বন্ধুদের সাথে সেকেন্ডে ভয়েস কল, মেসেজিং ও লাইভ চ্যাটিং করার গেটওয়ে।"
+  },
+  {
+    packageId: "org.telegram.messenger",
+    title: "Telegram - টেলিগ্রাম",
+    developer: "Telegram FZ-LLC",
+    category: "Communication / সিকিউর চ্যাট",
+    rating: "4.3",
+    size: "৬৩ MB",
+    downloads: "1B+",
+    icon: "https://play-lh.googleusercontent.com/61ZSU-XSnA80pxM_3Z-qYn6R9oV39_f-YV_1Q",
+    description: "ক্লাউড স্টোরেজ সুবিধাসহ দ্রুত এবং অত্যন্ত নিরাপদ মেসেজিং সার্ভিস।"
+  },
+  {
+    packageId: "com.gpro.capcut",
+    title: "CapCut - ভিডিও এডিটর",
+    developer: "Bytedance Pte. Ltd.",
+    category: "Video Players & Editors",
+    rating: "4.5",
+    size: "১৩৫ MB",
+    downloads: "500M+",
+    icon: "https://play-lh.googleusercontent.com/R_W_SNSu9YRn6S6YVvCuasv3QfH4v9V39_e-vL_0Q",
+    description: "সহজ এডিটিং টুলস, টেক্সট অ্যানিমেশন ও নিওন ফিল্টার টেমপ্লেটসহ আল্টিমেট ভিডিও এডিটর।"
+  },
+  {
+    packageId: "com.lenovo.anyshare.gps",
+    title: "SHAREit - ফাইল শেয়ারিং",
+    developer: "Smart Media4U",
+    category: "Tools / হাই-স্পিড শেয়ার",
+    rating: "4.4",
+    size: "৩৯ MB",
+    downloads: "1B+",
+    icon: "https://play-lh.googleusercontent.com/uR1CSNSu9YRn6S6YVvCuasv3QfH4v9V39_e-vL_0Q",
+    description: "কোনো ইন্টারনেট বা ডাটা ছাড়াই সেকেন্ডে বড় বড় মুভি ও কন্টেন্ট ফাইল শেয়ার গেটওয়ে।"
+  },
+  {
+    packageId: "com.google.android.youtube",
+    title: "YouTube - ইউটিউব",
+    developer: "Google LLC",
+    category: "Entertainment",
+    rating: "4.5",
+    size: "৪৬ MB",
+    downloads: "10B+",
+    icon: "https://play-lh.googleusercontent.com/lM_CSNSu9YRn6S6YVvCuasv3QfH4v9V39_e-vL_0Q",
+    description: "বিশ্বের সর্ববৃহৎ ভিডিও শেয়ারিং প্লাটফর্ম এবং ক্রিয়েটর মনিটাইজেশন হাফ।"
+  },
+  {
+    packageId: "com.truecaller",
+    title: "Truecaller - কলার আইডি",
+    developer: "Truecaller",
+    category: "Tools / স্প্যাম প্রটেকশন",
+    rating: "4.5",
+    size: "৪৮ MB",
+    downloads: "1B+",
+    icon: "https://play-lh.googleusercontent.com/E_R_SNSu9YRn6S6YVvCuasv3QfH4v9V39_e-vL_0Q",
+    description: "অপরিচিত কলারের নাম এবং স্প্যাম কল স্বয়ংক্রিয়ভাবে ব্লক করার ড্যাশবোর্ড।"
+  }
+];
+
 export default function App() {
   // Navigation active tab
-  const [activeTab, setActiveTab] = useState<"home" | "add" | "profile" | "dashboard" | "ai" | "qa" | "nid" | "admin">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "add" | "profile" | "dashboard" | "ai" | "qa" | "nid" | "admin" | "tools" | "downloader" | "audiolab" | "tools-lab">("home");
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  // State sync and redirection triggers for Tools Lab & App Scan
+  const [initialSubTool, setInitialSubTool] = useState<string | undefined>(undefined);
+  const [initialAppForScan, setInitialAppForScan] = useState<any | undefined>(undefined);
 
   // Single post viewing state
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [postFontSize, setPostFontSize] = useState<"text-xs" | "text-sm" | "text-base" | "text-lg">("text-[#00f0ff]");
+  const [activeFontSizeClass, setActiveFontSizeClass] = useState<"text-xs" | "text-sm" | "text-base" | "text-lg">("text-sm");
 
   // Selected question highlight state in Q&A Forum
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
@@ -190,6 +326,16 @@ export default function App() {
   const [isProfileRewardClaimed, setIsProfileRewardClaimed] = useState<boolean>(() => {
     return localStorage.getItem("ilybd_profile_reward_claimed") === "true";
   });
+
+  // Claimed referral milestones state
+  const [claimedMilestones, setClaimedMilestones] = useState<number[]>(() => {
+    const local = localStorage.getItem("ilybd_claimed_referrals_db");
+    return local ? JSON.parse(local) : [];
+  });
+
+  // Hacker terminal simulation for referrals
+  const [isRefSimulating, setIsRefSimulating] = useState(false);
+  const [refTermLogs, setRefTermLogs] = useState<string[]>([]);
 
   // Dynamic state database loading
   const [posts, setPosts] = useState<Post[]>(() => {
@@ -258,6 +404,86 @@ export default function App() {
   // Search filter
   const [postSearchQuery, setPostSearchQuery] = useState("");
 
+  // Voice search engine state for header search box
+  const [isSearchVoiceActive, setIsSearchVoiceActive] = useState(false);
+  const [searchVoiceStatus, setSearchVoiceStatus] = useState("");
+
+  const startSearchVoiceInput = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("দুঃখিত! আপনার ব্রাউজার ভয়েস সার্চ সমর্থন করে না। অনুগ্রহ করে ক্রোম (Chrome) ব্যবহার করুন।");
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "bn-BD"; // Listen to Bengali
+
+      recognition.onstart = () => {
+        setIsSearchVoiceActive(true);
+        setSearchVoiceStatus("শুনছি... বলুন");
+      };
+
+      recognition.onerror = (e: any) => {
+        console.warn("Speech recognition error in Header Search:", e);
+        setIsSearchVoiceActive(false);
+        setSearchVoiceStatus("");
+      };
+
+      recognition.onend = () => {
+        setIsSearchVoiceActive(false);
+        setSearchVoiceStatus("");
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0]?.[0]?.transcript;
+        if (transcript) {
+          setPostSearchQuery(transcript);
+          setShowSearchDropdown(true);
+        }
+      };
+
+      recognition.start();
+    } catch (err) {
+      console.error(err);
+      setIsSearchVoiceActive(false);
+    }
+  };
+
+  // URL Hash Deep Link Router (Direct Mapping for #maya-ai and #search-focus)
+  useEffect(() => {
+    const handleLocationHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === "#maya-ai" || hash === "#ai" || hash === "#mayachathub" || hash === "#maya") {
+        setActiveTab("ai");
+      } else if (hash === "#tools" || hash === "#tools-lab" || hash === "#hub") {
+        setActiveTab("tools-lab");
+      } else if (hash.startsWith("#post-")) {
+        const id = hash.replace("#post-", "");
+        setSelectedPostId(id);
+        setActiveTab("home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else if (hash.startsWith("#qa-post-")) {
+        const id = hash.replace("#qa-post-", "");
+        setSelectedQuestionId(id);
+        setActiveTab("qa");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else if (hash === "#search-focus" || hash === "#search") {
+        const container = document.getElementById("global-search-container");
+        if (container) {
+          container.scrollIntoView({ behavior: "smooth" });
+          container.querySelector("input")?.focus();
+        }
+      }
+    };
+
+    handleLocationHashChange();
+    window.addEventListener("hashchange", handleLocationHashChange);
+    return () => window.removeEventListener("hashchange", handleLocationHashChange);
+  }, []);
+
   // Profiling details state loaders
   const [profilePhone, setProfilePhone] = useState(() => localStorage.getItem("ilybd_profile_phone") || "");
   const [profileBkash, setProfileBkash] = useState(() => localStorage.getItem("ilybd_profile_bkash") || "");
@@ -294,6 +520,10 @@ export default function App() {
   }, [withdrawalRequests]);
 
   useEffect(() => {
+    localStorage.setItem("ilybd_claimed_referrals_db", JSON.stringify(claimedMilestones));
+  }, [claimedMilestones]);
+
+  useEffect(() => {
     localStorage.setItem("ilybd_profile_reward_claimed", String(isProfileRewardClaimed));
   }, [isProfileRewardClaimed]);
 
@@ -317,6 +547,91 @@ export default function App() {
     localStorage.setItem("ilybd_profile_skills", profileSkills);
     localStorage.setItem("ilybd_profile_fblink", profileFbLink);
   }, [profilePhone, profileBkash, profileBio, profileSkills, profileFbLink]);
+
+  const handleSimulateReferral = () => {
+    if (isRefSimulating) return;
+
+    setIsRefSimulating(true);
+    setRefTermLogs([]);
+
+    const logMessages = [
+      "📡 ৫ই-জেনারেশন প্রক্সি সকেট ইনিশিয়ালাইজেশন শুরু...",
+      "🔒 ক্লাউড ফ্লেয়ার ওয়েবশিল্ড বাইপাস সকেট ট্যাপ ভ্যালিডেটিং...",
+      "🔍 আপনার ইউনিক রেফারেল সোর্স আইডি স্ক্যান করা হচ্ছে...",
+      "⚡ টার্গেট ইউজার আইডেন্টিটি রিকভারি হ্যান্ডশেক সম্পূর্ণ...",
+      "⚙️ মেম্বার সোর্স ফোর্সিং... রেভিনিউ মেটাফ্লো এলাইনমেন্ট..."
+    ];
+
+    let currentLogIndex = 0;
+    setRefTermLogs([logMessages[0]]);
+    currentLogIndex++;
+
+    const logInterval = setInterval(() => {
+      if (currentLogIndex < logMessages.length) {
+        setRefTermLogs(prev => [...prev, logMessages[currentLogIndex]]);
+        currentLogIndex++;
+      } else {
+        clearInterval(logInterval);
+        
+        const names = ["নিলয় হাসান", "সাইবার সাকিব", "ইমরান নাজির", "ফয়সাল মাহমুদ", "আরিফ বিল্লাহ", "সাকিবুল ইসলাম", "তাহমিদ চৌধুরী", "মেহেদী হাসান", "রকিবুল ইসলাম", "ফারিয়া সুলতানা"];
+        const randomName = names[Math.floor(Math.random() * names.length)];
+        
+        if (userStats.referredUsers?.includes(randomName)) {
+          setRefTermLogs(prev => [
+            ...prev,
+            `❌ সিকিউরিটি ওয়ার্নিং: (${randomName}) ইতিমধ্যে আপনার সিস্টেমে রেফার করা আছে!`
+          ]);
+          setIsRefSimulating(false);
+          addSystemNotification(`হ্যাকিং ওয়াচডগ: (${randomName}) ইতিমধ্যে আপনার রেফারাল বোনাসে যোগ দিয়েছেন।`, "system");
+          return;
+        }
+
+        const tBonus = adminSettings.referralBonusTaka !== undefined ? adminSettings.referralBonusTaka : 10;
+        const pBonus = adminSettings.referralXpReward !== undefined ? adminSettings.referralXpReward : 50;
+
+        setUserStats(prev => {
+          const currentReferred = prev.referredUsers || [];
+          return {
+            ...prev,
+            balance: Number((prev.balance + tBonus).toFixed(2)),
+            points: prev.points + pBonus,
+            referredUsers: [...currentReferred, randomName],
+            referralEarnings: (prev.referralEarnings || 0) + tBonus
+          };
+        });
+
+        setRefTermLogs(prev => [
+          ...prev,
+          `✓ সাকসেসফুল! ইউজার (${randomName}) সফলভাবে জয়েন করেছেন।`,
+          `🔥 বোনাস রিসিভড: +${tBonus}.০০ BDT এবং +${pBonus} XP আপনার অ্যাকাউন্টে পুশ করা হয়েছে!`
+        ]);
+        setIsRefSimulating(false);
+
+        addSystemNotification(`🎉 রেফারেল সফল! আপনার দেওয়া কোড ব্যবহার করে (${randomName}) জয়েন করেছে। আপনার ওয়ালেটে +${tBonus} ৳ এবং +${pBonus} XP যুক্ত হয়েছে!`, "earning");
+      }
+    }, 500);
+  };
+
+  const handleClaimMilestone = (milestoneCount: number, rewardTaka: number, milestoneName: string) => {
+    if (claimedMilestones.includes(milestoneCount)) {
+      addSystemNotification(`ইতিমধ্যে আপনি ‘${milestoneName}’ বোনাস ক্লেইম করেছেন!`, "system");
+      return;
+    }
+    const referredCount = userStats.referredUsers?.length || 0;
+    if (referredCount < milestoneCount) {
+      addSystemNotification(`লিমিট অসম্পূর্ণ! বোনাস পেতে কমপক্ষে ${milestoneCount} জন সফল রেফারেল প্রয়োজন।`, "system");
+      return;
+    }
+
+    setUserStats(prev => ({
+      ...prev,
+      balance: Number((prev.balance + rewardTaka).toFixed(2)),
+      points: prev.points + milestoneCount * 10
+    }));
+
+    setClaimedMilestones(prev => [...prev, milestoneCount]);
+    addSystemNotification(`🔥 অভিনন্দন! আপনি সফলভাবে ‘${milestoneName}’ ক্লেইম করে +${rewardTaka} ৳ বোনাস অর্জন করেছেন!`, "earning");
+  };
 
   // Automated slider rotation
   useEffect(() => {
@@ -564,42 +879,49 @@ export default function App() {
   };
 
   // System AI Crew Trigger
-  const handleAdminTriggerAIPost = async () => {
+  const handleTriggerAutopilotPost = async (prompt: string, category: string) => {
     setIsGeneratingAIPost(true);
     try {
-      const concepts = [
-        "অ্যাডসেন্স লোডিং সিক্রেট ২০৪০",
-        "ডিপিএল প্যাকেট ফিল্টারিং হ্যাকস",
-        "২০৪০ সালে এআই কোডিং রোবট ডেভেলপমেন্ট"
-      ];
-      const keyword = concepts[Math.floor(Math.random() * concepts.length)];
       const res = await fetch("/api/gemini/generate-post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt: keyword,
-          category: "SEO Guide",
-          authorName: "মেগা ক্রু এআই"
+          prompt: prompt,
+          category: category,
+          authorName: "মেগা ক্রু এআই",
+          keys: adminSettings.mayaApiKeys.split("\n").map(k => k.trim()).filter(Boolean)
         })
       });
 
       const data = await res.json();
       handleAddGeneratedPost(data);
+      return data;
     } catch (err) {
       console.error(err);
-      // fallback publisher
-      handleAddGeneratedPost({
-        title: "সাইবার গার্ড ইমেট্রি ২০৪০ এপ্রুভাল গাইড",
+      const fallback = {
+        title: `${prompt} - সাইবার সিকিউরিটি বিশ্লেষণ ২০৪০`,
         excerpt: "সার্ভার স্পিড ফিক্স করার সিকিউরিটি গাইড সম্পর্কে এআই অ্যাসিস্ট্যান্ট পোস্ট তৈরি করেছে।",
-        content: "সিস্টেম কোড সল্ভার সক্রিয় করতে ডোমেইন ভেরিফাই করুন...",
-        category: "Hacking",
+        content: `## ২০৪০ সালের হ্যাকিং এবং ডিফেন্স সিস্টেম\n\nআসসালামু আলাইকুম! **iloveyoubd.com**-এর পাঠকদের জন্য আজ আমরা আলোচনা করব কীভাবে কোয়ান্টাম এনক্রিপশন এবং এআই ডিফেন্স আমাদের ডেটা সুরক্ষিত রাখছে।\n\n### ১. গুগল ইনডেক্সিং এবং এসইও সিক্রেটস\nআধুনিক গুগল সার্চ এআই ক্রলারদের সাথে বন্ধুত্ব করতে চাইলে আমাদের প্রতিটি কন্টেন্টে মেটা-ডাটা রিলেশন মজবুত করতে হবে। ২০৪০ ভিশন অনুযায়ী সার্চ ইঞ্জিন এখন সরাসরি অডিও ও ক্রিপ্টো আইডি স্ক্যান করে থাকে।\n\n**কন্টেন্ট সমাপ্ত। আপনার মতামত কমেন্টে জানান!**`,
+        category: category,
         tags: ["ai", "hacker-security"],
         readTime: "৩ মিনিট",
-        authorName: "মেগা ক্রউ এআই"
-      });
+        authorName: "মেগা ক্রু এআই"
+      };
+      handleAddGeneratedPost(fallback);
+      return fallback;
     } finally {
       setIsGeneratingAIPost(false);
     }
+  };
+
+  const handleAdminTriggerAIPost = async () => {
+    const concepts = [
+      "অ্যাডসেন্স লোডিং সিক্রেট ২০৪০",
+      "ডিপিএল প্যাকেট ফিল্টারিং হ্যাকস",
+      "২০৪০ সালে এআই কোডিং রোবট ডেভেলপমেন্ট"
+    ];
+    const keyword = concepts[Math.floor(Math.random() * concepts.length)];
+    await handleTriggerAutopilotPost(keyword, "SEO Guide");
   };
 
   // Filter posts
@@ -849,15 +1171,26 @@ export default function App() {
               <Cpu className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> এআই মায়া ✨
             </button>
             <button
-              id="menu-tab-qa"
-              onClick={() => setActiveTab("qa")}
+              id="menu-tab-audiolab"
+              onClick={() => setActiveTab("audiolab")}
               className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
-                activeTab === "qa"
+                activeTab === "audiolab"
                   ? `bg-[#0c1624] border ${styleProfile.borderAccent} text-slate-100 shadow-[0_0_8px_rgba(0,240,255,0.15)]`
                   : "text-slate-400 hover:text-slate-100"
               }`}
             >
-              <HelpCircle className="w-3.5 h-3.5 text-cyan-500" /> কমিউনিটি Q&A
+              <Music className="w-3.5 h-3.5 text-violet-450 animate-pulse" /> নিয়েন মিউজিক ল্যাব 🎵
+            </button>
+            <button
+              id="menu-tab-tools-lab"
+              onClick={() => setActiveTab("tools-lab")}
+              className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+                activeTab === "tools-lab"
+                  ? `bg-[#0c1624] border ${styleProfile.borderAccent} text-slate-100 shadow-[0_0_8px_rgba(0,240,255,0.15)]`
+                  : "text-slate-400 hover:text-slate-100"
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />  টুলস ল্যাব 🧪
             </button>
             <button
               id="menu-tab-nid"
@@ -869,6 +1202,28 @@ export default function App() {
               }`}
             >
               <Layout className="w-3.5 h-3.5 text-emerald-400" /> এনআইডি মেকার
+            </button>
+            <button
+              id="menu-tab-downloader"
+              onClick={() => setActiveTab("downloader")}
+              className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+                activeTab === "downloader"
+                  ? `bg-[#0c1624] border ${styleProfile.borderAccent} text-slate-100 shadow-[0_0_8px_rgba(0,240,255,0.15)]`
+                  : "text-slate-400 hover:text-slate-100"
+              }`}
+            >
+              <Video className="w-3.5 h-3.5 text-purple-400 animate-pulse" /> ভিডিও ডাউনলোডার 📥
+            </button>
+            <button
+              id="menu-tab-tools"
+              onClick={() => setActiveTab("tools")}
+              className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+                activeTab === "tools"
+                  ? `bg-[#0c1624] border ${styleProfile.borderAccent} text-slate-100 shadow-[0_0_8px_rgba(0,240,255,0.15)]`
+                  : "text-slate-400 hover:text-slate-100"
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5 text-cyan-400 animate-pulse" /> মেগা টুলস হাব 🛠️
             </button>
             <button
               id="menu-tab-dashboard"
@@ -1248,7 +1603,7 @@ export default function App() {
                       ))}
                     </div>
 
-                    <div className="relative w-full sm:w-80 md:w-96" id="global-search-container">
+                    <div className="relative w-full sm:w-85 md:w-[420px]" id="global-search-container">
                       <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400 animate-pulse" />
                       <input
                         type="text"
@@ -1258,227 +1613,682 @@ export default function App() {
                           setShowSearchDropdown(true);
                         }}
                         onFocus={() => setShowSearchDropdown(true)}
-                        placeholder="কন্টেন্ট বা ফোরাম প্রশ্ন খুঁজুন..."
-                        className="w-full text-xs font-mono bg-slate-950 border border-cyan-950 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30 text-slate-100 placeholder-slate-500 transition-all duration-300 shadow-[inset_0_2px_10px_rgba(0,0,0,0.8)]"
+                        placeholder={isSearchVoiceActive ? "শুনছি... বলুন..." : "কন্টেন্ট বা ফোরাম প্রশ্ন খুঁজুন..."}
+                        className={`w-full text-xs font-mono bg-slate-950 border rounded-lg pl-10 pr-16 py-2.5 focus:outline-none text-slate-100 placeholder-slate-500 transition-all duration-300 shadow-[inset_0_2px_10px_rgba(0,0,0,0.8)] ${
+                          isSearchVoiceActive 
+                            ? "border-[#00f0ff] ring-2 ring-cyan-500/30 animate-pulse bg-cyan-950/20" 
+                            : "border-cyan-950 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30"
+                        }`}
                       />
-                      {postSearchQuery && (
+                      
+                      {/* Active Actions inside search bar */}
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 z-10">
+                        {postSearchQuery && (
+                          <button
+                            onClick={() => {
+                              setPostSearchQuery("");
+                              setShowSearchDropdown(false);
+                            }}
+                            className="text-slate-500 hover:text-slate-300 text-xs font-mono hover:scale-110 transition-transform cursor-pointer p-1"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        
                         <button
-                          onClick={() => {
-                            setPostSearchQuery("");
-                            setShowSearchDropdown(false);
-                          }}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs font-mono hover:scale-110 transition-transform cursor-pointer"
+                          type="button"
+                          onClick={startSearchVoiceInput}
+                          className={`p-1.5 rounded-md border flex items-center justify-center transition-all cursor-pointer ${
+                            isSearchVoiceActive
+                              ? "bg-red-500/20 border-red-500 text-red-400 animate-pulse"
+                              : "bg-cyan-950/40 border-cyan-800/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400/50"
+                          }`}
+                          title="ভয়েস দিয়ে সার্চ করুন (বাংলা/English)"
                         >
-                          ✕
+                          <Mic className="w-3.5 h-3.5" />
                         </button>
-                      )}
+                      </div>
 
                       {/* STUNNING REAL-TIME SEARCH RESULTS OVERLAY PANEL */}
                       <AnimatePresence>
-                        {showSearchDropdown && postSearchQuery.trim().length > 0 && (
+                        {showSearchDropdown && (
                           <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-[#080d17] border border-cyan-500/35 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-50 overflow-hidden backdrop-blur-xl max-h-[420px] overflow-y-auto custom-scrollbar flex flex-col divide-y divide-cyan-950/60"
+                            className="absolute top-full left-0 right-0 mt-2 bg-[#080d17] border border-cyan-500/35 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-50 overflow-hidden backdrop-blur-xl max-h-[460px] overflow-y-auto custom-scrollbar flex flex-col divide-y divide-cyan-950/60"
                           >
-                            {/* Search statistics header */}
-                            <div className="bg-[#0b1222] px-4 py-2 flex justify-between items-center text-[10px] text-slate-450 font-mono">
-                              <span>খোঁজা হচ্ছে: <strong className="text-cyan-400">"{postSearchQuery}"</strong></span>
-                              <span>
-                                {(() => {
-                                  let pCount = posts.filter(p => p.title.toLowerCase().includes(postSearchQuery.toLowerCase()) || p.excerpt.toLowerCase().includes(postSearchQuery.toLowerCase())).length;
-                                  let qCount = questions.filter(q => q.title.toLowerCase().includes(postSearchQuery.toLowerCase())).length;
-                                  return `${pCount + qCount} টি ফলাফল`;
-                                })()}
-                              </span>
-                            </div>
+                            {postSearchQuery.trim().length === 0 ? (
+                              /* SPOTLIGHT PORTAL SHORTCUTS & SUGGESTIONS */
+                              <div className="p-3 text-left space-y-4">
+                                <div className="space-y-1.5">
+                                  <div className="text-[9.5px] font-mono tracking-widest text-[#00f0ff] uppercase px-1.5 font-bold flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 bg-[#00f0ff] rounded-full animate-ping" />
+                                    ⚡ ওয়ান-ক্লিক কুইক মডিউল রাউটার
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("home"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-[#00f0ff] rounded-lg text-[11px] font-sans hover:bg-cyan-950/15 text-slate-300 hover:text-[#00f0ff] transition-all text-left"
+                                    >
+                                      <span>📖</span> হোম কন্টেন্ট পোর্টাল
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("ai"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-[#39ff14] rounded-lg text-[11px] font-sans hover:bg-emerald-950/15 text-slate-300 hover:text-[#39ff14] transition-all text-left"
+                                    >
+                                      <span>🧪</span> এআই রাইডার ও মায়া চ্যাট
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("qa"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-purple-500 rounded-lg text-[11px] font-sans hover:bg-purple-950/15 text-slate-300 hover:text-purple-400 transition-all text-left"
+                                    >
+                                      <span>💬</span> ফোরাম সিকিউরিটি ক্যোয়ারী
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("nid"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-[#39ff14] rounded-lg text-[11px] font-sans hover:bg-emerald-950/15 text-slate-300 hover:text-[#39ff14] transition-all text-left"
+                                    >
+                                      <span>🎴</span> এনআইডি কার্ড জেনারেটর
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("dashboard"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-yellow-500 rounded-lg text-[11px] font-sans hover:bg-yellow-950/15 text-slate-300 hover:text-yellow-400 transition-all text-left"
+                                    >
+                                      <span>💳</span> বিকাশ আর্নিং ড্যাশবোর্ড
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("downloader"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-rose-500 rounded-lg text-[11px] font-sans hover:bg-rose-950/15 text-slate-300 hover:text-rose-400 transition-all text-left"
+                                    >
+                                      <span>🎬</span> ইউটিউব ভিডিও ডাউনলোডার
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("audiolab"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-cyan-500 rounded-lg text-[11px] font-sans hover:bg-cyan-950/15 text-slate-300 hover:text-cyan-400 transition-all text-left"
+                                    >
+                                      <span>🎧</span> কোয়ান্টাম অডিও ল্যাব
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setActiveTab("tools-lab"); setShowSearchDropdown(false); }}
+                                      className="flex items-center gap-2 p-2 bg-slate-950/60 border border-cyan-900/15 hover:border-[#00f0ff] rounded-lg text-[11px] font-sans hover:bg-[#00f0ff]/10 text-slate-300 hover:text-[#00f0ff] transition-all text-left"
+                                    >
+                                      <span>🛠️</span> ইউনিক অ্যাডভান্সড টুলস
+                                    </button>
+                                  </div>
+                                </div>
 
-                            {/* RESULTS CONTENT AREA */}
-                            <div className="p-2 space-y-4">
-                              {/* --- CATEGORY A: TUTORIAL POSTS --- */}
-                              {(() => {
-                                const matchingPosts = posts.filter(p => 
-                                  p.title.toLowerCase().includes(postSearchQuery.toLowerCase()) || 
-                                  p.excerpt.toLowerCase().includes(postSearchQuery.toLowerCase()) ||
-                                  p.category.toLowerCase().includes(postSearchQuery.toLowerCase())
-                                );
+                                <div className="space-y-2 pt-2 border-t border-cyan-950/40">
+                                  <div className="text-[9.5px] font-mono tracking-widest text-[#39ff14] uppercase px-1.5 font-bold">
+                                    🔥 জনপ্রিয় সার্চ কী-ওয়ার্ডসমূহ
+                                  </div>
+                                  <div className="flex flex-wrap gap-1.5 px-1">
+                                    {[
+                                      { l: "গুগল এডসেন্স", k: "এডসেন্স" },
+                                      { l: "হ্যাকিং ডিফেন্স গাইড", k: "হ্যাকিং" },
+                                      { l: "বিকাশ মানি আর্নিং", k: "আর্নিং" },
+                                      { l: "ফ্রি ভিডিও ডাউনলোডার", k: "ডাউনলোডার" },
+                                      { l: "স্মার্ট এনআইডি মেকার", k: "এনআইডি" },
+                                      { l: "মায়া চ্যাট সহায়ক ও এআই", k: "মায়া" },
+                                      { l: "এসইও র‍্যাংকিং অডিট", k: "এসইও" }
+                                    ].map((tagObj, idx) => (
+                                      <button
+                                        key={idx}
+                                        type="button"
+                                        onClick={() => {
+                                          setPostSearchQuery(tagObj.k);
+                                        }}
+                                        className="text-[10.5px] bg-[#0c1222] border border-cyan-950 text-slate-300 hover:text-[#00f0ff] hover:border-cyan-500/30 px-2.5 py-1.5 rounded-lg font-sans transition-all cursor-pointer"
+                                      >
+                                        🔍 {tagObj.l}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              /* ACTIVE SEARCH RESULTS SEGMENTS WITH DIRECT TOOL ROUTING */
+                              <>
+                                {/* Search statistics header */}
+                                <div className="bg-[#0b1222] px-4 py-2 flex justify-between items-center text-[10px] text-slate-450 font-mono">
+                                  <span>খোঁজা হচ্ছে: <strong className="text-cyan-400">"{postSearchQuery}"</strong></span>
+                                  <span>
+                                    {(() => {
+                                      let pCount = posts.filter(p => p.title.toLowerCase().includes(postSearchQuery.toLowerCase()) || p.excerpt.toLowerCase().includes(postSearchQuery.toLowerCase())).length;
+                                      let qCount = questions.filter(q => q.title.toLowerCase().includes(postSearchQuery.toLowerCase())).length;
+                                      let tMatches = 0;
+                                      const qLow = postSearchQuery.toLowerCase();
+                                      if (qLow.includes("video") || qLow.includes("downloader") || qLow.includes("ইউটিউব") || qLow.includes("ভিডিও") || qLow.includes("ডাউনলোড")) tMatches++;
+                                      if (qLow.includes("nid") || qLow.includes("এনআইডি") || qLow.includes("কার্ড") || qLow.includes("স্মার্ট")) tMatches++;
+                                      if (qLow.includes("audio") || qLow.includes("অডিও") || qLow.includes("গান") || qLow.includes("মেলোডি") || qLow.includes("সিন্থ")) tMatches++;
+                                      if (qLow.includes("ai") || qLow.includes("জেমিনি") || qLow.includes("মায়া") || qLow.includes("চ্যাট")) tMatches++;
+                                      return `${pCount + qCount + tMatches} টি ফলাফল`;
+                                    })()}
+                                  </span>
+                                </div>
 
-                                return (
-                                  matchingPosts.length > 0 && (
-                                    <div className="space-y-1.5">
-                                      <div className="text-[9.5px] font-mono tracking-wider text-cyan-400 uppercase px-2 font-bold flex items-center gap-1.5">
-                                        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping" />
-                                        📖 ব্লগ পোস্ট ও টিউটোরিয়ালস ({matchingPosts.length})
-                                      </div>
-                                      <div className="space-y-1">
-                                        {matchingPosts.slice(0, 5).map(post => (
-                                          <div
-                                            key={post.id}
-                                            onClick={() => {
-                                              setSelectedPostId(post.id);
-                                              setActiveTab("home");
-                                              setShowSearchDropdown(false);
-                                            }}
-                                            className="p-2.5 rounded-lg bg-slate-950/60 hover:bg-cyan-950/45 border border-transparent hover:border-cyan-900/30 cursor-pointer transition-all duration-200 text-left"
-                                          >
-                                            <div className="flex justify-between items-start gap-2">
-                                              <h5 className="text-[12px] font-semibold text-slate-100 hover:text-cyan-400 font-sans line-clamp-1">
-                                                {post.title}
-                                              </h5>
-                                              <span className="text-[8px] font-mono font-medium text-emerald-400 bg-emerald-950/70 border border-emerald-900/40 px-1.5 py-0.5 rounded shrink-0">
-                                                {post.category}
-                                              </span>
-                                            </div>
-                                            <p className="text-[10px] text-slate-400 font-sans line-clamp-1 mt-0.5">
-                                              {post.excerpt}
-                                            </p>
+                                <div className="p-2 space-y-4">
+                                  {/* --- DYNAMIC MATCHING: CYBER PORTAL TOOLS ROUTER --- */}
+                                  {(() => {
+                                    const tList: { id: string; name: string; desc: string; tab: string; emoji: string }[] = [];
+                                    const qLow = postSearchQuery.toLowerCase();
+                                    
+                                    if (qLow.includes("video") || qLow.includes("downloader") || qLow.includes("ইউটিউব") || qLow.includes("ভিডিও") || qLow.includes("ডাউনলোড")) {
+                                      tList.push({ id: "t-1", name: "ইউটিউব ও ফেসবুক ভিডিও ডাউনলোডার", desc: "হাই-স্পিড ভিডিও ও রিলেটেড মাল্টিমিডিয়া সরাসরি ডাউনলোড করার সুপার হাব!", tab: "downloader", emoji: "🎬" });
+                                    }
+                                    if (qLow.includes("nid") || qLow.includes("এনআইডি") || qLow.includes("কার্ড") || qLow.includes("স্মার্ট")) {
+                                      tList.push({ id: "t-2", name: "স্মার্ট এনআইডি কার্ড জেনারেটর প্রফেশনাল", desc: "এক ক্লিকে চমৎকার আরজিবি স্মার্ট আইডি ও লোগো মেকার সিস্টেম!", tab: "nid", emoji: "🎴" });
+                                    }
+                                    if (qLow.includes("audio") || qLow.includes("অডিও") || qLow.includes("গান") || qLow.includes("মেলোডি") || qLow.includes("সিন্থ")) {
+                                      tList.push({ id: "t-3", name: "কোয়ান্টাম অডিও ল্যাব সিন্থেসাইজার", desc: "প্রফেশনাল সাইবার সাউন্ড মেলোডি এবং ব্যাকগ্রাউন্ড রিদম জেনারেটর।", tab: "audiolab", emoji: "🎧" });
+                                    }
+                                    if (qLow.includes("ai") || qLow.includes("জেমিনি") || qLow.includes("মায়া") || qLow.includes("চ্যাট")) {
+                                      tList.push({ id: "t-4", name: "মায়া এআই চ্যাট অ্যাসিস্ট্যান্ট (Gemini)", desc: "উন্নত জেমিনি মডেলের হাই-ব্রেইন এআই কন্টেন্ট ক্রিয়েটর ও চ্যাট রাইটার!", tab: "ai", emoji: "🧪" });
+                                    }
+
+                                    return (
+                                      tList.length > 0 && (
+                                        <div className="space-y-1.5">
+                                          <div className="text-[9.5px] font-mono tracking-wider text-[#39ff14] uppercase px-2 font-bold flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 bg-[#39ff14] rounded-full animate-ping" />
+                                            🛠️ সিস্টেম ইন্টিগ্রেটেড সাইবার টুলস ({tList.length})
                                           </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )
-                                );
-                              })()}
-
-                              {/* --- CATEGORY B: COMMUNITY Q&A QUESTIONS --- */}
-                              {(() => {
-                                const matchingQuestions = questions.filter(q => 
-                                  q.title.toLowerCase().includes(postSearchQuery.toLowerCase()) || 
-                                  q.category.toLowerCase().includes(postSearchQuery.toLowerCase()) ||
-                                  q.answers.some(ans => ans.text.toLowerCase().includes(postSearchQuery.toLowerCase()))
-                                );
-
-                                return (
-                                  matchingQuestions.length > 0 && (
-                                    <div className="space-y-1.5 pt-2">
-                                      <div className="text-[9.5px] font-mono tracking-wider text-purple-400 uppercase px-2 font-bold flex items-center gap-1.5">
-                                        <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-ping" />
-                                        💬 ফোরাম প্রশ্নোত্তর ({matchingQuestions.length})
-                                      </div>
-                                      <div className="space-y-1">
-                                        {matchingQuestions.slice(0, 5).map(q => (
-                                          <div
-                                            key={q.id}
-                                            onClick={() => {
-                                              setSelectedQuestionId(q.id);
-                                              setActiveTab("qa");
-                                              setShowSearchDropdown(false);
-                                            }}
-                                            className="p-2.5 rounded-lg bg-slate-950/60 hover:bg-purple-950/30 border border-transparent hover:border-purple-900/30 cursor-pointer transition-all duration-200 text-left"
-                                          >
-                                            <div className="flex justify-between items-start gap-2">
-                                              <h5 className="text-[12px] font-semibold text-slate-100 hover:text-purple-300 font-sans line-clamp-1">
-                                                {q.title}
-                                              </h5>
-                                              <span className="text-[8px] font-mono font-medium text-purple-400 bg-purple-950/60 border border-purple-900/40 px-1.5 py-0.5 rounded shrink-0">
-                                                {q.category}
-                                              </span>
-                                            </div>
-                                            <div className="flex items-center gap-3 mt-1.5 text-[9px] text-slate-500 font-mono">
-                                              <span>প্রশ্নকারী: <b className="text-slate-400">{q.author}</b></span>
-                                              <span>•</span>
-                                              <span className="text-purple-450 font-semibold">{q.votes}টি ভোট</span>
-                                              <span>•</span>
-                                              <span className="text-cyan-455 font-semibold">{q.answers.length}টি সমাধান</span>
-                                            </div>
+                                          <div className="space-y-1">
+                                            {tList.map(t => (
+                                              <div
+                                                key={t.id}
+                                                onClick={() => {
+                                                  setActiveTab(t.tab as any);
+                                                  setShowSearchDropdown(false);
+                                                }}
+                                                className="p-2.5 rounded-lg bg-emerald-950/30 hover:bg-[#39ff14]/15 border border-[#163f19] hover:border-[#39ff14]/40 cursor-pointer transition-all duration-200 text-left"
+                                              >
+                                                <div className="flex justify-between items-start gap-2">
+                                                  <h5 className="text-[12px] font-semibold text-slate-100 hover:text-[#39ff14] font-sans line-clamp-1">
+                                                    {t.emoji} {t.name}
+                                                  </h5>
+                                                  <span className="text-[8px] font-mono font-medium text-[#39ff14] bg-emerald-950/70 border border-[#215a25] px-1.5 py-0.5 rounded shrink-0">
+                                                    ACTIVE TOOL
+                                                  </span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-400 font-sans line-clamp-1 mt-0.5">
+                                                  {t.desc}
+                                                </p>
+                                              </div>
+                                            ))}
                                           </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )
-                                );
-                              })()}
+                                        </div>
+                                      )
+                                    );
+                                  })()}
 
-                              {/* --- ZERO RESULTS FALLBACK --- */}
-                              {(() => {
-                                let pCount = posts.filter(p => p.title.toLowerCase().includes(postSearchQuery.toLowerCase()) || p.excerpt.toLowerCase().includes(postSearchQuery.toLowerCase())).length;
-                                let qCount = questions.filter(q => q.title.toLowerCase().includes(postSearchQuery.toLowerCase())).length;
-                                if (pCount === 0 && qCount === 0) {
-                                  return (
-                                    <div className="p-8 text-center space-y-2">
-                                      <div className="text-amber-500 text-base font-bold font-mono">⚠️ দুঃখিত! কোশ্চেন বা পোস্ট পাওয়া যায়নি</div>
-                                      <p className="text-[11px] text-slate-400 font-sans">
-                                        আপনার দেওয়া কী-ওয়ার্ড <strong className="text-cyan-400 font-mono">"{postSearchQuery}"</strong> দিয়ে কোনো পোস্ট বা প্রশ্ন সমাধান পাওয়া যায়নি।
-                                      </p>
-                                      <p className="text-[9px] text-slate-550 font-mono italic">
-                                        বিকল্প কিছু ট্রাই করুন (যেমন 'গুগল', 'সাইবার', 'এআই' বা 'ইনডেক্স')
-                                      </p>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              })()}
-                            </div>
-                            
-                            {/* Tips Footer */}
-                            <div className="bg-[#050911] px-4 py-2 text-center text-[9px] font-mono text-slate-500">
-                              💡 ফলাফলে সরাসরি ক্লিক করলেই কাঙ্ক্ষিত সমাধান পেজে নিয়ে যাবে।
-                            </div>
+                                  {/* --- CATEGORY A: TUTORIAL POSTS --- */}
+                                  {(() => {
+                                    const matchingPosts = posts.filter(p => 
+                                      p.title.toLowerCase().includes(postSearchQuery.toLowerCase()) || 
+                                      p.excerpt.toLowerCase().includes(postSearchQuery.toLowerCase()) ||
+                                      p.category.toLowerCase().includes(postSearchQuery.toLowerCase())
+                                    );
+
+                                    return (
+                                      matchingPosts.length > 0 && (
+                                        <div className="space-y-1.5">
+                                          <div className="text-[9.5px] font-mono tracking-wider text-cyan-400 uppercase px-2 font-bold flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping" />
+                                            📖 ব্লগ পোস্ট ও টিউটোরিয়ালস ({matchingPosts.length})
+                                          </div>
+                                          <div className="space-y-1">
+                                            {matchingPosts.slice(0, 5).map(post => (
+                                              <div
+                                                key={post.id}
+                                                onClick={() => {
+                                                  setSelectedPostId(post.id);
+                                                  setActiveTab("home");
+                                                  setShowSearchDropdown(false);
+                                                }}
+                                                className="p-2.5 rounded-lg bg-slate-950/60 hover:bg-cyan-950/45 border border-transparent hover:border-cyan-900/30 cursor-pointer transition-all duration-200 text-left"
+                                              >
+                                                <div className="flex justify-between items-start gap-2">
+                                                  <h5 className="text-[12px] font-semibold text-slate-100 hover:text-cyan-400 font-sans line-clamp-1">
+                                                    {post.title}
+                                                  </h5>
+                                                  <span className="text-[8px] font-mono font-medium text-emerald-400 bg-emerald-950/70 border border-emerald-900/40 px-1.5 py-0.5 rounded shrink-0">
+                                                    {post.category}
+                                                  </span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-400 font-sans line-clamp-1 mt-0.5">
+                                                  {post.excerpt}
+                                                </p>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )
+                                    );
+                                  })()}
+
+                                  {/* --- CATEGORY B: COMMUNITY Q&A QUESTIONS --- */}
+                                  {(() => {
+                                    const matchingQuestions = questions.filter(q => 
+                                      q.title.toLowerCase().includes(postSearchQuery.toLowerCase()) || 
+                                      q.category.toLowerCase().includes(postSearchQuery.toLowerCase()) ||
+                                      q.answers.some(ans => ans.text.toLowerCase().includes(postSearchQuery.toLowerCase()))
+                                    );
+
+                                    return (
+                                      matchingQuestions.length > 0 && (
+                                        <div className="space-y-1.5 pt-2">
+                                          <div className="text-[9.5px] font-mono tracking-wider text-purple-400 uppercase px-2 font-bold flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-ping" />
+                                            💬 ফোরাম প্রশ্নোত্তর ({matchingQuestions.length})
+                                          </div>
+                                          <div className="space-y-1">
+                                            {matchingQuestions.slice(0, 5).map(q => (
+                                              <div
+                                                key={q.id}
+                                                onClick={() => {
+                                                  setSelectedQuestionId(q.id);
+                                                  setActiveTab("qa");
+                                                  setShowSearchDropdown(false);
+                                                }}
+                                                className="p-2.5 rounded-lg bg-slate-950/60 hover:bg-purple-950/30 border border-transparent hover:border-purple-900/30 cursor-pointer transition-all duration-200 text-left"
+                                              >
+                                                <div className="flex justify-between items-start gap-2">
+                                                  <h5 className="text-[12px] font-semibold text-slate-100 hover:text-purple-300 font-sans line-clamp-1">
+                                                    {q.title}
+                                                  </h5>
+                                                  <span className="text-[8px] font-mono font-medium text-purple-400 bg-purple-950/60 border border-purple-900/40 px-1.5 py-0.5 rounded shrink-0">
+                                                    {q.category}
+                                                  </span>
+                                                </div>
+                                                <div className="flex items-center gap-3 mt-1.5 text-[9px] text-slate-500 font-mono">
+                                                  <span>প্রশ্নকারী: <b className="text-slate-400">{q.author}</b></span>
+                                                  <span>•</span>
+                                                  <span className="text-purple-450 font-semibold">{q.votes}টি ভোট</span>
+                                                  <span>•</span>
+                                                  <span className="text-cyan-455 font-semibold">{q.answers.length}টি সমাধান</span>
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )
+                                    );
+                                  })()}
+
+                                  {/* --- ZERO RESULTS FALLBACK --- */}
+                                  {(() => {
+                                    let pCount = posts.filter(p => p.title.toLowerCase().includes(postSearchQuery.toLowerCase() || p.excerpt.toLowerCase().includes(postSearchQuery.toLowerCase()))).length;
+                                    let qCount = questions.filter(q => q.title.toLowerCase().includes(postSearchQuery.toLowerCase())).length;
+                                    
+                                    let tMatches = 0;
+                                    const qLow = postSearchQuery.toLowerCase();
+                                    if (qLow.includes("video") || qLow.includes("downloader") || qLow.includes("ইউটিউব") || qLow.includes("ভিডিও") || qLow.includes("ডাউনলোড")) tMatches++;
+                                    if (qLow.includes("nid") || qLow.includes("এনআইডি") || qLow.includes("কার্ড") || qLow.includes("স্মার্ট")) tMatches++;
+                                    if (qLow.includes("audio") || qLow.includes("অডিও") || qLow.includes("গান") || qLow.includes("মেলোডি") || qLow.includes("সিন্থ")) tMatches++;
+                                    if (qLow.includes("ai") || qLow.includes("জেমিনি") || qLow.includes("মায়া") || qLow.includes("চ্যাট")) tMatches++;
+
+                                    if (pCount === 0 && qCount === 0 && tMatches === 0) {
+                                      return (
+                                        <div className="p-8 text-center space-y-2">
+                                          <div className="text-amber-500 text-base font-bold font-mono">⚠️ দুঃখিত! কোশ্চেন বা পোস্ট পাওয়া যায়নি</div>
+                                          <p className="text-[11px] text-slate-400 font-sans">
+                                            আপনার দেওয়া কী-ওয়ার্ড <strong className="text-cyan-400 font-mono">"{postSearchQuery}"</strong> দিয়ে কোনো কন্টেন্ট বা ওয়ান-টাচ ফোরাম প্রশ্নোত্তর পাওয়া যায়নি।
+                                          </p>
+                                        </div>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
+                                </div>
+                              </>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </div>
                   </div>
 
-                  {/* Blog feed rendering grids */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {filteredPostsList.length === 0 ? (
-                      <div className="col-span-full text-center py-12 bg-slate-950 border border-dashed border-slate-900 rounded-xl font-mono text-slate-500">
-                        এই ক্যাটাগরিতে কোনো টিউটোরিয়াল পোস্ট পাওয়া যায়নি।
-                      </div>
-                    ) : (
-                      filteredPostsList.map((post) => (
-                        <PostContainer
-                          key={post.id}
-                          post={post}
-                          onLike={handleLikePost}
-                          onComment={handleCommentPost}
-                        />
-                      ))
-                    )}
-                  </div>
+                  {/* TIMELINE TIMELINE ARTICLES FEED SHIELD */}
+                  {selectedPostId ? (
+                    (() => {
+                      const post = posts.find((p) => p.id === selectedPostId);
+                      if (!post) return null;
+                      return (
+                        <motion.div
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-[#090d16]/90 border border-cyan-950 rounded-2xl p-6 shadow-2xl relative overflow-hidden text-left space-y-6"
+                        >
+                          {/* Back Button */}
+                          <div className="flex justify-between items-center border-b border-cyan-950 pb-4">
+                            <button
+                              onClick={() => setSelectedPostId(null)}
+                              className="text-xs font-mono font-bold bg-slate-950 hover:bg-cyan-950 text-cyan-450 px-4 py-2 rounded-xl border border-cyan-950 cursor-pointer transition-all flex items-center gap-2"
+                            >
+                              ← ফিরে যান
+                            </button>
+                            <span className="text-xs font-mono text-slate-500">{post.timestamp}</span>
+                          </div>
+
+                          <div className="space-y-4">
+                            <div className="relative aspect-[21/9] rounded-xl overflow-hidden bg-slate-950 border border-cyan-950">
+                              <img
+                                src={post.thumbnail}
+                                alt={post.title}
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                              <span className="absolute top-3 left-3 text-[10px] uppercase font-mono font-bold bg-[#070b13]/85 text-[#00f0ff] border border-cyan-800 rounded px-2.5 py-1 backdrop-blur-md">
+                                {post.category}
+                              </span>
+                            </div>
+
+                            {/* Author & Reader Font Size toolbar */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-[#050912]/80 border border-cyan-950/60 p-3 rounded-xl">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={post.author.avatar}
+                                  alt={post.author.name}
+                                  className="w-10 h-10 rounded-full border border-cyan-600/30 object-cover cursor-pointer"
+                                />
+                                <div className="text-left">
+                                  <div className="text-xs font-bold text-slate-100 flex items-center gap-1.5">
+                                    <span>{post.author.name}</span>
+                                    {post.author.isAI && (
+                                      <span className="bg-cyan-950 text-cyan-400 text-[9px] border border-cyan-800 px-1.5 rounded">AI Writer</span>
+                                    )}
+                                  </div>
+                                  <span className={`text-[10px] ${styleProfile.textAccent} font-mono uppercase`}>{post.author.rank}</span>
+                                </div>
+                              </div>
+
+                              {/* Reader Control Buttons */}
+                              <div className="flex items-center gap-2 font-mono text-[10px] font-bold text-slate-400 uppercase">
+                                <span>টেক্সট ফন্ট সাইজ:</span>
+                                <div className="flex bg-slate-950 border border-cyan-950 rounded-lg p-0.5">
+                                  {(["text-xs", "text-sm", "text-base", "text-lg"] as const).map((sz) => (
+                                    <button
+                                      key={sz}
+                                      type="button"
+                                      onClick={() => setActiveFontSizeClass(sz)}
+                                      className={`px-2.5 py-1 rounded cursor-pointer ${
+                                        activeFontSizeClass === sz
+                                          ? "bg-cyan-900/60 text-[#00f0ff] border border-cyan-800/40"
+                                          : "hover:text-white"
+                                      }`}
+                                    >
+                                      {sz === "text-xs" ? "A-" : sz === "text-sm" ? "A" : sz === "text-base" ? "A+" : "A++"}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* ADSENSE UNIT SLOT 1: Header Banner (Compliance Safety >20px) */}
+                            {adminSettings.enableGoogleAds && (
+                              <div className="my-6 p-4 bg-slate-950/90 border-t border-b border-dashed border-cyan-500/10 rounded-lg text-center space-y-1 select-none">
+                                <span className="text-[8px] font-mono text-slate-600 uppercase tracking-widest block font-bold">
+                                  — ADVERTISEMENT - গুগল এডসেন্স স্পন্সরড ব্যানার বিজ্ঞাপন —
+                                </span>
+                                <div className="text-[11px] font-mono text-cyan-500/70 p-2 italic leading-relaxed">
+                                  {adminSettings.advertisementSnippet || "Google AdSense Responsive Unit - 728x90 Auto Safe"}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Table of Contents Indexing Box */}
+                            <div className="bg-[#040811] border border-cyan-950/60 rounded-xl p-4 space-y-2.5 text-left font-sans">
+                              <h4 className="text-xs font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-cyan-950/60 pb-1.5">
+                                📋 কন্টেন্ট সূচিপত্র ও দ্রুত রিডার ন্যাভিগেশন
+                              </h4>
+                              <ul className="text-[11px] text-slate-400 space-y-1.5 pl-3 list-decimal leading-relaxed">
+                                <li>
+                                  <span className="hover:text-[#00f0ff] cursor-pointer transition-colors block">
+                                    ভূমিকা ও প্রযুক্তি পরিচিতি (Brief Introduction to {post.category})
+                                  </span>
+                                </li>
+                                <li>
+                                  <span className="hover:text-[#00f0ff] cursor-pointer transition-colors block">
+                                    এই কন্টেন্টের মূল আকর্ষণসমূহ (Target Key Highlights)
+                                  </span>
+                                </li>
+                                <li>
+                                  <span className="hover:text-[#00f0ff] cursor-pointer transition-colors block">
+                                    গভীর বিশ্লেষণ ও সিকিউরিটি নির্দেশনা (Implementation Methodology)
+                                  </span>
+                                </li>
+                                <li>
+                                  <span className="hover:text-[#00f0ff] cursor-pointer transition-colors block">
+                                    মন্তব্যসমূহ ও ক্রিয়েশন ফিডব্যাক (Community Panel)
+                                  </span>
+                                </li>
+                              </ul>
+                            </div>
+
+                            {/* Key Highlights box */}
+                            <div className="bg-[#051114] border border-cyan-500/20 border-l-[3px] border-l-[#00f0ff] p-4 rounded-r-xl text-left space-y-1.5">
+                              <span className="text-[10px] font-mono font-bold text-[#00f0ff] uppercase tracking-widest block font-sans">
+                                ✨ কন্টেন্টের মূল আকর্ষণসমূহ (Cheat Sheets)
+                              </span>
+                              <div className="text-xs text-slate-300 font-sans leading-relaxed space-y-1">
+                                <p>• ১০০% জেনুইন বাংলাদেশি কন্টেন্ট পাবলিশার গাইডলাইন অনুসরণ করে রচিত।</p>
+                                <p>• গুগল সার্ভিস ক্রল ফ্রেন্ডলি ও ইনস্ট্যান্ট ডমিন মেটাবক্স ইনডেক্সিং ভেরিফাইড।</p>
+                                <p>• ফোরাম মনিটাইজেশন স্কিম অনুযায়ী কন্টেন্ট রাইটাররা বোনাস ব্যালেন্স ডিস্ট্রিবিউট পাবেন।</p>
+                              </div>
+                            </div>
+
+                            <h1 className="text-xl md:text-2xl font-bold font-sans text-white leading-snug tracking-tight text-left">
+                              {post.title}
+                            </h1>
+
+                            {/* Main Body */}
+                            <div className={`${activeFontSizeClass} text-slate-300 leading-relaxed font-sans space-y-4 pt-2 whitespace-pre-line text-left`}>
+                              {post.content}
+                            </div>
+
+                            {/* ADSENSE UNIT SLOT 2: Mid-point content block (Compliance Safety >20px) */}
+                            {adminSettings.enableGoogleAds && (
+                              <div className="my-6 p-4 bg-slate-950/90 border border-cyan-950/40 rounded-xl text-center space-y-1 select-none">
+                                <span className="text-[8px] font-mono text-slate-600 uppercase tracking-widest block font-bold">
+                                  — ADVERTISEMENT - এডসেন্স ইন-আর্টিকেল ডাইনামিক বিজ্ঞাপন বোতাম —
+                                </span>
+                                <div className="text-[11px] font-mono text-cyan-500/70 p-2 italic">
+                                  {adminSettings.advertisementSnippet || "Google AdSense In-Article Ad Slot - Native Responsive Box"}
+                                </div>
+                              </div>
+                            )}
+
+                          </div>
+
+                          {/* Monetization details at bottom of reading post */}
+                          <div className="bg-[#050913] border border-cyan-950 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-left">
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => handleLikePost(post.id)}
+                                className="flex items-center gap-1.5 text-slate-300 hover:text-emerald-400 font-bold transition-all"
+                              >
+                                <ThumbsUp className="w-4 h-4 text-emerald-500 animate-bounce" /> {post.likes} লাইকস
+                              </button>
+                              <span className="text-slate-500">|</span>
+                              <span className="text-slate-300 flex items-center gap-1">
+                                <Eye className="w-4 h-4 text-cyan-500" /> {post.views} ভিউস
+                              </span>
+                            </div>
+                            <span className="text-[#39ff14] text-[11px] font-bold">✓ আপনি এই কন্টেন্ট পড়ে ফোরাম ক্রিয়েটরকে সাহায্য করছেন।</span>
+                          </div>
+
+                          {/* Dynamic Creator Post Earnings Widget */}
+                          <div className="bg-[#070e1a] border border-cyan-500/10 rounded-xl p-4 text-left space-y-2 font-mono">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-slate-400 text-[11px] uppercase">রিয়েল-টাইম কন্টেন্ট লভ্যাংশ মিটার:</span>
+                              <span className="text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-900/40 px-2 py-0.5 rounded text-[10px] select-none uppercase">
+                                Active Earning Share
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-center text-[10px] pt-1">
+                              <div className="bg-slate-950 p-2 rounded border border-cyan-950">
+                                <span className="text-slate-500 block">ভিউ বোনাস (৳)</span>
+                                <span className="text-cyan-400 font-bold block mt-0.5">{(post.views * (adminSettings.payoutPerView || 0.15)).toFixed(2)} ৳</span>
+                              </div>
+                              <div className="bg-slate-950 p-2 rounded border border-cyan-950">
+                                <span className="text-slate-500 block">লাইক বোনাস (৳)</span>
+                                <span className="text-cyan-400 font-bold block mt-0.5 font-sans">{(post.likes * (adminSettings.payoutPerLike || 0.50)).toFixed(2)} ৳</span>
+                              </div>
+                              <div className="bg-slate-950 p-2 rounded border border-cyan-950">
+                                <span className="text-slate-500 block">পাবলিশ ফান্ড (৳)</span>
+                                <span className="text-[#39ff14] font-bold block mt-0.5 font-sans">{(adminSettings.payoutPerPublish || 8.50).toFixed(2)} ৳</span>
+                              </div>
+                            </div>
+                            <div className="flex justify-between items-center bg-[#050912] p-2.5 rounded border border-cyan-950/60 text-xs">
+                              <span className="text-slate-300 font-bold">সর্বমোট কন্টেন্ট রিওয়ার্ড লভ্যাংশ:</span>
+                              <span className="text-[#39ff14] font-black text-sm">
+                                {(
+                                  post.views * (adminSettings.payoutPerView || 0.15) +
+                                  post.likes * (adminSettings.payoutPerLike || 0.50) +
+                                  (adminSettings.payoutPerPublish || 8.50)
+                                ).toFixed(2)}{" "}
+                                ৳ BDT
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Related Posts Carousel */}
+                          {(() => {
+                            const related = posts.filter(p => p.category === post.category && p.id !== post.id).slice(0, 2);
+                            if (related.length === 0) return null;
+                            return (
+                              <div className="border-t border-cyan-950/60 pt-5 space-y-3.5 text-left">
+                                <h4 className="text-xs font-bold font-mono text-[#00f0ff] uppercase tracking-wider">
+                                  🔗 অনুরূপ ট্রিকস ও কন্টেন্ট যা আপনার পড়া উচিত
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                  {related.map((rp) => (
+                                    <div
+                                      key={rp.id}
+                                      onClick={() => setSelectedPostId(rp.id)}
+                                      className="bg-slate-950/80 border border-cyan-950 rounded-xl p-3 hover:border-cyan-500 transition-colors cursor-pointer flex gap-3 text-left items-start"
+                                    >
+                                      <img
+                                        src={rp.thumbnail}
+                                        alt={rp.title}
+                                        className="w-14 h-14 rounded-lg object-cover border border-cyan-950 select-none"
+                                        referrerPolicy="no-referrer"
+                                      />
+                                      <div className="flex-1 min-w-0 text-left">
+                                        <span className="text-[11px] font-sans font-bold text-slate-200 hover:text-[#00f0ff] leading-relaxed block truncate">
+                                          {rp.title}
+                                        </span>
+                                        <span className="text-[9px] font-mono text-slate-500 block mt-1 uppercase">
+                                          {rp.category} • {rp.timestamp}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {/* ADSENSE UNIT SLOT 3: Comments Preloader Banner (Compliance Safety >20px) */}
+                          {adminSettings.enableGoogleAds && (
+                            <div className="my-6 p-4 bg-slate-950/90 border-t border-b border-dashed border-cyan-500/10 rounded-lg text-center space-y-1 select-none">
+                              <span className="text-[8px] font-mono text-slate-600 uppercase tracking-widest block font-bold">
+                                — ADVERTISEMENT - গুগল এডসেন্স রেসপনসিভ ফুটার এড ব্লক —
+                              </span>
+                              <div className="text-[11px] font-mono text-cyan-500/70 p-2 italic">
+                                {adminSettings.advertisementSnippet || "Google AdSense Footer Match Banner Ads Unit"}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Section Comments */}
+                          <div className="border-t border-cyan-950 pt-5 space-y-4">
+                            <h3 className="text-sm font-bold font-mono text-[#00f0ff] uppercase tracking-wider">মন্তব্যসমূহ ({post.comments.length})</h3>
+                            <div className="space-y-3.5 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                              {post.comments.length === 0 ? (
+                                <div className="text-xs text-slate-500 italic pl-1">কোনো মন্তব্য নেই, প্রথম মন্তব্য করে ৫ পয়েন্ট আর্ন করুন!</div>
+                              ) : (
+                                post.comments.map((comment) => (
+                                  <div key={comment.id} className="bg-slate-950/60 p-3 rounded-xl border border-cyan-950/40 text-xs">
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <img
+                                        src={comment.authorAvatar}
+                                        alt={comment.authorName}
+                                        className="w-5 h-5 rounded-full border border-slate-700"
+                                      />
+                                      <span className="font-bold text-[#00f0ff]">{comment.authorName}</span>
+                                      <span className="text-[9px] text-[#4d5b7c] ml-auto">{comment.timestamp}</span>
+                                    </div>
+                                    <p className="text-slate-200 pl-1 leading-relaxed font-sans">{comment.text}</p>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+
+                            {/* Comment Input */}
+                            <form
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                const form = e.currentTarget;
+                                const input = form.elements.namedItem("commentInput") as HTMLInputElement;
+                                if (input && input.value.trim()) {
+                                  handleCommentPost(post.id, input.value);
+                                  input.value = "";
+                                }
+                              }}
+                              className="flex gap-2"
+                            >
+                              <input
+                                name="commentInput"
+                                type="text"
+                                placeholder="একটি গঠনমূলক বা সাইবার সিকিউরিটি রিসার্চ ভিত্তিক মন্তব্য লিখুন..."
+                                className="flex-1 bg-slate-950 border border-cyan-950 focus:border-cyan-500 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none placeholder-slate-600 font-sans"
+                              />
+                              <button
+                                type="submit"
+                                className="bg-gradient-to-r from-cyan-500 to-teal-500 text-[#070b13] px-5 py-2.5 rounded-xl font-bold font-sans text-xs uppercase"
+                              >
+                                পোস্ট
+                              </button>
+                            </form>
+                          </div>
+                        </motion.div>
+                      );
+                    })()
+                  ) : (
+                    /* Regular Feed Post Listings Grid */
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {filteredPostsList.length === 0 ? (
+                        <div className="md:col-span-2 text-center py-16 bg-slate-950/30 border border-cyan-950 rounded-2xl">
+                          <span className="text-slate-400 font-mono text-xs">দুঃখিত! এই ফিল্টারে কোনো ফোরাম আর্টিকেল পাওয়া যায়নি।</span>
+                        </div>
+                      ) : (
+                        filteredPostsList.map((post) => (
+                          <PostContainer
+                            key={post.id}
+                            post={post}
+                            onLike={handleLikePost}
+                            onComment={handleCommentPost}
+                          />
+                        ))
+                      )}
+                    </div>
+                  )}
+
                 </div>
 
-                {/* Right side widgets column */}
-                <div className="w-full lg:w-80 space-y-6 shrink-0 text-left">
+                {/* Right side column: sidebar trackers */}
+                <div className="lg:col-span-4 w-full lg:w-80 space-y-6 shrink-0 text-left">
                   
-                  {/* Cyber User Profile/Points stats */}
-                  <div className="bg-[#090d16] border border-cyan-950 rounded-xl p-4 relative overflow-hidden">
-                    <div className="absolute -top-10 -left-10 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl" />
-                    <h3 className="text-xs font-mono text-cyan-400 uppercase tracking-widest mb-3 font-bold border-b border-cyan-950 pb-1 flex items-center gap-1.5">
-                      <User className="w-4 h-4 text-cyan-400" /> সাইবার ফোরাম স্ট্যাটস
-                    </h3>
-                    
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-400 font-mono">ওয়ালেট ব্যালেন্স:</span>
-                        <span className="font-bold text-emerald-400">{userStats.balance} ৳</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-400 font-mono">ফোরাম পয়েন্ট:</span>
-                        <span className="font-semibold text-cyan-300">{userStats.points} XP</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-400 font-mono">পাবলিশ করা পোস্ট:</span>
-                        <span className="font-semibold text-white">{userStats.postsPublished} টি</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-400 font-mono">পেন্ডিং কন্টেন্ট:</span>
-                        <span className="font-semibold text-yellow-500">{userStats.postsPending} টি</span>
-                      </div>
-
-                      <div className="pt-3 border-t border-cyan-950 flex flex-col gap-2">
-                        <button
-                          onClick={handleApplyWithdrawal}
-                          className="w-full bg-cyan-950 hover:bg-cyan-900 border border-cyan-400/80 text-cyan-300 font-bold font-mono text-[10px] py-1.5 tracking-wider rounded text-center cursor-pointer"
-                        >
-                          💸 ক্যাশআউট বিকাশ/নগদ
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* AI Auto posting monitoring status */}
                   <div className="bg-[#090d16] border border-cyan-950 rounded-xl p-4">
                     <h3 className="text-xs font-mono text-cyan-400 uppercase tracking-widest mb-3 font-bold border-b border-cyan-950 pb-1 flex items-center justify-between">
@@ -1598,7 +2408,7 @@ export default function App() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-mono text-slate-300"> can বিস্তারিত কন্টেন্ট আর্টিকেল (Markdown Supported)</label>
+                    <label className="block text-xs font-mono text-slate-300">বিস্তারিত কন্টেন্ট আর্টিকেল (Markdown Supported)</label>
                     <textarea
                       required
                       rows={8}
@@ -1647,6 +2457,49 @@ export default function App() {
                 settings={adminSettings} 
                 onUpdateSettings={(updated) => setAdminSettings((prev) => ({ ...prev, ...updated }))} 
                 selectedMood={selectedMood}
+                userStats={userStats}
+                isLoggedIn={isLoggedIn}
+                posts={posts}
+                questions={questions}
+              />
+            </motion.div>
+          )}
+
+          {/* Tab 4.5: Neon Generative Music Lab */}
+          {activeTab === "audiolab" && (
+            <motion.div
+              key="audiolab"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+            >
+              <AudioLab mayaApiKeys={adminSettings.mayaApiKeys} />
+            </motion.div>
+          )}
+
+          {/* Tab: Dedicated Tools Lab Directory */}
+          {activeTab === "tools-lab" && (
+            <motion.div
+              key="tools-lab"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+            >
+              <ToolsLabHub 
+                onSelectTab={(tab) => {
+                  setActiveTab(tab);
+                  setSelectedPostId(null);
+                }}
+                onSelectSubTool={(subTool, app) => {
+                  setInitialSubTool(subTool);
+                  if (app) {
+                    setInitialAppForScan(app);
+                  } else {
+                    setInitialAppForScan(undefined);
+                  }
+                  setActiveTab("tools");
+                  setSelectedPostId(null);
+                }}
               />
             </motion.div>
           )}
@@ -1681,6 +2534,37 @@ export default function App() {
             </motion.div>
           )}
 
+          {/* Tab: AIO Secure Video Downloader */}
+          {activeTab === "downloader" && (
+            <motion.div
+              key="downloader"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+            >
+              <VideoDownloader />
+            </motion.div>
+          )}
+
+          {/* Tab: Mega Unified Tools Hub */}
+          {activeTab === "tools" && (
+            <motion.div
+              key="tools"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+            >
+              <UnifiedTools 
+                initialSubTool={initialSubTool as any}
+                initialApp={initialAppForScan}
+                onClearInitialApp={() => {
+                  setInitialAppForScan(undefined);
+                  setInitialSubTool(undefined);
+                }}
+              />
+            </motion.div>
+          )}
+
           {/* Tab 8: Profile customization & Reward Claiming Portal */}
           {activeTab === "profile" && (
             <motion.div
@@ -1688,7 +2572,7 @@ export default function App() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="max-w-3xl mx-auto text-left"
+              className="max-w-4xl mx-auto space-y-6 text-left"
             >
               <div className="bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl relative overflow-hidden space-y-6">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-[#ffae00]/5 pointer-events-none" />
@@ -1750,7 +2634,7 @@ export default function App() {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
                     <div className="flex items-center gap-1.5 text-[10px] font-mono">
                       <span className="text-[#39ff14] font-bold">✔</span>
-                      <span className="text-slate-300">অ্যাকাউন্ট নাম ও সিড</span>
+                      <span className="text-slate-300">অ্যাকাউন্টের নাম ও সিড</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] font-mono">
                       <span className={profileBio ? "text-[#39ff14] font-bold" : "text-slate-600"}>
@@ -1768,19 +2652,19 @@ export default function App() {
                       <span className={profileBkash ? "text-[#39ff14] font-bold" : "text-slate-600"}>
                         {profileBkash ? "✔" : "○"}
                       </span>
-                      <span className={profileBkash ? "text-slate-300" : "text-slate-500"}>বিকাশ/নগদ নম্বর</span>
+                      <span className={profileBkash ? "text-slate-300" : "text-slate-400"}>বিকাশের নম্বর</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] font-mono">
                       <span className={profileSkills ? "text-[#39ff14] font-bold" : "text-slate-600"}>
                         {profileSkills ? "✔" : "○"}
                       </span>
-                      <span className={profileSkills ? "text-slate-300" : "text-slate-500"}>পারদর্শিতা ও স্কিলস</span>
+                      <span className={profileSkills ? "text-slate-300" : "text-slate-400"}>দক্ষতা ও স্কিলস</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] font-mono">
                       <span className={profileFbLink ? "text-[#39ff14] font-bold" : "text-slate-600"}>
                         {profileFbLink ? "✔" : "○"}
                       </span>
-                      <span className={profileFbLink ? "text-slate-300" : "text-slate-500"}>সামাজিক ওয়েবসাইট লিংক</span>
+                      <span className={profileFbLink ? "text-slate-300" : "text-slate-400"}>ফেসবুক লিংক</span>
                     </div>
                   </div>
                 </div>
@@ -1887,6 +2771,101 @@ export default function App() {
                     </button>
                   </div>
                 </div>
+              </div>
+
+              {/* Grid 2-columns (Left: Beautiful Line-by-Line List, Right: Wallet Balance & Payout Control) */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                {/* Column Left (Col-sp-7): Styled Line-By-Line List & Referrals Card */}
+                <div className="lg:col-span-7 space-y-5 text-left">
+                  <div className="bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl space-y-5">
+                    <h3 className="text-sm font-bold font-sans uppercase tracking-widest text-[#00f0ff] border-b border-cyan-950 pb-2 flex items-center gap-1.5">
+                      <User className="w-4 h-4 text-cyan-500" /> প্রোফাইলের বিস্তারিত বিবরণী (লাইন বাই লাইন)
+                    </h3>
+                    
+                    <div className="space-y-1 font-sans">
+                      <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
+                        <span className="text-slate-400">১. ইউজারনেম (Username):</span>
+                        <span className="text-slate-100 font-bold">{userStats.name}</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
+                        <span className="text-slate-400">২. ফোরাম পদবি / রোল:</span>
+                        <span className={`font-semibold ${styleProfile.textAccent}`}>{userStats.rank}</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
+                        <span className="text-slate-400">৩. ওয়ালেট ব্যালেন্স (৳):</span>
+                        <span className="text-emerald-400 font-bold">{userStats.balance} ৳ BDT</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
+                        <span className="text-slate-400">৪. ফোরাম রিওয়ার্ড পয়েন্ট (XP):</span>
+                        <span className="text-cyan-300 font-bold">{userStats.points} Point</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
+                        <span className="text-slate-400">৫. প্রকাশিত কন্টেন্ট সংখ্যা:</span>
+                        <span className="text-white font-bold">{userStats.postsPublished} টি আর্টিকেল</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
+                        <span className="text-slate-400">৬. যাচাইাধীন (পেন্ডিং) পোস্ট:</span>
+                        <span className="text-yellow-500 font-bold">{userStats.postsPending} টি পেন্ডিং</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
+                        <span className="text-slate-400">৭. গুগল এডসেন্স আরপিএম আরনিং:</span>
+                        <span className="text-emerald-400 font-bold">১০.৪৫ ৳ এভারেজ</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-3 font-mono text-xs">
+                        <span className="text-slate-400">৮. ফোরাম অ্যাকাউন্ট টাইপ:</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 font-bold uppercase">PRO CREATIVE</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Column Right (Col-sp-5): Wallet Balance & Cashout Controls */}
+                <div className="lg:col-span-12 xl:col-span-5 space-y-6">
+                
+                  {/* Wallet Balance retract widget */}
+                  <div className="bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl relative overflow-hidden text-left">
+                    <h3 className="text-sm font-bold font-mono text-emerald-400 uppercase tracking-wide mb-4 flex items-center gap-1.5">
+                      <Wallet className="w-5 h-5 text-emerald-400 animate-pulse" /> বিকাশ/নগদ ক্যাশআউট গেটওয়ে
+                    </h3>
+
+                    <div className="bg-slate-950/80 p-4 border border-cyan-950 rounded-xl mb-4 text-center">
+                      <span className="text-[10px] text-slate-400 font-mono block uppercase">মোট বকেয়া ব্যালেন্স</span>
+                      <span className="text-2xl font-bold text-emerald-400 font-mono block mt-1">{userStats.balance} ৳</span>
+                      <span className="text-[9px] font-mono text-slate-500 mt-1 block">মিনিমাম প্রত্যাহার সীমা: ৫০ ৳ BDT</span>
+                    </div>
+
+                    <div className="bg-[#0c1813] border border-emerald-900/30 p-3.5 rounded-xl text-xs text-emerald-300 space-y-1.5 leading-relaxed font-sans mb-5">
+                      <span className="font-bold text-emerald-400 block mb-1">📋 উত্তোলন গাইডলাইন:</span>
+                      <p>১. আপনার ড্যাশবোর্ডে ৫০ টাকা বা তার বেশি ব্যালেন্স পূর্ণ হলে উত্তোলন করতে পারবেন।</p>
+                      <p>২. প্রতিটি উইথড্র রিকোয়েস্ট ২ ঘণ্টার মধ্যে সম্পূর্ণ অটোমেটিক গেটওয়ে রিওয়ার্ড পেমেন্টে পরিশোধ হয়ে যাবে।</p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleApplyWithdrawal}
+                      className="w-full flex items-center justify-center gap-2 text-xs font-mono font-bold uppercase bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 py-3 rounded-xl shadow-lg cursor-pointer transform hover:scale-[1.01] transition-all"
+                    >
+                      💸 ৫০ ৳ সরাসরি উইথড্র করুন
+                    </button>
+                  </div>
+
+                  {/* Notification portal link card widget */}
+                  <div className="bg-gradient-to-br from-[#0c111e] to-[#050811] border border-cyan-950 rounded-2xl p-5 text-xs text-slate-400 text-left">
+                    <h4 className="text-slate-200 font-bold font-sans text-xs mb-1.5">পেমেন্ট হিস্ট্রি ও মেসেজ ট্র্যাকার</h4>
+                    <p className="text-[11.5px] text-slate-400 leading-relaxed font-sans">
+                      আপনার যেকোনো ব্যালেন্স বোনাস এড বা টাকা উত্তোলনের রিকোয়েস্ট সরাসরি আপনার রিয়েল-টাইম বেল নোটিফিকেশনে পুশ মেসেজে চলে যাবে!
+                    </p>
+                  </div>
+
+                </div>
 
               </div>
             </motion.div>
@@ -1981,74 +2960,251 @@ export default function App() {
               {/* Grid 2-columns (Left: Beautiful Line-by-Line List, Right: Wallet Balance & Payout Control) */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                {/* Column Left (Col-sp-7): Styled Line-By-Line List */}
-                <div className="lg:col-span-7 bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl space-y-5">
-                  <h3 className="text-sm font-bold font-sans uppercase tracking-widest text-[#00f0ff] border-b border-cyan-950 pb-2 flex items-center gap-1.5">
-                    <User className="w-4 h-4 text-cyan-500" /> প্রোফাইলের বিস্তারিত বিবরণী (লাইন বাই লাইন)
-                  </h3>
-                  
-                  <div className="space-y-1">
+                {/* Column Left (Col-sp-7): Supercharged Cyber Referral & Milestones Center */}
+                <div className="lg:col-span-7 bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl relative overflow-hidden text-left space-y-6">
+                  {/* Decorative element */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-transparent blur-2xl rounded-full pointer-events-none" />
+
+                  <div className="border-b border-cyan-950 pb-4 flex justify-between items-center">
+                    <div>
+                      <h3 className="text-base font-bold font-sans tracking-tight text-white flex items-center gap-2">
+                        <Gift className="w-5.5 h-5.5 text-[#00f0ff] animate-pulse" />
+                        আনলিমিটেড আর্নিং রেফারেল পোর্টাল (২০৪০ এলিট)
+                      </h3>
+                      <p className="text-[11px] text-slate-400 font-mono mt-0.5 uppercase">
+                        ✓ প্রতি সফল রেফারে ১০ ৳ + ৫০XP বোনাস এবং আকর্ষণীয় মাইলস্টোন ক্যাশ প্রাইজ!
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Referral Code & Copy Segment */}
+                  <div className="bg-slate-950/70 border border-cyan-950 p-4.5 rounded-xl space-y-3.5">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5">
+                      <div>
+                        <span className="text-[10px] font-mono text-cyan-500 uppercase tracking-wider block">আপনার কাস্টম রেফারেল কোড:</span>
+                        <div className="flex items-center gap-2.5 mt-1">
+                          <code className="text-base font-mono font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] to-[#39ff14] select-all">
+                            {userStats.referralCode || `REF-${userStats.name.replace(/\s+/g, "").toUpperCase().substring(0, 7)}420`}
+                          </code>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const code = userStats.referralCode || `REF-${userStats.name.replace(/\s+/g, "").toUpperCase().substring(0, 7)}420`;
+                              navigator.clipboard.writeText(code);
+                              addSystemNotification("রেফারেল কোড সফলভাবে কপি করা হয়েছে!", "system");
+                            }}
+                            className="bg-[#0c1a2d] hover:bg-cyan-950 text-cyan-400 p-1.5 rounded-lg border border-cyan-900 cursor-pointer text-[10px] uppercase font-mono px-2.5 py-1.5 flex items-center gap-1 transition-all"
+                          >
+                            <Copy className="w-3.5 h-3.5" /> কপি করুন
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Simulation Button */}
+                      <div className="w-full sm:w-auto">
+                        <button
+                          type="button"
+                          onClick={handleSimulateReferral}
+                          disabled={isRefSimulating}
+                          className="w-full bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-slate-950 font-bold font-sans text-xs px-4 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(0,240,255,0.15)] disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer animate-pulse-slow"
+                        >
+                          <Terminal className="w-4 h-4" /> 
+                          {isRefSimulating ? "সিকিউর টার্নেল লোড হচ্ছে..." : "🚀 নতুন রেফারেল সিমুলেট (টেস্ট)"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Simulation Terminal Log Window */}
+                    {(isRefSimulating || refTermLogs.length > 0) && (
+                      <div className="bg-[#030610] border border-cyan-950 rounded-lg p-3.5 font-mono text-[10.5px] text-[#39ff14] space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar shadow-inner text-left">
+                        <div className="flex items-center justify-between border-b border-cyan-950 pb-1.5 mb-1.5 text-slate-500 text-[9px] uppercase font-bold">
+                          <span>SYSTEM PORTAL SHELL</span>
+                          <span className="animate-pulse">● TRANSACTING</span>
+                        </div>
+                        {refTermLogs.map((log, i) => (
+                          <div key={i} className="leading-relaxed">
+                            <span className="text-cyan-500">guest@iloveyoubd:~$</span> {log}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Milestone Checkpoints Timeline */}
+                  <div className="space-y-3.5 text-left">
+                    <h4 className="text-xs font-bold font-mono text-[#00f0ff] uppercase tracking-widest flex items-center gap-1">
+                      <Award className="w-4.5 h-4.5 text-yellow-500" /> রেফারেল মাইলস্টোন ও বোনাস লেভেলস
+                    </h4>
+
+                    {/* Progress status */}
+                    <div className="bg-[#050a14] border border-cyan-950 p-4.5 rounded-xl space-y-4">
+                      <div className="flex justify-between items-center text-xs font-mono">
+                        <span className="text-slate-400">আপনার মোট সফল রেফারেলস:</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 font-black text-sm bg-yellow-950/40 px-2.5 py-0.5 rounded border border-yellow-900/30">
+                          {userStats.referredUsers?.length || 0} টি রেফারেলস
+                        </span>
+                      </div>
+
+                      {/* Interactive Visual Progress Bar */}
+                      <div className="relative pt-1 font-mono">
+                        <div className="overflow-hidden h-2.5 text-xs flex rounded bg-slate-900 border border-cyan-950">
+                          <div
+                            style={{ width: `${Math.min(((userStats.referredUsers?.length || 0) / 50) * 100, 100)}%` }}
+                            className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-cyan-500 to-emerald-500 transition-all duration-500"
+                          />
+                        </div>
+                        {/* Milestone indicators along progress bar */}
+                        <div className="flex justify-between text-[8px] text-slate-400 mt-2">
+                          <span className="font-extrabold text-[#00f0ff]">০</span>
+                          <span>৫ (Rookie)</span>
+                          <span>১০ (Elite)</span>
+                          <span>২৫ (Titan)</span>
+                          <span className="font-extrabold text-yellow-500">৫০ (Overlord)</span>
+                        </div>
+                      </div>
+
+                      {/* Milestones claims list */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
+                        {[
+                          { count: 1, reward: 10, name: "মাইলস্টোন ০১" },
+                          { count: 5, reward: 50, name: "রেফারেল এলিট ক্রু" },
+                          { count: 10, reward: 150, name: "নেটওয়ার্ক টাইটান" },
+                          { count: 25, reward: 500, name: "ইনফ্লুয়েন্সার কিং" },
+                          { count: 50, reward: 1500, name: "রেফারেল ওভারলর্ড সিল" }
+                        ].map((m) => {
+                          const isClaimed = claimedMilestones.includes(m.count);
+                          const userRefLength = userStats.referredUsers?.length || 0;
+                          const isQualified = userRefLength >= m.count;
+
+                          return (
+                            <div
+                              key={m.count}
+                              className={`p-3 rounded-lg border flex justify-between items-center text-xs font-sans relative overflow-hidden ${
+                                isClaimed
+                                  ? "bg-[#061511] border-emerald-950/40 text-emerald-300"
+                                  : isQualified
+                                  ? "bg-[#091a24] border-cyan-500 text-slate-100 shadow-[0_0_10px_rgba(0,240,255,0.05)] cursor-pointer"
+                                  : "bg-[#050811] border-cyan-950/60 text-slate-400"
+                              }`}
+                            >
+                              <div>
+                                <span className="block font-bold text-[11.5px]">{m.name}</span>
+                                <span className={`text-[9.5px] font-mono uppercase block mt-0.5 ${isClaimed ? "text-emerald-500" : isQualified ? "text-cyan-400 font-bold" : "text-slate-500"}`}>
+                                  {m.count} রেফারেল বোনাস 
+                                </span>
+                              </div>
+                              
+                              <div className="flex flex-col items-end gap-1 font-mono">
+                                <span className="text-[11.5px] font-black text-yellow-400 block">+{m.reward} ৳ BDT</span>
+                                
+                                {isClaimed ? (
+                                  <span className="text-[8.5px] font-mono text-emerald-400 border border-emerald-950 bg-emerald-950 px-1.5 py-0.2 rounded uppercase flex items-center gap-0.5">
+                                    ✓ ক্লেইমড
+                                  </span>
+                                ) : isQualified ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleClaimMilestone(m.count, m.reward, m.name)}
+                                    className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 text-[9px] font-mono font-bold px-2 py-0.5 rounded cursor-pointer animate-pulse uppercase tracking-wider shadow"
+                                  >
+                                    ক্লেইম করুন
+                                  </button>
+                                ) : (
+                                  <span className="text-[8.5px] font-mono text-slate-600 bg-slate-950 px-1.5 py-0.2 rounded uppercase border border-cyan-950/40">
+                                    🔒 লকড
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Viral facebook/telegram copy templates section */}
+                  <div className="space-y-3.5 text-left text-xs">
+                    <h4 className="font-bold font-mono text-[#00f0ff] uppercase tracking-widest flex items-center gap-1">
+                      <Share2 className="w-4.5 h-4.5 text-cyan-400" /> প্রচার বুস্ট প্যাক: কাস্টম ভাইরাল কপি কন্টেন্ট
+                    </h4>
                     
-                    <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
-                      <span className="text-slate-400">১. ইউজারনেম (Username):</span>
-                      <span className="text-slate-100 font-bold font-sans">{userStats.name}</span>
-                    </div>
+                    <div className="p-4 bg-[#050a14] border border-cyan-950 rounded-xl space-y-3 font-sans text-slate-300">
+                      <p className="text-[10.5px] text-slate-400 leading-relaxed font-sans">
+                        নিচের রেডিমেড প্রমোশনাল টেমপ্লেটটি কপি করে ফেসবুক কুয়েরি গ্রুপ, টেলিগ্রাম বা হোয়াটসঅ্যাপে পোস্ট করে বেশি মেম্বার রেফার করুন ও পেমেন্ট বিকাশ ওয়ালেটে ক্যাশআউট করুন:
+                      </p>
 
-                    <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
-                      <span className="text-slate-400">২. ফোরাম পদবি / রোল:</span>
-                      <span className={`font-semibold ${styleProfile.textAccent}`}>{userStats.rank}</span>
+                      <div className="bg-slate-950 border border-cyan-950/60 rounded-lg p-3 relative font-sans leading-relaxed text-slate-200 pr-12 text-[11px]">
+                        "🔥 iloveyoubd.com-এ সাইবার সিকিউরিটি রিসার্চ ও কন্টেন্ট লিখে প্রতি মাসে আনলিমিটেড টাকা ইনকাম করুন! আমার রেফারেল কোড: <span className="text-yellow-400 uppercase font-mono">{userStats.referralCode || `REF-${userStats.name.replace(/\s+/g, "").toUpperCase().substring(0, 7)}420`}</span>। পেমেন্ট সরাসরি বিকাশ এবং নগদে!"
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const code = userStats.referralCode || `REF-${userStats.name.replace(/\s+/g, "").toUpperCase().substring(0, 7)}420`;
+                            const template = `🔥 iloveyoubd.com-এ সাইবার সিকিউরিটি রিসার্চ ও কন্টেন্ট লিখে প্রতি মাসে আনলিমিটেড টাকা ইনকাম করুন! আমার রেফারেল কোড: ${code}। পেমেন্ট সরাসরি বিকাশ এবং নগদে!`;
+                            navigator.clipboard.writeText(template);
+                            addSystemNotification("প্রমোশনাল টেমপ্লেট কপি করা হয়েছে!", "system");
+                          }}
+                          className="absolute right-2 top-2 bg-slate-900 border border-cyan-950 hover:bg-cyan-950 text-cyan-400 p-1.5 rounded cursor-pointer"
+                          title="কপি টেমপ্লেট"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Column Left Stats Subcontainer */}
-                <div className="lg:col-span-7 bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl space-y-5">
-                  <h3 className="text-sm font-bold font-sans uppercase tracking-widest text-[#00f0ff] border-b border-cyan-950 pb-2 flex items-center gap-1.5">
-                    <User className="w-4 h-4 text-cyan-500" /> আপনার পরিসংখ্যান (Stats)
-                  </h3>
-                  
-                  <div className="space-y-1">
-                    {/* HIDDEN INLINE ENVELOPE */}
-                    <div className="hidden">
-              iloveyoubd.com হল বাংলাদেশের একমাত্র বিশেষায়িত প্রযুক্তি বিষয়ক অনলাইন হ্যাকিং ফোরাম ও মাল্টি-অটোর ডিস্ট্রিবিউটেড ব্লগিং পোর্টাল। আমরা সাইবার সিকিউরিটি রিসার্চ এবং উচ্চ-মানের কন্টেন্ট রাইটিংকে ত্বরان্বিত ও নিরাপদ করতে সর্বদা প্রতিশ্রুতিবদ্ধ।
+                  {/* Referred Users list badges */}
+                  {userStats.referredUsers && userStats.referredUsers.length > 0 && (
+                    <div className="space-y-3.5 text-left text-xs">
+                      <h4 className="font-bold font-mono text-emerald-400 uppercase tracking-widest">
+                        👥 আপনার আমন্ত্রিত ইউজারগণ ({userStats.referredUsers.length} জন)
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5 bg-slate-950 p-3 rounded-xl border border-cyan-950/40">
+                        {userStats.referredUsers.map((name, i) => (
+                          <span key={i} className="text-[10px] font-mono text-slate-300 bg-[#09151c] border border-cyan-950 px-2.5 py-1 rounded">
+                            👤 {name}
+                          </span>
+                        ))}
+                      </div>
                     </div>
+                  )}
 
-
-                    <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
-                      <span className="text-slate-400">৩. ওয়ালেট ব্যালেন্স (৳):</span>
-                      <span className="text-emerald-400 font-bold">{userStats.balance} ৳ BDT</span>
+                  {/* Local Competitive Leaderboard */}
+                  <div className="space-y-3.5 text-left text-xs">
+                    <h4 className="font-bold font-mono text-[#00f0ff] uppercase tracking-widest flex items-center gap-1">
+                      <TrendingUp className="w-4.5 h-4.5 text-cyan-400" /> শীর্ষ রেফারার মেম্বারবোর্ড (বাংলাদেশী কিলারবোর্ড)
+                    </h4>
+                    
+                    <div className="bg-[#050a14] border border-cyan-950 rounded-xl overflow-hidden font-mono text-[11px]">
+                      <div className="grid grid-cols-12 bg-slate-950/60 p-2.5 border-b border-cyan-950 text-slate-500 font-bold uppercase tracking-wider text-[9px]">
+                        <span className="col-span-3 text-left">মর্যাদা / র‌্যাঙ্ক</span>
+                        <span className="col-span-6 text-left">আমন্ত্রণকারী মেম্বার</span>
+                        <span className="col-span-3 text-right">ইনভাইট ইনকাম</span>
+                      </div>
+                      
+                      <div className="divide-y divide-cyan-950/30">
+                        <div className="grid grid-cols-12 p-2.5 items-center bg-yellow-950/10">
+                          <span className="col-span-3 text-left font-black text-yellow-400 text-xs">👑 ১ম প্লেস</span>
+                          <span className="col-span-6 text-left font-sans text-slate-250 font-bold">রেজোওয়ানুল সানি (৪৩ জন)</span>
+                          <span className="col-span-3 text-right text-emerald-400 font-bold">৬০৫ ৳ BDT</span>
+                        </div>
+                        <div className="grid grid-cols-12 p-2.5 items-center">
+                          <span className="col-span-3 text-left font-bold text-slate-300">🥈 ২য় প্লেস</span>
+                          <span className="col-span-6 text-left font-sans text-slate-300">সাইবার জিম হ্যাকার (২৮ জন)</span>
+                          <span className="col-span-3 text-right text-emerald-400 font-bold">৩৯০ ৳ BDT</span>
+                        </div>
+                        <div className="grid grid-cols-12 p-2.5 items-center bg-[#090d16]/40">
+                          <span className="col-span-3 text-left font-bold text-amber-600">🥉 ৩য় প্লেস</span>
+                          <span className="col-span-6 text-left font-sans text-slate-300 font-bold">আপনি ({userStats.name}) ({userStats.referredUsers?.length || 0} জন)</span>
+                          <span className="col-span-3 text-right text-emerald-400 font-bold">{(userStats.referralEarnings || 0).toFixed(2)} ৳ BDT</span>
+                        </div>
+                      </div>
                     </div>
-
-                    <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
-                      <span className="text-slate-400">৪. ফোরাম রিওয়ার্ড পয়েন্ট (XP):</span>
-                      <span className="text-cyan-300 font-bold">{userStats.points} Point</span>
-                    </div>
-
-                    <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
-                      <span className="text-slate-400">৫. প্রকাশিত কন্টেন্ট সংখ্যা:</span>
-                      <span className="text-white font-bold">{userStats.postsPublished} টি আর্টিকেল</span>
-                    </div>
-
-                    <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
-                      <span className="text-slate-400">৬. যাচাইাধীন (পেন্ডিং) পোস্ট:</span>
-                      <span className="text-yellow-500 font-bold">{userStats.postsPending} টি পেন্ডিং</span>
-                    </div>
-
-                    <div className="flex justify-between items-center py-3 border-b border-cyan-950/40 font-mono text-xs">
-                      <span className="text-slate-400">৭. গুগল এডসেন্স আরপিএম আরনিং:</span>
-                      <span className="text-emerald-400 font-bold">১০.৪৫ ৳ এভারেজ</span>
-                    </div>
-
-                    <div className="flex justify-between items-center py-3 font-mono text-xs">
-                      <span className="text-slate-400">৮. ফোরাম মেম্বারশিপ অ্যাকাউন্ট টাইপ:</span>
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 font-bold uppercase">PRO CREATIVE</span>
-                    </div>
-
                   </div>
+
                 </div>
 
-                {/* Column Right (Col-sp-5): Wallet Retract Controls & Gateway rules */}
-                <div className="lg:col-span-5 space-y-6">
+                {/* Column Right (Col-sp-5): Wallet Balance & Cashout Controls */}
+                <div className="lg:col-span-12 xl:col-span-5 space-y-6">
                   
                   {/* Wallet Balance retract widget */}
                   <div className="bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl relative overflow-hidden text-left">
@@ -2108,6 +3264,11 @@ export default function App() {
                 totalWithdrawn={totalWithdrawn}
                 withdrawalRequests={withdrawalRequests}
                 onApproveWithdrawal={handleApproveWithdrawal}
+                onTriggerInstantAutopilot={handleTriggerAutopilotPost}
+                posts={posts}
+                setPosts={setPosts}
+                currentUser={userStats}
+                addNotification={addSystemNotification}
               />
             </motion.div>
           )}
@@ -2132,9 +3293,9 @@ export default function App() {
               iloveyoubd.com হল বাংলাদেশের একমাত্র প্রযুক্তি বিষয়ক হ্যাকিং ও মাল্টি-অটোর ডিস্ট্রিবিউটেড ব্লগিং পোর্টাল। এখানে সিক্লিউড অ্যাডসেন্স কোডিং এপিআই মেম্বারদের সরাসরি আরজিবি লাইটিং বর্ডার ব্যালেন্স মনিটাইজেশন ড্যাশবোর্ডে সাপোর্ট দিয়ে থাকে।
             </p>
 
-            <div className="flex items-center gap-3 pt-2">
-              <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[10px] font-mono text-emerald-400">Server Coords: Node-3000 // Active Tunnel Online</span>
+            <div className="flex items-center gap-2 pt-2 text-slate-500 font-medium text-[11px] font-sans">
+              <ShieldCheck className="w-4 h-4 text-[#39ff14]" />
+              <span>নিরাপদ এসইও এবং গুগল এডসেন্স ফ্রেন্ডলি কোড ভেরিফাইড</span>
             </div>
           </div>
 
@@ -2168,10 +3329,10 @@ export default function App() {
               </li>
               <li>
                 <button 
-                  onClick={() => { setActiveTab("qa"); setSelectedPostId(null); }} 
+                  onClick={() => { setActiveTab("tools-lab"); setSelectedPostId(null); }} 
                   className="flex items-center gap-1.5 hover:text-[#00f0ff] transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
                 >
-                  <span className="text-[#39ff14] text-xs">➔</span> কমুনিটি প্রশ্ন-উত্তর ফোরাম
+                  <span className="text-cyan-405 text-xs">➔</span> এআই টুলস ল্যাব ও ফ্যাক্টরি 🧪
                 </button>
               </li>
               <li>
@@ -2222,7 +3383,7 @@ export default function App() {
 
         <div className="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-cyan-950 flex flex-col sm:flex-row justify-between items-center gap-2 text-[11px] text-slate-500 font-mono">
           <span>© 2026-2040 ILOVEYOUBD.COM ALL RIGHTS RESERVED.</span>
-          <span>CRAFTED IN THE Cyber-Native Bangladesh 2040</span>
+          <span>সর্বোচ্চ সুরক্ষায় হোস্টকৃত এবং গুগল সার্টিফাইড</span>
         </div>
       </footer>
 
@@ -2281,21 +3442,44 @@ export default function App() {
                       const regName = formData.get("username") as string;
                       const regRole = formData.get("userrole") as string;
                       const avatarSeed = formData.get("avatarSeed") as string || "tester";
+                      const referralCode = (formData.get("referral") as string || "").trim();
 
                       if (regName && regName.trim()) {
                         const newAvatar = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${avatarSeed}`;
+                        
+                        // Default starting gifts
+                        let startBalance = 10.00;
+                        let startPoints = 100;
+                        let noticeMessage = `অভিনন্দন ${regName}! আপনার রেজিস্ট্রেশন সফল হয়েছে এবং ১০ টাকা বোনাস ওয়ালেটে যুক্ত হয়েছে।`;
+
+                        // If referral code is applied
+                        if (referralCode) {
+                          const refereeTaka = adminSettings.refereeBonusTaka !== undefined ? adminSettings.refereeBonusTaka : 10;
+                          const refereeXp = adminSettings.refereeXpReward !== undefined ? adminSettings.refereeXpReward : 100;
+                          
+                          startBalance += refereeTaka;
+                          startPoints += refereeXp;
+                          
+                          noticeMessage = `🎯 রেফারেল কোড (${referralCode}) সফলভাবে প্রয়োগ করা হয়েছে! অভিনন্দন ${regName}, আপনার বিশেষ স্পেশাল জয়েনিং বোনাস ওয়ালেটে যুক্ত হয়েছে: +${refereeTaka} BDT এবং +${refereeXp} XP!`;
+                        }
+
                         setUserStats({
                           name: regName.trim(),
                           avatar: newAvatar,
-                          balance: 10.00, // starting gift bonus
-                          points: 100, // starting gift points
+                          balance: startBalance, 
+                          points: startPoints, 
                           rank: regRole,
                           postsPublished: 0,
-                          postsPending: 0
+                          postsPending: 0,
+                          referralCode: `REF-${regName.replace(/\s+/g, "").toUpperCase().substring(0, 7)}420`,
+                          referredBy: referralCode || undefined,
+                          referredUsers: [],
+                          referralEarnings: 0
                         });
+
                         setIsLoggedIn(true);
                         setShowAuthModal(false);
-                        addSystemNotification(`অভিনন্দন ${regName}! আপনার রেজিস্ট্রেশন সফল হয়েছে এবং ১০ টাকা বোনাস ওয়ালেটে যুক্ত হয়েছে।`, "system");
+                        addSystemNotification(noticeMessage, "system");
                       }
                     }}
                     className="space-y-4"
@@ -2335,8 +3519,27 @@ export default function App() {
                       />
                     </div>
 
-                    <div className="bg-[#050911] p-3 rounded border border-cyan-950 text-[10px] leading-relaxed text-slate-400 font-mono">
-                      🔒 আপনার রেজিস্ট্রেশন সরাসরি ব্রাউজারে সুরক্ষিত মেমোরিতে সেভ থাকবে। রেজিস্ট্রেশন করলে ১০ টাকা ও ১০০ ফোরাম পয়েন্ট বোনাস পাবেন!
+                    <div>
+                      <label className="block text-xs font-mono text-[#00f0ff] uppercase mb-1 flex items-center justify-between">
+                        <span>রেফারেল কোড (Optional Referral Code):</span>
+                        <span className="text-[9px] text-[#39ff14] font-normal lowercase font-sans">কমিশন বোনাস অ্যাক্টিভেট করুন</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="referral"
+                        placeholder="যেমন: REF-TAREK420"
+                        className="w-full text-xs bg-[#070b13] border border-emerald-950/80 focus:border-[#39ff14] focus:outline-none rounded-lg p-2.5 text-[#39ff14] font-mono tracking-wider uppercase placeholder:text-slate-700"
+                      />
+                    </div>
+
+                    <div className="bg-[#050911] p-3 rounded border border-cyan-950 text-[10px] leading-relaxed text-slate-400 font-mono space-y-1">
+                      <div>🔒 আপনার রেজিস্ট্রেশন সরাসরি ব্রাউজারে নিরাপদ মেমোরিতে সুরক্ষিত থাকবে।</div>
+                      <div className="text-slate-500 font-sans">
+                        * সাধারণ জয়েনিং ফি: <span className="text-slate-300 font-mono">১০ টাকা + ১০০ XP</span>
+                      </div>
+                      <div className="text-emerald-400/90 font-sans">
+                        * রেফারেল কোড ব্যবহারে বোনাস: <span className="text-[#39ff14] font-mono">+{adminSettings.refereeBonusTaka || 10} টাকা + {adminSettings.refereeXpReward || 100} XP অতিরিক্ত স্পেশাল গিফট!</span>
+                      </div>
                     </div>
 
                     <button
@@ -2441,15 +3644,15 @@ export default function App() {
 
         <button
           onClick={() => {
-            setActiveTab("qa");
+            setActiveTab("tools-lab");
             setSelectedPostId(null);
           }}
           className={`flex flex-col items-center justify-center gap-1 text-[11.5px] font-bold font-sans cursor-pointer transition-all duration-300 transform active:scale-95 ${
-            activeTab === "qa" ? "text-purple-400 scale-110 shadow-[0_0_15px_rgba(168,85,247,0.1)] font-bold" : "text-slate-400 hover:text-white"
+            activeTab === "tools-lab" ? "text-[#00f0ff] scale-110 shadow-[0_0_15px_rgba(0,240,255,0.15)] font-bold" : "text-slate-400 hover:text-white"
           }`}
         >
-          <HelpCircle className={`w-5.5 h-5.5 transition-transform duration-300 ${activeTab === "qa" ? "stroke-[2.5px]" : ""}`} />
-          <span>কমিউনিটি Q&A</span>
+          <Wrench className={`w-5.5 h-5.5 transition-transform duration-300 ${activeTab === "tools-lab" ? "text-cyan-400 stroke-[2.5px]" : ""}`} />
+          <span>টুলস ল্যাব 🧪</span>
         </button>
 
         <button

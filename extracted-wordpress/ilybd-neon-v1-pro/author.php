@@ -181,34 +181,110 @@ $comment_count = $wpdb->get_var("
         </div>
 
         <!-- POSTS -->
-        <h2 class="section-title">Recent Posts</h2>
+        <h2 class="section-title" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 19px; color: #fff; margin-bottom: 25px; font-weight: bold; border-left: 4px solid <?php echo esc_attr($neon); ?>; padding-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">⭐ Recent Posts</h2>
 
-        <div class="post-list">
+        <div class="cyber-author-posts-container" style="display: flex; flex-direction: column; gap: 20px;">
 
-            <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+            <?php if (have_posts()) : while (have_posts()) : the_post(); 
+                $post_id      = get_the_ID();
+                $post_link    = esc_url(get_permalink());
+                $author_name_str = get_the_author();
+                $avatar_url   = get_avatar_url($author_id);
+                $view_count   = get_post_meta($post_id, 'ilybd_post_views_count', true) ?: '0';
+                $like_count   = get_post_meta($post_id, '_likes', true) ?: '0';
+                $comments_num = get_comments_number($post_id);
+                $excerpt      = wp_trim_words(get_the_excerpt(), 22, '...');
+            ?>
 
-                <a class="post-card" href="<?php the_permalink(); ?>">
-
-                    <div class="thumb">
-                        <?php if(has_post_thumbnail()) the_post_thumbnail('thumbnail'); ?>
+                <div class="cyber-horizontal-post-card" style="display: flex; background: rgba(13, 21, 39, 0.45); border: 1.5px solid rgba(255, 255, 255, 0.05); border-radius: 14px; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 15px rgba(0,0,0,0.34); max-width: 100%; position: relative;" onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='<?php echo esc_attr($neon); ?>cc'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.5), 0 0 12px <?php echo esc_attr($neon); ?>33';" onmouseout="this.style.transform='none'; this.style.borderColor='rgba(255, 255, 255, 0.05)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.34)';">
+                    
+                    <!-- Left Column: Media Thumbnail -->
+                    <div class="post-media-column" style="width: 250px; min-width: 250px; position: relative; overflow: hidden; background: #070b13; border-right: 1px solid rgba(255,255,255,0.05);">
+                        <a href="<?php echo $post_link; ?>" style="display: block; width: 100%; height: 100%; min-height: 154px;">
+                            <?php if (has_post_thumbnail()) : ?>
+                                <?php the_post_thumbnail('medium', [
+                                    'style' => 'width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;',
+                                    'alt' => esc_attr(get_the_title()),
+                                    'onmouseover' => "this.style.transform='scale(1.08)'",
+                                    'onmouseout' => "this.style.transform='scale(1.0)'"
+                                ]); ?>
+                            <?php else : ?>
+                                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#161b22; color:<?php echo esc_attr($neon); ?>; font-family:monospace; font-size:12px; font-weight:bold; min-height: 154px;">ILYBD TECH</div>
+                            <?php endif; ?>
+                        </a>
                     </div>
 
-                    <div class="meta">
-                        <h3><?php the_title(); ?></h3>
-
-                        <div class="info">
-                            <span>📅 <?php echo get_the_date(); ?></span>
-                            <span>👁 <?php echo get_post_meta(get_the_ID(), 'post_views_count', true) ?: '0'; ?></span>
+                    <!-- Right Column: Info & Content Excerpt -->
+                    <div class="post-info-column" style="flex-grow: 1; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
+                        <div>
+                            <h3 style="margin: 0 0 10px 0 !important; font-size: 17.5px !important; line-height: 1.4 !important; font-weight: 700 !important; font-family: inherit;">
+                                <a href="<?php echo $post_link; ?>" style="color: #fff !important; text-decoration: none !important; transition: color 0.2s;" onmouseover="this.style.color='<?php echo esc_attr($neon); ?>'" onmouseout="this.style.color='#fff'">
+                                    <?php the_title(); ?>
+                                </a>
+                            </h3>
+                            
+                            <p style="color: #8b949e !important; font-size: 13px !important; line-height: 1.6 !important; margin: 0 0 15px 0 !important;">
+                                <?php echo esc_html($excerpt); ?>
+                            </p>
                         </div>
+
+                        <!-- Footer Meta Icons Section -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 12px; margin-top: auto;">
+                            <!-- Author Link group info -->
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <img src="<?php echo esc_url($avatar_url); ?>" style="width: 22px; height: 22px; border-radius: 50%; border: 1.2px solid <?php echo esc_attr($neon); ?>;" alt="">
+                                <span style="font-size: 12px; color: #c9d1d9; font-weight: 600;"><?php echo esc_html($author_name_str); ?></span>
+                            </div>
+
+                            <!-- Views, Likes, Comments Meta icons -->
+                            <div style="display: flex; align-items: center; gap: 12px; font-size: 11px; color: #8b949e; font-family: monospace;">
+                                <div style="display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);" title="Views">
+                                    <i class="fa-regular fa-eye" style="color: <?php echo esc_attr($neon); ?>;"></i>
+                                    <span><?php echo esc_html($view_count); ?></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);" title="Comments">
+                                    <i class="fa-regular fa-comment" style="color: <?php echo esc_attr($neon); ?>;"></i>
+                                    <span><?php echo esc_html($comments_num); ?></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);" title="Likes">
+                                    <i class="fa-regular fa-heart" style="color: <?php echo esc_attr($neon); ?>;"></i>
+                                    <span><?php echo esc_html($like_count); ?></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);" title="Published Date">
+                                    <i class="fa-regular fa-calendar-days" style="color: #8b949e;"></i>
+                                    <span><?php echo get_the_date('M j, Y'); ?></span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                </a>
+                </div>
 
             <?php endwhile; else: ?>
-                <p class="empty">No posts yet.</p>
+                <div style="text-align: center; padding: 40px; background: rgba(22,27,34,0.3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <p style="color: #8b949e; margin: 0; font-size: 14px;">এই লেখকের কোনো পোস্ট পাওয়া যায়নি।</p>
+                </div>
             <?php endif; ?>
 
         </div>
+
+        <style>
+        @media (max-width: 680px) {
+            .cyber-horizontal-post-card {
+                flex-direction: column !important;
+            }
+            .post-media-column {
+                width: 100% !important;
+                min-width: 100% !important;
+                border-right: none !important;
+                border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+            }
+            .post-media-column a {
+                height: 180px !important;
+            }
+        }
+        </style>
 
     </section>
 

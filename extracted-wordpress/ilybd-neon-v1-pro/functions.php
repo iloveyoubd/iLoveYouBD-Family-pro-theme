@@ -7,6 +7,25 @@
 if (!defined('ABSPATH')) exit;
 
 /* =====================================
+   0. MBSTRING POLYFILLS (CRITICAL FIX FOR C-PANEL EA-PHP)
+===================================== */
+if (!function_exists('mb_strlen')) {
+    function mb_strlen($str, $encoding = null) { return strlen($str); }
+}
+if (!function_exists('mb_strpos')) {
+    function mb_strpos($haystack, $needle, $offset = 0, $encoding = null) { return strpos($haystack, $needle, $offset); }
+}
+if (!function_exists('mb_strtolower')) {
+    function mb_strtolower($str, $encoding = null) { return strtolower($str); }
+}
+if (!function_exists('mb_substr')) {
+    function mb_substr($str, $start, $length = null, $encoding = null) { return substr($str, $start, $length === null ? strlen($str) : $length); }
+}
+if (!function_exists('mb_str_word_count')) {
+    function mb_str_word_count($string, $format = 0, $charlist = '') { return str_word_count($string, $format, $charlist); }
+}
+
+/* =====================================
    1. THEME SETUP
 ===================================== */
 add_action('after_setup_theme', function () {
@@ -27,12 +46,16 @@ add_action('after_setup_theme', function () {
         'theme-settings.php', 'user-economy.php', 'ads-master.php', 'enqueue-assets.php',
         'cyber-ui-settings.php', 'user-dashboard.php', 'post-layouts.php', 'featured-control.php',
         'settings-core.php', 'settings-slider.php', 'settings-featured.php', 'settings-popular.php',
-        'ily-admin-settings.php', 'cyber-layout-engine.php', 'cyber-render-engine.php', 'speed-optimizer.php'
+        'ily-admin-settings.php', 'cyber-layout-engine.php', 'cyber-render-engine.php', 'speed-optimizer.php', 'autonomous-publishing-v2.php', 'seo-engine.php', 'command-central-helpers.php',
+        'ilybd-tools-engine.php', 'ilybd-tools-views.php'
     ];
     foreach ($modules as $file) {
         $path = get_template_directory() . '/inc/' . $file;
         if (file_exists($path)) { require_once $path; }
     }
+    
+    // Automatically boot the CyberX Android App Store registration and scanners framework
+    // Replaced by ultra-modern, high-speed Play Store Scraper and SEO Gateway inside React Portal.
 });
 
 /* =====================================
@@ -377,6 +400,7 @@ add_action('admin_menu', function () {
 
 function cyberx_settings_page() {
     $enabled = get_option('cyberx_proxy_enabled', 0);
+    $show_apps = get_option('ilybd_show_app_section', 1);
     $yt_link  = get_option('ilybd_social_youtube', 'https://youtube.com/@iloveyoubd');
     $yt_video = get_option('ilybd_social_yt_video', 'dQw4w9WgXcQ');
     $fb_page  = get_option('ilybd_social_facebook', 'https://facebook.com/iloveyoubd');
@@ -385,6 +409,7 @@ function cyberx_settings_page() {
 
     if (isset($_POST['cyberx_settings_submit'])) {
         update_option('cyberx_proxy_enabled', isset($_POST['proxy_toggle']) ? 1 : 0);
+        update_option('ilybd_show_app_section', isset($_POST['apps_toggle']) ? 1 : 0);
         update_option('ilybd_social_youtube', sanitize_text_field($_POST['ilybd_social_youtube']));
         update_option('ilybd_social_yt_video', sanitize_text_field($_POST['ilybd_social_yt_video']));
         update_option('ilybd_social_facebook', sanitize_text_field($_POST['ilybd_social_facebook']));
@@ -393,6 +418,7 @@ function cyberx_settings_page() {
         
         // Refresh local variables manually for displaying
         $enabled  = isset($_POST['proxy_toggle']) ? 1 : 0;
+        $show_apps = isset($_POST['apps_toggle']) ? 1 : 0;
         $yt_link  = sanitize_text_field($_POST['ilybd_social_youtube']);
         $yt_video = sanitize_text_field($_POST['ilybd_social_yt_video']);
         $fb_page  = sanitize_text_field($_POST['ilybd_social_facebook']);
@@ -504,6 +530,13 @@ function cyberx_settings_page() {
                             <input type="checkbox" name="proxy_toggle" <?php checked($enabled, 1); ?>> 
                             <strong>Enable Smart Node Interception Proxy Link</strong>
                         </label>
+                    </div>
+                    <div class="cyberx-form-group" style="margin-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px;">
+                        <label>
+                            <input type="checkbox" name="apps_toggle" <?php checked($show_apps, 1); ?>> 
+                            <strong>Enable Play Store Apps/Discovery Portal on Homepage</strong>
+                        </label>
+                        <p class="description" style="color: #00f0ff;">টিক মার্ক দেওয়া থাকলে হোমপেজে অ্যাপস ও ডাউনলোডার সেকশনটি শো করাবে, টিক মার্ক তুলে দিলে সম্পূর্ণ সেকশনটি ম্যাজিকালি হাইড হয়ে যাবে।</p>
                     </div>
                 </div>
 
@@ -668,7 +701,20 @@ function ilybd_get_notifications(){
     if(!$user_id){ wp_send_json_error(); }
     $noti = get_user_meta($user_id, 'notifications', true);
     $noti = is_array($noti) ? $noti : [];
-    wp_send_json_success(['count' => count($noti), 'items' => array_slice(array_reverse($noti), 0, 3)]);
+    
+    $normalized = [];
+    foreach ($noti as $item) {
+        $normalized[] = [
+            'id'        => isset($item['id']) ? $item['id'] : '',
+            'text'      => isset($item['text']) ? $item['text'] : '',
+            'message'   => isset($item['text']) ? $item['text'] : (isset($item['message']) ? $item['message'] : ''),
+            'link'      => isset($item['link']) ? $item['link'] : '',
+            'time'      => isset($item['time']) ? $item['time'] : '',
+            'timestamp' => isset($item['timestamp']) ? $item['timestamp'] : time(),
+        ];
+    }
+    
+    wp_send_json_success(['count' => count($normalized), 'items' => array_slice(array_reverse($normalized), 0, 3)]);
 }
 
 /* =========================
@@ -904,12 +950,13 @@ if (file_exists(get_template_directory() . '/inc/adsense-intelligence-engine.php
    ========================================================================== */
 
 // --- ১.১ নোটিফিকেশন রাইটার ---
-function ilybd_add_user_notification($user_id, $message) {
+function ilybd_add_user_notification($user_id, $message, $link = '') {
     $notifications = get_user_meta($user_id, 'notifications', true);
     $notifications = is_array($notifications) ? $notifications : [];
     $new_noti = [
         'id'        => 'noti_' . time() . '_' . rand(100, 999),
         'text'      => $message,
+        'link'      => $link,
         'time'      => current_time('mysql'),
         'timestamp' => time()
     ];
@@ -1001,7 +1048,7 @@ function ilybd_award_comment_rewards($comment_ID, $comment_approved, $commentdat
                 $reply_author = $comment->comment_author;
                 $post_title = get_the_title($post_id);
                 $msg_reply = sprintf("💬 %s আপনার মন্তব্যের উত্তর দিয়েছেন '%s' পোস্টটিতে!", $reply_author, $post_title);
-                ilybd_add_user_notification($reply_user_id, $msg_reply);
+                ilybd_add_user_notification($reply_user_id, $msg_reply, get_comment_link($comment_ID));
             }
         }
 
@@ -1060,7 +1107,7 @@ function ilybd_comment_approval_reward_transition($comment_id, $comment_status) 
                     $reply_author = $comment->comment_author;
                     $post_title = get_the_title($post_id);
                     $msg_reply = sprintf("💬 %s আপনার মন্তব্যের উত্তর দিয়েছেন '%s' পোস্টটিতে!", $reply_author, $post_title);
-                    ilybd_add_user_notification($reply_user_id, $msg_reply);
+                    ilybd_add_user_notification($reply_user_id, $msg_reply, get_comment_link($comment_id));
                 }
             }
 
@@ -2093,7 +2140,7 @@ function ilybd_ajax_follow_author() {
     } else {
         $following[] = $author_id;
         $follower_name = wp_get_current_user()->display_name;
-        ilybd_add_user_notification($author_id, sprintf("👥 %s আপনাকে ফলো করা শুরু করেছে!", $follower_name));
+        ilybd_add_user_notification($author_id, sprintf("👥 %s আপনাকে ফলো করা শুরু করেছে!", $follower_name), get_author_posts_url($curr_user_id));
         
         $author_points = (int)get_user_meta($author_id, 'ilybd_total_points', true);
         update_user_meta($author_id, 'ilybd_total_points', $author_points + 5); 
@@ -2130,7 +2177,7 @@ function ilybd_ajax_like_author_profile() {
         $likes[] = $ident;
         if (is_user_logged_in() && $curr_user_id != $author_id) {
             $liker_name = wp_get_current_user()->display_name;
-            ilybd_add_user_notification($author_id, sprintf("💖 %s আপনার প্রোফাইল পছন্দ করেছে!", $liker_name));
+            ilybd_add_user_notification($author_id, sprintf("💖 %s আপনার প্রোফাইল পছন্দ করেছে!", $liker_name), get_author_posts_url($curr_user_id));
             
             $author_points = (int)get_user_meta($author_id, 'ilybd_total_points', true);
             update_user_meta($author_id, 'ilybd_total_points', $author_points + 5);
@@ -2277,6 +2324,128 @@ if (!function_exists('ilybd_sanitize_and_format_social_link')) {
         }
     }
 }
+
+/* =========================================================================
+   ১২. আইবিডি অ্যাপস (CPT & METABOXES) & হোমপেজ পোস্ট লিমিট (৫)
+   ========================================================================= */
+
+// ১২.১ আইবিডি অ্যাপস কাস্টম পোস্ট টাইপ রেজিস্ট্রেশন
+add_action('init', function () {
+    register_post_type('apps', array(
+        'labels' => array(
+            'name'               => 'আইবিডি অ্যাপস',
+            'singular_name'      => 'আইবিডি অ্যাপ',
+            'add_new'            => 'নতুন অ্যাপ যোগ করুন',
+            'add_new_item'       => 'নতুন আইবিডি অ্যাপ যোগ করুন',
+            'edit_item'          => 'অ্যাপ এডিট করুন',
+            'new_item'           => 'নতুন অ্যাপ',
+            'all_items'          => 'সব আইবিডি অ্যাপস',
+            'view_item'          => 'অ্যাপ দেখুন',
+            'search_items'       => 'অ্যাপ খুঁজুন',
+            'not_found'          => 'কোনো অ্যাপ পাওয়া যায়নি',
+            'not_found_in_trash' => 'ট্র্যাশে কোনো অ্যাপ পাওয়া যায়নি',
+            'parent_item_colon'  => '',
+            'menu_name'          => 'আইবিডি অ্যাপস',
+        ),
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array('slug' => 'ily-apps'),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => 5,
+        'menu_icon'          => 'dashicons-smartphone', // Smartphone Icon
+        'supports'           => array('title', 'editor', 'thumbnail', 'excerpt'),
+        'show_in_rest'       => true, // Gutenberg Editor Support
+    ));
+});
+
+// ১২.২ আইবিডি অ্যাপ কাস্টম মেটাবক্স প্যানেল রেজিস্ট্রেশন
+add_action('add_meta_boxes', function () {
+    add_meta_box(
+        'ilybd_apps_details_panel',
+        'আইবিডি অ্যাপ ডিটেইলস (Apps Configuration Fields)',
+        'ilybd_apps_meta_box_html_render',
+        'apps',
+        'normal',
+        'high'
+    );
+});
+
+function ilybd_apps_meta_box_html_render($post) {
+    $pkgValue     = get_post_meta($post->ID, '_app_pkg', true);
+    $iconValue    = get_post_meta($post->ID, '_app_icon_url', true);
+    $sizeValue    = get_post_meta($post->ID, '_app_size', true);
+    $versionValue = get_post_meta($post->ID, '_app_version', true);
+    
+    wp_nonce_field('ilybd_save_apps_data_action', 'ilybd_apps_meta_nonce_field');
+    ?>
+    <div style="padding: 10px 0;">
+        <p style="margin-bottom: 15px; font-weight: bold; color: #0073aa;">এখানে আপনার অ্যাপস এবং গেমসের কাস্টম ফিল্ডগুলোর বিবরণ দিয়ে পাবলিশ করুন। এগুলো সরাসরি হোমপেজের GPLAY অ্যাপ ক্লাউডে যোগ হবে।</p>
+        <table class="form-table" style="width: 100%;">
+            <tr>
+                <th style="width: 25%; text-align: left; padding: 12px 10px;"><label for="ilybd_app_pkg"><b>প্যাকেজ আইডি (Package ID):</b></label></th>
+                <td style="padding: 12px 10px;">
+                    <input type="text" id="ilybd_app_pkg" name="ilybd_app_pkg" value="<?php echo esc_attr($pkgValue); ?>" style="width: 100%; max-width: 450px; padding: 8px; border-radius: 4px;" placeholder="e.g. com.whatsapp or com.bKash.customerapp" />
+                    <p class="description" style="margin-top: 5px;">গুগল প্লে স্টোর অ্যাপ আইডির প্যাকেজ নাম দিন।</p>
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 25%; text-align: left; padding: 12px 10px;"><label for="ilybd_app_icon_url"><b>অ্যাপ আইকন লিংক (Icon URL):</b></label></th>
+                <td style="padding: 12px 10px;">
+                    <input type="url" id="ilybd_app_icon_url" name="ilybd_app_icon_url" value="<?php echo esc_url($iconValue); ?>" style="width: 100%; max-width: 450px; padding: 8px; border-radius: 4px;" placeholder="e.g. https://i.ibb.co/hK70xYF/whatsapp-logo.png" />
+                    <p class="description" style="margin-top: 5px;">অ্যাপটির আইকন ইমেজের সম্পূর্ণ ইমেজ লিংক দিন (যেমন ImgBB বা আপনার পিএইচপি আপলোডার লিংক)।</p>
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 25%; text-align: left; padding: 12px 10px;"><label for="ilybd_app_size"><b>ফাইল সাইজ (App/Game Size):</b></label></th>
+                <td style="padding: 12px 10px;">
+                    <input type="text" id="ilybd_app_size" name="ilybd_app_size" value="<?php echo esc_attr($sizeValue); ?>" style="width: 100%; max-width: 450px; padding: 8px; border-radius: 4px;" placeholder="e.g. ৪৮ MB or ১৬০ MB" />
+                    <p class="description" style="margin-top: 5px;">অ্যাপ বা গেমের ফাইলের সাইজ লিখুন।</p>
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 25%; text-align: left; padding: 12px 10px;"><label for="ilybd_app_version"><b>ভার্সন নম্বর (Version):</b></label></th>
+                <td style="padding: 12px 10px;">
+                    <input type="text" id="ilybd_app_version" name="ilybd_app_version" value="<?php echo esc_attr($versionValue); ?>" style="width: 100%; max-width: 450px; padding: 8px; border-radius: 4px;" placeholder="e.g. v2.45 or v1.0.2" />
+                    <p class="description" style="margin-top: 5px;">অ্যাপের বর্তমান সংস্করণ বা ভার্সন লিখুন।</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <?php
+}
+
+// ১২.৩ আইবিডি অ্যাপ কাস্টম মেটাবক্স ডাটা সেভ অপশন
+add_action('save_post', function ($post_id) {
+    if (!isset($_POST['ilybd_apps_meta_nonce_field']) || !wp_verify_nonce($_POST['ilybd_apps_meta_nonce_field'], 'ilybd_save_apps_data_action')) {
+        return;
+    }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    if (isset($_POST['ilybd_app_pkg'])) {
+        update_post_meta($post_id, '_app_pkg', sanitize_text_field($_POST['ilybd_app_pkg']));
+    }
+    if (isset($_POST['ilybd_app_icon_url'])) {
+        update_post_meta($post_id, '_app_icon_url', esc_url_raw($_POST['ilybd_app_icon_url']));
+    }
+    if (isset($_POST['ilybd_app_size'])) {
+        update_post_meta($post_id, '_app_size', sanitize_text_field($_POST['ilybd_app_size']));
+    }
+    if (isset($_POST['ilybd_app_version'])) {
+        update_post_meta($post_id, '_app_version', sanitize_text_field($_POST['ilybd_app_version']));
+    }
+}, 10, 1);
+
+// ১২.৪ হোমপেজ ফিডে পোস্টের সংখ্যা যেভাবে ছিল সেভাবেই রাখা থাকবে
 
 
 

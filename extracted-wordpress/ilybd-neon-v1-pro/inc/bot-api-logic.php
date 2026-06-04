@@ -25,7 +25,7 @@ function cyber_bot_render_settings() {
             <?php
             settings_fields('cyber_bot_logic_group');
             $current_keys = get_option('cyber_bot_api_keys');
-            if(empty($current_keys)) { $current_keys = "AlzaSyBAcwAPXPzNfeGQ6XHDR-EaNRsHqhkTro8"; }
+            if(empty($current_keys)) { $current_keys = "AIzaSyBAcwAPXPzNfeGQ6XHDR-EaNRsHqhkTro8"; }
             ?>
             <div style="background: #0c1224; border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                 <label style="display: block; font-weight: bold; margin-bottom: 10px; color: #00f0ff; font-size: 14px;">ADMIN KEY ROTATION POOL (প্রতি লাইনে একটি করে চিল্ড এপিআই কি দিন):</label>
@@ -71,7 +71,7 @@ function handle_cyber_bot_request() {
     $user_query = sanitize_text_field($_POST['user_query']);
     
     // Read optional model, system instruction, and temperature
-    $target_model = isset($_POST['model']) ? sanitize_text_field($_POST['model']) : 'gemini-2.5-flash';
+    $target_model = isset($_POST['model']) ? sanitize_text_field($_POST['model']) : 'gemini-3.5-flash';
     $custom_sys = isset($_POST['system_instruction']) ? sanitize_text_field($_POST['system_instruction']) : 'You are Maya (মায়া), the highly professional, helpful, and extremamente competent assistant of iloveyoubd.com. Write in flawless Bangla.';
     $temperature = isset($_POST['temperature']) ? floatval($_POST['temperature']) : 0.7;
 
@@ -85,7 +85,7 @@ function handle_cyber_bot_request() {
     }
 
     // Merge custom keys and admin options
-    $admin_keys_raw = get_option('cyber_bot_api_keys', 'AlzaSyBAcwAPXPzNfeGQ6XHDR-EaNRsHqhkTro8');
+    $admin_keys_raw = get_option('cyber_bot_api_keys', 'AIzaSyBAcwAPXPzNfeGQ6XHDR-EaNRsHqhkTro8');
     $client_keys_raw = isset($_POST['custom_keys']) ? sanitize_textarea_field($_POST['custom_keys']) : '';
 
     $combined_raw = $client_keys_raw . "\n" . $admin_keys_raw;
@@ -99,62 +99,90 @@ function handle_cyber_bot_request() {
     // Map selected model names to Google Gemini REST endpoints
     $model_mapping_aliases = [
         'gemini-3.5-flash' => 'gemini-2.5-flash',
-        'gemini-3.1-pro-preview' => 'gemini-1.5-pro',
-        'maya-ultra' => 'gemini-1.5-pro'
+        'gemini-3.1-pro-preview' => 'gemini-2.5-pro',
+        'maya-ultra' => 'gemini-2.5-pro'
     ];
 
-    $resolved_model = isset($model_mapping_aliases[$target_model]) ? $model_mapping_aliases[$target_model] : 'gemini-2.5-flash';
+    $resolved_model = isset($model_mapping_aliases[$target_model]) ? $model_mapping_aliases[$target_model] : 'gemini-2.0-flash';
 
     $successful_text_reply = null;
     $connection_errors = [];
 
     // Loop through the rotated keys database
     foreach ($api_keys as $idx => $key) {
-        $api_endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" . $resolved_model . ":generateContent?key=" . $key;
-
-        $payload = [
-            "contents" => [
-                [
-                    "role" => "user",
-                    "parts" => [
-                        ["text" => "System Instructions: " . $custom_sys . "\n\nQuery: " . $user_query]
-                    ]
-                ]
-            ],
-            "generationConfig" => [
-                "temperature" => $temperature,
-                "maxOutputTokens" => 1600
-            ]
+        // Ordered list of models to try for this key to utilize separate quotas
+        $model_candidates = [
+            $resolved_model,
+            'gemini-3.5-flash',
+            'gemini-2.5-flash',
+            'gemini-3.1-flash-lite',
+            'gemini-2.5-flash-lite',
+            'gemini-2.0-flash',
+            'gemini-1.5-flash'
         ];
+        // Remove duplicates while preserving preferred ordering
+        $model_candidates = array_values(array_unique($model_candidates));
 
-        $response = wp_remote_post($api_endpoint, [
-            'body'      => json_encode($payload),
-            'headers'   => ['Content-Type' => 'application/json'],
-            'method'    => 'POST',
-            'timeout'   => 7,
-            'sslverify' => false,
-        ]);
+        foreach ($model_candidates as $model_name) {
+            $api_endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" . $model_name . ":generateContent?key=" . $key;
 
-        if (is_wp_error($response)) {
-            $connection_errors[] = "Key #" . ($idx + 1) . " (Network issue: " . $response->get_error_message() . ")";
-            continue;
-        }
+            $payload = [
+                "contents" => [
+                    [
+                        "role" => "user",
+                        "parts" => [
+                            ["text" => "Query: " . $user_query]
+                        ]
+                    ]
+                ],
+                "generationConfig" => [
+                    "temperature" => $temperature,
+                    "maxOutputTokens" => 1600
+                ]
+            ];
 
-        $status_code = wp_remote_retrieve_response_code($response);
-        $result_body = json_decode(wp_remote_retrieve_body($response), true);
+            if (!empty($custom_sys)) {
+                $payload["system_instruction"] = [
+                    "parts" => [
+                        ["text" => $custom_sys]
+                    ]
+                ];
+            }
 
-        if ($status_code !== 200) {
-            $error_message = isset($result_body['error']['message']) ? $result_body['error']['message'] : "HTTP Status Code " . $status_code;
-            $connection_errors[] = "Key #" . ($idx + 1) . " (API Error: " . $error_message . ")";
-            continue;
-        }
+            $response = wp_remote_post($api_endpoint, [
+                'body'      => json_encode($payload),
+                'headers'   => ['Content-Type' => 'application/json'],
+                'method'    => 'POST',
+                'timeout'   => 12,
+                'sslverify' => false,
+            ]);
 
-        if (isset($result_body['candidates'][0]['content']['parts'][0]['text'])) {
-            $successful_text_reply = $result_body['candidates'][0]['content']['parts'][0]['text'];
-            break;
-        } else {
-            $connection_errors[] = "Key #" . ($idx + 1) . " (Invalid structure response)";
-            continue;
+            if (is_wp_error($response)) {
+                $connection_errors[] = "Key #" . ($idx + 1) . " with " . $model_name . " (Network issue: " . $response->get_error_message() . ")";
+                continue;
+            }
+
+            $status_code = wp_remote_retrieve_response_code($response);
+            $result_body = json_decode(wp_remote_retrieve_body($response), true);
+
+            if ($status_code !== 200) {
+                $error_message = isset($result_body['error']['message']) ? $result_body['error']['message'] : "HTTP Status Code " . $status_code;
+                $connection_errors[] = "Key #" . ($idx + 1) . " (" . $model_name . "): status " . $status_code . " - " . $error_message;
+                
+                // If key is totally invalid (400) or unauthorised (403), skip this key entirely
+                if ($status_code === 400 || $status_code === 403) {
+                    break;
+                }
+                continue; // Do NOT break on 429 so we can try other models on the same key!
+            }
+
+            if (isset($result_body['candidates'][0]['content']['parts'][0]['text'])) {
+                $successful_text_reply = $result_body['candidates'][0]['content']['parts'][0]['text'];
+                break 2; // Break both levels of loops
+            } else {
+                $connection_errors[] = "Key #" . ($idx + 1) . " (" . $model_name . "): Unexpected structure format";
+                continue;
+            }
         }
     }
 

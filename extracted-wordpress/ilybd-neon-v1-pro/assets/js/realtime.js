@@ -29,7 +29,7 @@ jQuery(document).ready(function($){
                 let newItems = data.items;
 
                 newItems.forEach(function(n){
-                    showRealtimeNotification(n.message);
+                    showRealtimeNotification(n.text || n.message, n.link);
                 });
 
                 playNotiSound();
@@ -50,33 +50,110 @@ jQuery(document).ready(function($){
     /* =========================
        UI NOTIFICATION
     ========================= */
-    function showRealtimeNotification(msg){
+    function showRealtimeNotification(msg, link){
 
         let box = $('#noti-box');
         if(!box.length) return;
 
+        let cursorStyle = link ? 'cursor:pointer;' : '';
         let item = $(`
             <div class="noti-item" style="
-                background:#000;
-                color:#00ff99;
-                padding:10px;
-                margin-top:5px;
-                border:1px solid #00ff99;
-                border-radius:8px;
-                box-shadow:0 0 12px #00ff99;
-            ">
+                background: #090e1a;
+                color: #00ff99;
+                padding: 12px 18px;
+                margin-top: 8px;
+                border: 1.5px solid #00f0ff;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,240,255,0.3);
+                font-size: 13px;
+                font-family: sans-serif;
+                font-weight: bold;
+                line-height: 1.4;
+                transition: transform 0.2s;
+                ${cursorStyle}
+            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                 🔔 ${msg}
+                ${link ? '<div style="font-size:11px; color:#00f0ff; margin-top:5px; text-decoration:underline; font-weight: normal;"><i class="fa-solid fa-arrow-up-right-from-square"></i> নির্দিষ্ট পেজে যেতে ক্লিক করুন (View Content)</div>' : ''}
             </div>
         `);
+
+        if (link) {
+            item.on('click', function() {
+                window.location.href = link;
+            });
+        }
 
         box.append(item);
 
         setTimeout(function(){
-            item.fadeOut(300, function(){
+            item.fadeOut(400, function(){
                 $(this).remove();
             });
-        }, 4000);
+        }, 6000);
     }
+
+    /* =========================
+       🔔 FUTURISTIC CYBER BELL SOUND WITH AUTO-UNLOCK
+       ========================= */
+    let globalAudioCtx = null;
+    function initGlobalAudioContext() {
+        if (!globalAudioCtx) {
+            var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                globalAudioCtx = new AudioContextClass();
+            }
+        }
+        if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+            globalAudioCtx.resume();
+        }
+    }
+
+    // Auto-unlock AudioContext on first user interaction
+    $(document).on('click touchstart keydown mousemove', function() {
+        initGlobalAudioContext();
+    });
+
+    window.playNotiSound = function() {
+        try {
+            initGlobalAudioContext();
+            var ctx = globalAudioCtx;
+            if (!ctx) {
+                var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                ctx = new AudioContextClass();
+            }
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+            
+            // Double-chime futuristic sci-fi synth bell
+            var playTone = function(freq, delay, duration, gainVal) {
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+                
+                // Exponential decay for frequency & gain to simulate real physical resonance/cyber delay
+                osc.frequency.exponentialRampToValueAtTime(freq * 0.5, ctx.currentTime + delay + duration);
+                
+                gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+                gain.gain.linearRampToValueAtTime(gainVal, ctx.currentTime + delay + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + duration);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(ctx.currentTime + delay);
+                osc.stop(ctx.currentTime + delay + duration);
+            };
+            
+            // Neon star chimes: high pitch double-strike (C6, then E6 slightly after)
+            playTone(1046.50, 0, 0.4, 0.25);
+            playTone(1318.51, 0.08, 0.5, 0.2);
+        } catch(e) {
+            console.log("Audio play error (requires user interaction first): ", e);
+        }
+    };
 
 });
 

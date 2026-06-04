@@ -3,6 +3,12 @@
 <head>
 <meta charset="<?php bloginfo('charset'); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Space+Grotesk:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 <?php wp_head(); ?>
 
@@ -98,6 +104,47 @@ header{
     position: relative;
     display: inline-block;
 }
+
+/* ⚡ HIGH-TECH COGNITIVE PROFESSIONAL HEADER TTS SPEAKER BUTTON ⚡ */
+.header-tts-btn {
+    background: rgba(0, 240, 255, 0.08) !important;
+    border: 1.2px solid #00f0ff !important;
+    color: #00f0ff !important;
+    width: 29px !important;
+    height: 29px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative !important;
+    font-size: 11px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5) !important;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.15) !important;
+    z-index: 999999 !important;
+}
+.header-tts-btn:hover {
+    background: #00f0ff !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px #00f0ff, 0 0 8px #00ff41 !important;
+    transform: scale(1.08) !important;
+}
+.header-tts-btn.playing {
+    background: #ff3b30 !important;
+    border-color: #ff3b30 !important;
+    color: #fff !important;
+    box-shadow: 0 0 15px rgba(255, 59, 48, 0.6) !important;
+    animation: headerTtsPulse 1.2s infinite ease-in-out !important;
+}
+@keyframes headerTtsPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); box-shadow: 0 0 15px rgba(255, 59, 48, 0.7); }
+    100% { transform: scale(1); }
+}
+
 .tool-icon-btn {
     background: none;
     border: none;
@@ -294,10 +341,17 @@ header{
         </a>
     </div>
 
-    <div class="tool-icon-wrapper" style="position: relative; display: inline-block;">
-        <button class="tool-icon-btn" onclick="toggleHeaderTools(event)" title="Tools & Account">
-            <i class="dashicons dashicons-admin-tools"></i>
+    <div style="display: flex; align-items: center; gap: 14px;">
+        <!-- ⚡ GLOBAL COGNITIVE HIGH-TECH HEADER SPEECH SYSTEM (2040 Style) ⚡ -->
+        <button id="header-global-tts-btn" class="header-tts-btn" onclick="toggleHeaderTts(event)" title="পুরো পেজ শুনুন (Listen Page)" aria-label="Listen Page Content">
+            <i id="header-global-tts-icon" class="fa-solid fa-volume-high"></i>
+            <span id="header-tts-active-dot" style="display: none; position: absolute; top: -1px; right: -1px; width: 6px; height: 6px; background: #00ff41; border-radius: 50%; box-shadow: 0 0 6px #00ff41;"></span>
         </button>
+
+        <div class="tool-icon-wrapper" style="position: relative; display: inline-block;">
+            <button id="header-tools-toggle" class="tool-icon-btn" onclick="toggleHeaderTools(event)" title="Tools & Account" aria-label="Tools and Account" aria-expanded="false" aria-haspopup="true">
+                <i class="dashicons dashicons-admin-tools"></i>
+            </button>
         <div id="header-tools-dropdown" class="cyber-dropdown-menu">
             <?php if(is_user_logged_in()): 
                 $logout_url = wp_logout_url(home_url()); ?>
@@ -314,6 +368,7 @@ header{
             <?php endif; ?>
         </div>
     </div>
+</div>
 
 </div>
 
@@ -322,15 +377,22 @@ function toggleHeaderTools(event) {
     event.preventDefault();
     event.stopPropagation();
     var dd = document.getElementById('header-tools-dropdown');
+    var btn = document.getElementById('header-tools-toggle');
     if (dd.style.display === 'none' || dd.style.display === '') {
         dd.style.display = 'block';
+        if (btn) { btn.setAttribute('aria-expanded', 'true'); }
     } else {
         dd.style.display = 'none';
+        if (btn) { btn.setAttribute('aria-expanded', 'false'); }
     }
 }
 document.addEventListener('click', function() {
     var dd = document.getElementById('header-tools-dropdown');
-    if (dd) { dd.style.display = 'none'; }
+    var btn = document.getElementById('header-tools-toggle');
+    if (dd) { 
+        dd.style.display = 'none'; 
+        if (btn) { btn.setAttribute('aria-expanded', 'false'); }
+    }
 });
 </script>
 

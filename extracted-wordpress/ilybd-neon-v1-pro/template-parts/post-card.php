@@ -30,6 +30,18 @@ $like_count   = get_post_meta(get_the_ID(), '_likes', true) ?: '0';
                 ?>
             </span>
         </a>
+        
+        <!-- High Tech Cognitive TTS Card Button (2040 Cyber style) -->
+        <button class="card-tts-trigger" 
+                data-title="<?php echo esc_attr(get_the_title()); ?>" 
+                data-excerpt="<?php echo esc_attr(wp_strip_all_tags(get_the_excerpt() ?: get_the_content())); ?>" 
+                title="পোস্টটি শুনুন (Listen to summary)" 
+                onclick="toggleCardPlayback(this, event)"
+                style="position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: rgba(4, 7, 12, 0.85); border: 1.5px solid <?php echo $neon; ?>; display: flex; align-items: center; justify-content: center; color: <?php echo $neon; ?>; font-size: 14px; cursor: pointer; transition: all 0.3s; z-index: 55; box-shadow: 0 0 12px <?php echo $neon; ?>55; backdrop-filter: blur(4px);"
+                onmouseover="this.style.background='<?php echo $neon; ?>'; this.style.color='#000'; this.style.boxShadow='0 0 18px <?php echo $neon; ?>';" 
+                onmouseout="if(!this.classList.contains('playing')){ this.style.background='rgba(4, 7, 12, 0.85)'; this.style.color='<?php echo $neon; ?>'; this.style.boxShadow='0 0 12px <?php echo $neon; ?>55'; }">
+            <i class="fa-solid fa-volume-high"></i>
+        </button>
     </div>
 
     <div class="post-info">
@@ -76,23 +88,23 @@ $like_count   = get_post_meta(get_the_ID(), '_likes', true) ?: '0';
 
                     <!-- Share Button Trigger with interactive Dropdown Option -->
                     <div class="meta-link share-wrapper" style="position: relative; display: inline-block;">
-                        <button class="meta-link share-btn-trigger" title="Share Post" style="background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #8b949e; transition: 0.3s;" onclick="togglePostCardShare(this, event)">
+                        <button class="meta-link share-btn-trigger" title="Share Post" aria-label="Share Post" style="background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #8b949e; transition: 0.3s;" onclick="togglePostCardShare(this, event)">
                             <i class="fa-solid fa-share-nodes" style="color: <?php echo $neon; ?>;"></i> 
                             <span>শেয়ার</span>
                         </button>
                         <div class="postcard-share-dropdown" style="display: none; position: absolute; bottom: 30px; right: 0; background: #1c2128; border: 1.5px solid <?php echo $neon; ?>; box-shadow: 0 5px 15px rgba(0,0,0,0.8), 0 0 10px <?php echo $neon; ?>44; border-radius: 8px; padding: 8px; z-index: 999; width: 156px;">
                             <div style="font-size: 10px; color: #8b949e; text-transform: uppercase; font-weight: 800; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-align: center;">Share options</div>
                             <div class="dropdown-share-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $post_link; ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #1877f2; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="Facebook">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $post_link; ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #1877f2; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="Facebook" aria-label="Share on Facebook">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
-                                <a href="https://api.whatsapp.com/send?text=<?php echo urlencode(get_the_title()) . ' ' . $post_link; ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #25d366; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="WhatsApp">
+                                <a href="https://api.whatsapp.com/send?text=<?php echo urlencode(get_the_title()) . ' ' . $post_link; ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #25d366; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="WhatsApp" aria-label="Share on WhatsApp">
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
-                                <a href="https://t.me/share/url?url=<?php echo $post_link; ?>&text=<?php echo urlencode(get_the_title()); ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="Telegram">
+                                <a href="https://t.me/share/url?url=<?php echo $post_link; ?>&text=<?php echo urlencode(get_the_title()); ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="Telegram" aria-label="Share on Telegram">
                                     <i class="fab fa-telegram-plane"></i>
                                 </a>
-                                <button onclick="copyPostCardLink('<?php echo esc_js(get_permalink()); ?>', this, event)" style="width: 28px; height: 28px; border-radius: 50%; background: <?php echo $neon; ?>; display: flex; align-items: center; justify-content: center; color: #000; font-size: 12px; border: none; cursor: pointer;" title="Copy Link">
+                                <button onclick="copyPostCardLink('<?php echo esc_js(get_permalink()); ?>', this, event)" style="width: 28px; height: 28px; border-radius: 50%; background: <?php echo $neon; ?>; display: flex; align-items: center; justify-content: center; color: #000; font-size: 12px; border: none; cursor: pointer;" title="Copy Link" aria-label="Copy post link">
                                     <i class="fa-solid fa-link"></i>
                                 </button>
                             </div>

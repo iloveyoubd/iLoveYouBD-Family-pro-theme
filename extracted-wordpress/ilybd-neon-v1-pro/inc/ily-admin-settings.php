@@ -100,16 +100,6 @@ add_action('admin_init', 'ily_handle_admin_withdraw_payouts');
    ========================================= */
 function ily_options_page() {
     $neon = get_option('ily_default_neon', '#00ff41');
-    $cache_stats = array('count' => 0, 'size' => 0);
-    if (function_exists('ilybd_prime_get_cache_stats')) {
-        $cache_stats = ilybd_prime_get_cache_stats();
-    }
-    
-    $cache_msg = get_transient('ilybd_prime_cache_notif');
-    if ($cache_msg) {
-        echo '<div class="notice notice-success is-dismissible" style="background:#161b22; color:#00ff41; border:1px solid #00ff41; padding:15px; margin-top:20px; border-radius:6px; max-width:900px;"><p style="margin:0; font-weight:bold;">⚡ ' . esc_html($cache_msg) . '</p></div>';
-        delete_transient('ilybd_prime_cache_notif');
-    }
     ?>
     <div class="wrap" style="background:#0d1117; padding:25px; border-radius:12px; border:1px solid #30363d; color:#fff; max-width:900px; margin-top:20px;">
         <h1 style="color:#00ff41; font-weight:800; font-size:24px; margin-bottom:20px;">⚡ ILYBD Mastery Panel Control</h1>
@@ -153,35 +143,6 @@ function ily_options_page() {
             </table>
             <?php submit_button('Save System Settings', 'primary', 'save_ily'); ?>
         </form>
-
-        <!-- ILYBD Shield Speed Cache Controller Dashboard -->
-        <div style="margin-top:40px; border-top:1px solid #30363d; padding-top:25px;">
-            <h3 style="color:#00ff41; font-weight:700; font-size:18px; display:flex; align-items:center; margin-top:0;">
-                <span class="dashicons dashicons-performance" style="margin-right:8px; font-size:22px; width:22px; height:22px; color:#00ff41;"></span> 
-                ILYBD Shield Static Speed Cache (LiteSpeed Alternative)
-            </h3>
-            <p style="color:#8b949e; font-size:13px; line-height:1.6; margin-bottom:20px;">
-                এই সিস্টেমটি পুরো ওয়েবসাইটের লেআউট কম্পাইল করে হাই-স্পিড স্ট্যাটিক এইচটিএমএল ক্যাশ ফাইলে রূপান্তর করে। ফলে ভিজিটরদের সেকেন্ডের ভগ্নাংশে (৫ মিলি-সেকেন্ডের নিচে) পেজ লোড হয় এবং সার্ভার ডাটাবেজ প্রসেস লোড রিলিজ থাকে। যেকোনো কন্টেন্ট আপডেট হলে অটোমেটিক ক্যাশে রিফ্রেশ হয়ে যায়। লগড-ইন ইউজার/অ্যাডমিনদের জন্য ক্যাশে সম্পূর্ণ বাইপাস থাকে।
-            </p>
-            
-            <div style="display:flex; gap:20px; margin-bottom:20px;">
-                <div style="background:#161b22; border:1px solid #30363d; padding:20px; border-radius:8px; flex:1; text-align:center;">
-                    <div style="font-size:12px; color:#8b949e; text-transform:uppercase; font-weight:600; letter-spacing:1px; margin-bottom:5px;">ক্যাশড পেজ সংখ্যা</div>
-                    <div style="font-size:32px; font-weight:bold; color:#00ff41; font-family:monospace;"><?php echo intval($cache_stats['count']); ?> টি</div>
-                </div>
-                <div style="background:#161b22; border:1px solid #30363d; padding:20px; border-radius:8px; flex:1; text-align:center;">
-                    <div style="font-size:12px; color:#8b949e; text-transform:uppercase; font-weight:600; letter-spacing:1px; margin-bottom:5px;">ক্যাশড স্টোরেজ সাইজ</div>
-                    <div style="font-size:32px; font-weight:bold; color:#00d4ff; font-family:monospace;"><?php echo esc_html($cache_stats['size']); ?> MB</div>
-                </div>
-            </div>
-            
-            <div style="display:flex; align-items:center; gap:10px;">
-                <a class="button" href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=ilybd_prime_admin_clear_all_cache'), 'ilybd_prime_clear_nonce'); ?>" style="background:#ff3e3e; border:none; color:#fff; font-weight:bold; height:auto; padding:10px 20px; border-radius:4px; display:inline-flex; align-items:center; text-decoration:none;">
-                    <span class="dashicons dashicons-trash" style="margin-right:6px; line-height:inherit;"></span> ম্যানুয়ালি ক্যাশে ক্লিয়ার করুন
-                </a>
-                <span style="color:#8b949e; font-size:12px;">(সব স্ট্যাটিক ক্যাশে ফাইল মুছে পুনরায় নতুন ফাইল জেনারেট করানোর জন্য এটি ব্যবহার করুন।)</span>
-            </div>
-        </div>
     </div>
     <?php
 }

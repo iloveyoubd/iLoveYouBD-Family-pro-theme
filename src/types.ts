@@ -62,6 +62,10 @@ export interface UserStats {
   rank: string;
   postsPublished: number;
   postsPending: number;
+  referralCode?: string;
+  referredBy?: string;
+  referredUsers?: string[]; // Array of names referred by this user
+  referralEarnings?: number; // Taka earned from referrals
 }
 
 export interface AdminSettings {
@@ -79,4 +83,11 @@ export interface AdminSettings {
   mayaApiKeys: string;
   mayaSystemInstruction: string;
   mayaTemperature: number;
+  autopilotInterval: string;
+  autopilotCategories: string;
+  autopilotKeywords: string;
+  referralBonusTaka?: number;  // Bonus Taka for referrer (e.g. 10 TK)
+  referralXpReward?: number;   // XP points for both referrer and referee (e.g. 50 XP)
+  refereeBonusTaka?: number;   // Bonus Taka for registered user (referee)
+  refereeXpReward?: number;    // XP points for registered user (referee)
 }

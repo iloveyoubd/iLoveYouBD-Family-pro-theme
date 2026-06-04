@@ -79,8 +79,8 @@ $neon = get_option('ilybd_main_color', '#00ff41');
         </div>
 
         <div class="nav-group-side">
-            <a href="<?php echo home_url('/forum'); ?>" class="nav-item">
-                <span class="n-icon">💬</span><span class="n-text">Forum</span>
+            <a href="<?php echo home_url('/tools-lab'); ?>" class="nav-item">
+                <span class="n-icon">🧪</span><span class="n-text">Tools Lab</span>
             </a>
             <a href="<?php echo home_url('/dashboard?action=profile'); ?>" class="nav-item">
                 <span class="n-icon">👤</span><span class="n-text">Profile</span>
@@ -337,6 +337,452 @@ jQuery(document).ready(function($) {
                 }).html('<i class="fa-solid fa-triangle-exclamation" style="color:#ff3333; margin-right:5px;"></i> সার্ভার কানেকশন ত্রুটি! পুনরায় চেষ্টা করুন।').fadeIn();
             }
         });
+    });
+});
+</script>
+
+<!-- ⚡ ILYBD GLOBAL SYSTEM Speech Synthesis (TTS Player v2.10 - 2040 Neon Style) ⚡ -->
+<style>
+@keyframes globalTtsPulse {
+    0% { transform: scale(1); box-shadow: 0 0 10px #00f0ff; }
+    50% { transform: scale(1.08); box-shadow: 0 0 20px #00ff41, 0 0 10px #00f0ff; }
+    100% { transform: scale(1); box-shadow: 0 0 10px #00f0ff; }
+}
+.card-tts-trigger.playing {
+    animation: globalTtsPulse 1.2s infinite ease-in-out !important;
+    background: #00f0ff !important;
+    color: #000 !important;
+    border-color: #00ff41 !important;
+}
+@keyframes pulseGlow {
+    from { filter: drop-shadow(0 0 2px #00f0ff); opacity: 0.8; }
+    to { filter: drop-shadow(0 0 10px #00ff41); opacity: 1; }
+}
+@keyframes ttsBounce {
+    0% { transform: scaleY(0.7); }
+    100% { transform: scaleY(1.3); }
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Dynamic Injection of Page TTS Panel (Only if (.inner-page-content) exists and not single post)
+    var pageContent = document.querySelector('.inner-page-content');
+    if (pageContent && !document.body.classList.contains('single-post')) {
+        var panelHtml = `
+            <div class="cyber-global-page-tts-panel" style="background: rgba(9, 13, 19, 0.95); border: 1.5px solid #00f0ff; border-radius: 12px; padding: 15px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0, 240, 255, 0.15); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif; position: relative; z-index: 99;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <h4 style="margin: 0; font-size: 13.5px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-microphone-lines" style="color: #00f0ff; animation: pulseGlow 1.5s infinite alternate;"></i> এআই ভয়েস রিডার (AI Page Reader)
+                    </h4>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 10px; color: #8b949e; font-family: monospace;">VOICE:</span>
+                        <select id="global-page-tts-voice" style="background: #11161d; color: #fff; border: 1px solid rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">
+                            <option value="female" selected>👩 মেয়ের কণ্ঠ (Female)</option>
+                            <option value="male">👨 ছেলের কণ্ঠ (Male)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button id="global-page-tts-play-btn" onclick="togglePageAudioSpeak()" style="background: linear-gradient(135deg, #00f0ff 0%, #00ff41 100%); color: #000; font-weight: 900; font-size: 11.5px; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 0 10px #00f0ff'; this.style.transform='translateY(-1px)';" onmouseout="this.style.boxShadow='none'; this.style.transform='none';">
+                            <i class="fa-solid fa-play"></i> পড়ে শোনান (Listen Page)
+                        </button>
+                        <button id="global-page-tts-stop-btn" onclick="stopGlobalTts()" style="background: rgba(255,45,45,0.12); color: #ff3b30; border: 1.5px solid rgba(255,45,45,0.22); font-weight: bold; font-size: 11px; padding: 7px 14px; border-radius: 6px; cursor: pointer; display: none; align-items: center; gap: 5px;">
+                            <i class="fa-solid fa-circle-stop"></i> বন্ধ করুন
+                        </button>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 11px; color: #8b949e; font-family: monospace;">SPEED:</span>
+                        <select id="global-page-tts-speed" style="background: #11161d; color: #fff; border: 1px solid rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">
+                            <option value="0.8">0.8x ধীর</option>
+                            <option value="1.0" selected>1.0x সাধারণ</option>
+                            <option value="1.2">1.2x দ্রুত</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="global-page-tts-hud" style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.02); display: none; align-items: center; justify-content: space-between;">
+                    <span id="global-page-tts-msg" style="font-size: 11.5px; color: #00f0ff; font-family: sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;">রিডার কন্টেন্ট বিশ্লেষণ করছে...</span>
+                    <div class="voice-playing-wave" style="display: flex; align-items: flex-end; gap: 1.5px; height: 10px;">
+                        <span style="display:inline-block; width: 1.5px; height: 6px; background: #00f0ff; animation: waveBar 0.5s infinite alternate 0.1s;"></span>
+                        <span style="display:inline-block; width: 1.5px; height: 10px; background: #00f0ff; animation: waveBar 0.5s infinite alternate 0.3s;"></span>
+                        <span style="display:inline-block; width: 1.5px; height: 4px; background: #00f0ff; animation: waveBar 0.5s infinite alternate 0.5s;"></span>
+                    </div>
+                </div>
+            </div>
+        `;
+        pageContent.insertAdjacentHTML('afterbegin', panelHtml);
+    }
+
+    // 2. Global TTS Engine State
+    var globalTtsState = {
+        isPlaying: false,
+        activeUtterance: null,
+        currentBtn: null,
+        voiceType: 'female'
+    };
+
+    var pageParagraphs = [];
+    var pageParagraphIndex = 0;
+
+    // Triggered by card speaker buttons
+    window.toggleCardPlayback = function(btn, event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        var title = btn.getAttribute('data-title') || '';
+        var excerpt = btn.getAttribute('data-excerpt') || '';
+        var fullText = title + "। " + excerpt;
+
+        if (globalTtsState.isPlaying && globalTtsState.currentBtn === btn) {
+            window.stopGlobalTts();
+            return;
+        }
+
+        if (globalTtsState.isPlaying) {
+            window.stopGlobalTts();
+        }
+
+        // Play card audio
+        globalTtsState.isPlaying = true;
+        globalTtsState.currentBtn = btn;
+        btn.classList.add('playing');
+        btn.innerHTML = '<i class="fa-solid fa-volume-high" style="animation: ttsBounce 0.5s infinite alternate;"></i>';
+        
+        window.speechSynthesis.cancel();
+        
+        var utterance = new SpeechSynthesisUtterance(fullText);
+        utterance.lang = 'bn-BD';
+        utterance.rate = 1.0;
+        utterance.pitch = (globalTtsState.voiceType === 'male') ? 0.8 : 1.15;
+
+        if (window.speechSynthesis.getVoices) {
+            var voices = window.speechSynthesis.getVoices();
+            var bengaliVoice = voices.find(function(v) { return v.lang.indexOf('bn') !== -1; });
+            if (bengaliVoice) utterance.voice = bengaliVoice;
+        }
+
+        utterance.onend = function() {
+            window.stopGlobalTts();
+        };
+
+        utterance.onerror = function() {
+            window.stopGlobalTts();
+        };
+
+        globalTtsState.activeUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // ⚡ NEW TRIGGERED BY HEADER PLAY BUTTON ⚡
+    window.toggleHeaderTts = function(event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        var headerBtn = document.getElementById('header-global-tts-btn');
+        var headerIcon = document.getElementById('header-global-tts-icon');
+        var activeDot = document.getElementById('header-tts-active-dot');
+
+        if (globalTtsState.isPlaying && globalTtsState.currentBtn === headerBtn) {
+            window.stopGlobalTts();
+            return;
+        }
+
+        if (globalTtsState.isPlaying) {
+            window.stopGlobalTts();
+        }
+
+        pageParagraphs = [];
+        // Scan standard containers hierarchically to find speakable content
+        var containers = document.querySelectorAll('.entry-content-main, .inner-page-content, main, article, #main, .main-content, .post-grid, .dashboard-container, body');
+        for (var i = 0; i < containers.length; i++) {
+            var elList = containers[i].querySelectorAll('p, h2, h3, h4, li');
+            elList.forEach(function(pEl) {
+                if (pEl.closest('header, footer, nav, .cyber-dropdown-menu, .cyber-global-page-tts-panel, .card-tts-trigger, button, #header-tools-dropdown, .messenger-box, .widget-title, .widget, .nav-grid')) {
+                    return;
+                }
+                var text = pEl.textContent.trim();
+                if (text.length > 8) {
+                    pageParagraphs.push({
+                        element: pEl,
+                        text: text
+                    });
+                }
+            });
+            if (pageParagraphs.length > 0) {
+                break;
+            }
+        }
+
+        if (pageParagraphs.length === 0) {
+            console.log('No speakable text found.');
+            return;
+        }
+
+        globalTtsState.isPlaying = true;
+        globalTtsState.currentBtn = headerBtn;
+        pageParagraphIndex = 0;
+
+        if (headerIcon) {
+            headerIcon.className = 'fa-solid fa-circle-stop';
+        }
+        if (activeDot) {
+            activeDot.style.display = 'block';
+        }
+        if (headerBtn) {
+            headerBtn.classList.add('playing');
+        }
+
+        speakPageParagraph(0);
+    };
+
+    // Triggered by Page AI voice reader button
+    window.togglePageAudioSpeak = function() {
+        var playBtn = document.getElementById('global-page-tts-play-btn');
+        if (!playBtn) return;
+
+        if (globalTtsState.isPlaying && globalTtsState.currentBtn === playBtn) {
+            if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i> থামুন (Pause)';
+                document.getElementById('global-page-tts-msg').textContent = 'পড়ছি: ' + pageParagraphs[pageParagraphIndex].text.substring(0, 35) + '...';
+            } else {
+                window.speechSynthesis.pause();
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i> শুনুন (Resume)';
+                document.getElementById('global-page-tts-msg').textContent = 'থামানো হয়েছে (Paused)';
+            }
+            return;
+        }
+
+        if (globalTtsState.isPlaying) {
+            window.stopGlobalTts();
+        }
+
+        pageParagraphs = [];
+        var parentContainer = document.querySelector('.inner-page-content');
+        if (!parentContainer) return;
+
+        var textElements = parentContainer.querySelectorAll('p, h2, h3, li');
+        textElements.forEach(function(el) {
+            if (el.closest('.cyber-global-page-tts-panel')) return;
+            var txt = el.textContent.trim();
+            if (txt.length > 5) {
+                pageParagraphs.push({
+                    element: el,
+                    text: txt
+                });
+            }
+        });
+
+        if (pageParagraphs.length === 0) {
+            console.log('No legible content paragraphs found.');
+            return;
+        }
+
+        globalTtsState.isPlaying = true;
+        globalTtsState.currentBtn = playBtn;
+        pageParagraphIndex = 0;
+
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i> থামুন (Pause)';
+        
+        var stopBtn = document.getElementById('global-page-tts-stop-btn');
+        if (stopBtn) stopBtn.style.display = 'inline-flex';
+        
+        var hud = document.getElementById('global-page-tts-hud');
+        if (hud) hud.style.display = 'flex';
+
+        speakPageParagraph(0);
+    };
+
+    function speakPageParagraph(index) {
+        if (!globalTtsState.isPlaying) return;
+
+        // Reset all styles
+        document.querySelectorAll('p, h2, h3, h4, li').forEach(function(el) {
+            el.style.background = '';
+            el.style.borderLeft = '';
+            el.style.paddingLeft = '';
+        });
+
+        if (index >= pageParagraphs.length) {
+            window.stopGlobalTts();
+            return;
+        }
+
+        pageParagraphIndex = index;
+        var pData = pageParagraphs[index];
+
+        // Highlight with dynamic cool cyber gradient neon borders
+        pData.element.style.background = 'rgba(0, 240, 255, 0.05)';
+        pData.element.style.borderLeft = '4px solid #00f0ff';
+        pData.element.style.paddingLeft = '14px';
+        pData.element.style.borderRadius = '0 8px 8px 0';
+        pData.element.style.transition = 'all 0.3s ease';
+
+        var scrollPos = pData.element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({
+            top: scrollPos - 130,
+            behavior: 'smooth'
+        });
+
+        window.speechSynthesis.cancel();
+
+        var utterance = new SpeechSynthesisUtterance(pData.text);
+        utterance.lang = 'bn-BD';
+        
+        var speedRateEl = document.getElementById('global-page-tts-speed');
+        var speedRate = speedRateEl ? parseFloat(speedRateEl.value || '1.0') : 1.0;
+        utterance.rate = speedRate;
+
+        var voiceTypeSelEl = document.getElementById('global-page-tts-voice');
+        var voiceTypeSel = voiceTypeSelEl ? voiceTypeSelEl.value : 'female';
+        globalTtsState.voiceType = voiceTypeSel;
+        utterance.pitch = (voiceTypeSel === 'male') ? 0.8 : 1.15;
+
+        if (window.speechSynthesis.getVoices) {
+            var voices = window.speechSynthesis.getVoices();
+            var bengaliVoice = voices.find(function(v) { return v.lang.indexOf('bn') !== -1; });
+            if (bengaliVoice) utterance.voice = bengaliVoice;
+        }
+
+        var msgEl = document.getElementById('global-page-tts-msg');
+        if (msgEl) msgEl.textContent = 'পড়ছি: ' + pData.text.substring(0, 35) + '...';
+
+        utterance.onend = function() {
+            setTimeout(function() {
+                if (globalTtsState.isPlaying && !window.speechSynthesis.paused) {
+                    speakPageParagraph(index + 1);
+                }
+            }, 800);
+        };
+
+        utterance.onerror = function() {
+            if (globalTtsState.isPlaying && !window.speechSynthesis.paused) {
+                speakPageParagraph(index + 1);
+            }
+        };
+
+        globalTtsState.activeUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    window.stopGlobalTts = function() {
+        window.speechSynthesis.cancel();
+        
+        // Reset Header Button state
+        var headerBtn = document.getElementById('header-global-tts-btn');
+        var headerIcon = document.getElementById('header-global-tts-icon');
+        var activeDot = document.getElementById('header-tts-active-dot');
+        if (headerBtn) {
+            headerBtn.classList.remove('playing');
+        }
+        if (headerIcon) {
+            headerIcon.className = 'fa-solid fa-volume-high';
+        }
+        if (activeDot) {
+            activeDot.style.display = 'none';
+        }
+
+        if (globalTtsState.currentBtn) {
+            var btn = globalTtsState.currentBtn;
+            btn.classList.remove('playing');
+            if (btn.classList.contains('card-tts-trigger')) {
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                btn.style.background = 'rgba(4, 7, 12, 0.85)';
+                btn.style.color = '#00f0ff';
+                btn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.35)';
+            }
+        }
+
+        globalTtsState.isPlaying = false;
+        globalTtsState.currentBtn = null;
+        globalTtsState.activeUtterance = null;
+
+        // Reset page controls
+        var playBtn = document.getElementById('global-page-tts-play-btn');
+        if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play"></i> পড়ে শোনান (Listen Page)';
+        
+        var stopBtn = document.getElementById('global-page-tts-stop-btn');
+        if (stopBtn) stopBtn.style.display = 'none';
+
+        var hud = document.getElementById('global-page-tts-hud');
+        if (hud) hud.style.display = 'none';
+
+        document.querySelectorAll('p, h2, h3, h4, li').forEach(function(el) {
+            el.style.background = '';
+            el.style.borderLeft = '';
+            el.style.paddingLeft = '';
+            el.style.borderRadius = '';
+        });
+    };
+
+    window.addEventListener('beforeunload', function() {
+        window.speechSynthesis.cancel();
+    });
+});
+</script>
+
+<!-- 🛡️ GOOGLE ADSENSE COMPLIANCE & CYBER COOKIE CONSENT BANNER (2040 STYLING) -->
+<div id="ilybd-cyber-cookie-banner" class="cookie-banner-hidden" style="position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%) translateY(120px); width: 92%; max-width: 680px; background: rgba(7, 11, 19, 0.96); border: 2.2px solid <?php echo $neon; ?>; border-radius: 16px; padding: 22px 28px; box-shadow: 0 10px 40px rgba(0,255,65,0.15), inset 0 0 15px rgba(0,255,65,0.05); z-index: 999999; font-family: system-ui, -apple-system, sans-serif; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); display: none;">
+    <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; text-align: left;">
+        <div style="flex: 1; min-width: 280px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <span style="font-size: 20px;">🛡️</span>
+                <strong style="color: #fff; font-size: 15px; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'Space Grotesk', monospace;">Cookie Consent & Safeguard Panel</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #a0aec0; margin: 0; line-height: 1.6; font-family: system-ui, sans-serif;">
+                আমরা কুুুকি ব্যবহার করি: <strong>iloveyoubd.com</strong> ট্রিকবিডি স্টাইল হ্যাকিং, আর্নিং ও সিকিউরিটি অভিজ্ঞতা উন্নত করতে গুগল অ্যাডসেন্স ও মেমোরি সেশন ট্র্যাকিং কুকি ব্যবহার করে। আমাদের সাইট ব্যবহার করে আপনি এতে সম্মতি দিচ্ছেন।
+            </p>
+        </div>
+        <div style="display: flex; gap: 14px; align-items: center; margin-top: 5px;">
+            <a href="<?php echo home_url('/privacy-policy/'); ?>" style="color: #a0aec0; text-decoration: underline; font-size: 12px; font-weight: bold; transition: 0.2s;" onmouseover="this.style.color='<?php echo $neon; ?>';" onmouseout="this.style.color='#a0aec0';">প্রাইভেসি পলিসি</a>
+            <button id="ilybd-accept-cookie-btn" style="background: <?php echo $neon; ?>; color: #000; border: none; font-weight: 900; font-size: 12.5px; padding: 10px 22px; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: all 0.3s; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 0 12px <?php echo $neon; ?>44;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 0 20px <?php echo $neon; ?>';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 0 12px <?php echo $neon; ?>44';">
+                <span>Accept (সম্মতি দিন)</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var banner = document.getElementById("ilybd-cyber-cookie-banner");
+    var acceptBtn = document.getElementById("ilybd-accept-cookie-btn");
+    
+    if (!banner || !acceptBtn) return;
+    
+    // Quick helper to read browser cookie
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+        return null;
+    }
+    
+    // Check if consent has already been granted
+    var consent = getCookie("ily_cookie_consent");
+    if (!consent) {
+        banner.style.display = "block";
+        setTimeout(function() {
+            banner.style.transform = "translateX(-50%) translateY(0)";
+        }, 1500);
+    }
+    
+    acceptBtn.addEventListener("click", function() {
+        // Set cookie consent valid for 365 days
+        var expiry = new Date();
+        expiry.setTime(expiry.getTime() + (365 * 24 * 60 * 60 * 1000));
+        document.cookie = "ily_cookie_consent=accepted; expires=" + expiry.toUTCString() + "; path=/; SameSite=Lax; Secure";
+        
+        banner.style.transform = "translateX(-50%) translateY(120px)";
+        setTimeout(function() {
+            banner.style.display = "none";
+        }, 600);
     });
 });
 </script>

@@ -10,6 +10,12 @@ $author_name = get_the_author();
 $author_bio = get_the_author_meta('description') ?: 'আমি একজন প্রযুক্তিপ্রেমী কন্টেন্ট ক্রিয়েটর। নতুন নতুন প্রযুক্তি, প্রোগ্রামিং এবং সাইবার সিকিউরিটি নিয়ে গবেষণা করতে আমার ভালো লাগে।';
 $neon = esc_attr(get_option('ilybd_main_color', '#00ff41'));
 
+$user_data = get_userdata($auth_id);
+$joining_date = 'অজানা';
+if ($user_data) {
+    $joining_date = date_i18n('j F, Y', strtotime($user_data->user_registered));
+}
+
 $status = ilybd_get_user_active_status($auth_id);
 $tiktok_profile = get_user_meta($auth_id, 'user_tiktok', true);
 $phone_contact = get_user_meta($auth_id, 'user_phone', true);
@@ -62,6 +68,14 @@ $author_pts = (int)get_user_meta($auth_id, 'ilybd_total_points', true);
                     <?php if ($curr_uid && $curr_uid == $auth_id) : ?>
                         <span class="v3-badge-self">আপনার প্রোফাইল</span>
                     <?php endif; ?>
+                </div>
+
+                <!-- 📆 Beautiful Joining Date Badge -->
+                <div class="v3-author-meta-row" style="margin-bottom: 15px; display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; font-family: monospace; color: #8b949e;">
+                    <span style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.03); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <i class="fa-regular fa-calendar-alt" style="color: <?php echo esc_attr($neon); ?>;"></i> 
+                        যুক্ত হয়েছেন (Joined): <span style="color: #fff; font-weight: bold;"><?php echo esc_html($joining_date); ?></span>
+                    </span>
                 </div>
 
                 <div class="v3-author-bio-field">

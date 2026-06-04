@@ -43,6 +43,16 @@ $neon = get_option('ilybd_main_color', '#00ff41');
                         <h3>📜 4. Service Maintenance & Disclaimers</h3>
                         <p>We do not guarantee uninterrupted server uptime, nor are we liable for data errors in external software files hosted on secondary mirrors. We reserve the absolute right to suspend accounts, ban IP segments, or adjust interface parameters without prior notice to ensure absolute server integrity.</p>
                     </div>
+
+                    <div class="policy-card" style="grid-column: span 2; border-color: <?php echo $neon; ?>44; background: rgba(0, 255, 65, 0.02);">
+                        <h3 style="color: <?php echo $neon; ?>;"><i class="fa-solid fa-receipt"></i> 💸 ৫. কন্টেন্ট প্রকাশনা রিওয়ার্ড ও পেমেন্ট উত্তোলন শর্তাবলী (Publisher Rewards Policy)</h3>
+                        <p style="margin-bottom: 15px; color: #fff;">আমাদের প্ল্যাটফর্মের যেকোনো নিবন্ধিত মেম্বার বা রাইটার পোস্ট পাবলিশ করে টাকা ইনকাম করতে পারবেন। এই আর্নিং এবং উইথড্রয়াল প্রোটোকলের আইনি শর্তাবলী নিম্নরূপ:</p>
+                        <ul style="color: #a0aec0; font-size: 13.5px; line-height: 1.8; padding-left: 20px; list-style-type: decimal;">
+                            <li><strong style="color: #fff;">ব্যালেন্স একুমুলেশন:</strong> প্রতিটি পোস্ট বা টিউন সফলভাবে এডিটরদের দ্বারা এপ্রুভ ও পাবলিশ হওয়ার পর আপনার ওয়ালেটে নির্ধারিত রেট অনুযায়ী টাকা জমা হয়।</li>
+                            <li><strong style="color: #fff;">উইথড্র রিকোয়েস্ট:</strong> ওয়ালেটের মিনিমাম থ্রেশহোল্ড অতিক্রম করার সাপেক্ষে যেকোনো সময়ে বিকাশ, নগদ বা রকেট অ্যাকাউন্ট প্রদান করে উইথড্র সাবমিট করা যাবে।</li>
+                            <li><strong style="color: #fff;">অডিট এবং সিকিউরিটি চেক:</strong> উইথড্র রিকোয়েস্ট সাবমিশনের পর প্রতিটি পোস্টের গুণগত মান ও ইউনিকনেস অডিট করা হবে। স্প্যাম বা এআই র রাইটিং ফ্রড শনাক্ত হলে আর্নিং রিসেট এবং মেম্বারশিপ ব্লক করার সম্পূর্ণ অধিকার এডমিন টিম সংরক্ষণ করে।</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="policy-footer-note">
