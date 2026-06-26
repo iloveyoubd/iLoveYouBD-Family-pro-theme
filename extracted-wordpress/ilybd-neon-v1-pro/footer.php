@@ -5,9 +5,13 @@
  * Fix: Smart Scroll Header Hide/Show logic added.
  */
 $neon = get_option('ilybd_main_color', '#00ff41');
+$enable_rgb = get_option('ilybd_enable_rgb', 'yes');
+$rgb_style = get_option('ilybd_rgb_style', 'classic_neo');
 ?>
 
-<div class="cyber-rgb-frame"></div>
+<?php if ($enable_rgb === 'yes') : ?>
+<div class="cyber-rgb-frame <?php echo esc_attr($rgb_style); ?>"></div>
+<?php endif; ?>
 
 <footer class="cyber-footer">
     <div class="footer-bg-glow"></div>
@@ -22,7 +26,7 @@ $neon = get_option('ilybd_main_color', '#00ff41');
             <div style="font-size: 18px; font-weight: 800; color: #fff; text-shadow: 0 0 10px <?php echo $neon; ?>55; letter-spacing: 1px; margin-bottom: 8px;">
                 <i class="fa-solid fa-paper-plane" style="color: <?php echo $neon; ?>; margin-right: 6px;"></i> সাবস্ক্রাইব নিউজলেটার (Subscribe by Newsletter)
             </div>
-            <p style="font-size: 12px; color: #8b949e; margin-bottom: 18px; line-height: 1.5; padding: 0 10px;">আমাদের প্ল্যাটফর্মের লেটেস্ট টেকনোলজি আপডেট, ফ্রি ইন্টারনেট এবং হ্যাকিং ট্রিকস সরাসরি ইমেইলে পেতে সাবস্ক্রাইব করে রাখুন।</p>
+            <p style="font-size: 12px; color: #8b949e; margin-bottom: 18px; line-height: 1.5; padding: 0 10px;">আমাদের প্ল্যাটফর্মের লেটেস্ট টেকনোলজি আপডেট, প্রোগ্রামিং টিউটোরিয়াল এবং ক্যারিয়ার সম্পর্কিত টিপস সরাসরি ইমেইলে পেতে সাবস্ক্রাইব করে রাখুন।</p>
             
             <form id="ilybd-newsletter-form" style="display: flex; gap: 8px; width: 100%; max-width: 500px; margin: 0 auto; flex-wrap: wrap;">
                 <input type="email" name="sub_email" required placeholder="আপনার ইমেইল এড্রেস লিখুন..." style="background: #11161d; color: #fff; border: 1px solid #30363d; padding: 12px 16px; border-radius: 8px; flex: 1; min-width: 240px; outline: none; font-size: 13.5px; transition: all 0.3s; font-weight: bold; text-align: left;" onfocus="this.style.borderColor='<?php echo $neon; ?>'; this.style.boxShadow='0 0 10px <?php echo $neon; ?>33';">
@@ -41,11 +45,21 @@ $neon = get_option('ilybd_main_color', '#00ff41');
             <a href="/support" class="f-link">Support Us</a>
             <a href="/faq" class="f-link">FAQ</a>
             <a href="/copyrights" class="f-link">Copyrights</a>
-            <a href="/desclimer" class="f-link">Desclimer</a>
+            <a href="/disclaimer" class="f-link">Disclaimer</a>
             <a href="/user-rights" class="f-link">User Rights</a>
             <a href="/advisement" class="f-link">Advisements</a>
             <a href="/community-guidelines" class="f-link">Community Guidelines</a>
             <a href="/safety" class="f-link">Safety & Control</a>
+            <a href="/ai-content-policy" class="f-link" style="color: #60a5fa; font-weight: bold;">AI Content Policy</a>
+            <a href="/cookie-policy" class="f-link" style="color: #60a5fa; font-weight: bold;">Cookie Policy</a>
+            <a href="/corrections-policy" class="f-link" style="color: #60a5fa; font-weight: bold;">Corrections Policy</a>
+            <a href="/dmca" class="f-link" style="color: #60a5fa; font-weight: bold;">DMCA Policy</a>
+            <a href="/editorial-policy" class="f-link" style="color: #60a5fa; font-weight: bold;">Editorial Policy</a>
+            <a href="/authors" class="f-link" style="color: #22c55e; font-weight: bold;">Our Authors Hub</a>
+            <a href="/how-to-earn-money" class="f-link" style="color: #00ff41; font-weight: bold;">Earn Online Rewards</a>
+            <a href="/make-money-online" class="f-link" style="color: #00f0ff; font-weight: bold;">Earning Guides Hub</a>
+            <a href="/refer-and-earn" class="f-link" style="color: #ffaa00; font-weight: bold;">Referral Hub</a>
+            <a href="/sitemap" class="f-link" style="color: #ec4899; font-weight: bold;">HTML Sitemap Index</a>
         </div>
         
         <div class="footer-copy-big">
@@ -55,20 +69,20 @@ $neon = get_option('ilybd_main_color', '#00ff41');
     </div>
 </footer>
 
-<nav class="cyber-mobile-nav">
+<nav class="cyber-mobile-nav" aria-label="Mobile Navigation">
     <div class="nav-container-inner">
         
         <div class="nav-group-side">
-            <a href="<?php echo home_url(); ?>" class="nav-item">
+            <a href="<?php echo home_url(); ?>" class="nav-item" aria-label="Home Link">
                 <span class="n-icon">🏠</span><span class="n-text">Home</span>
             </a>
-            <a href="<?php echo home_url('/tv'); ?>" class="nav-item">
+            <a href="<?php echo home_url('/tv'); ?>" class="nav-item" aria-label="Live TV Channel">
                 <span class="n-icon">📺</span><span class="n-text">Live TV</span>
             </a>
         </div>
 
         <div class="nav-center-bridge">
-            <div class="nav-ai-btn" onclick="jQuery('.cyber-chat-window').toggleClass('active');" title="AI Chat">
+            <div class="nav-ai-btn" onclick="jQuery('.cyber-chat-window').toggleClass('active');" title="AI Chat" role="button" aria-label="Toggle AI Assist Chatbot" tabindex="0">
                 <div class="ai-symbol">
                     <svg class="gemini-star" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: <?php echo $neon; ?>; filter: drop-shadow(0 0 8px <?php echo $neon; ?>); animation: pulseStar 1.8s infinite ease-in-out;">
                         <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
@@ -79,10 +93,10 @@ $neon = get_option('ilybd_main_color', '#00ff41');
         </div>
 
         <div class="nav-group-side">
-            <a href="<?php echo home_url('/tools-lab'); ?>" class="nav-item">
+            <a href="<?php echo home_url('/tools-lab'); ?>" class="nav-item" aria-label="System Tools Lab">
                 <span class="n-icon">🧪</span><span class="n-text">Tools Lab</span>
             </a>
-            <a href="<?php echo home_url('/dashboard?action=profile'); ?>" class="nav-item">
+            <a href="<?php echo home_url('/dashboard?action=profile'); ?>" class="nav-item" aria-label="User Account Profile">
                 <span class="n-icon">👤</span><span class="n-text">Profile</span>
             </a>
         </div>
@@ -116,10 +130,74 @@ body { background: #0b0f15; padding-bottom: 60px !important; }
 .cyber-rgb-frame {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 99999; opacity: 0.15;
-    background: linear-gradient(90deg, #ff004c, #00ffcc, #3b82f6, #ff004c);
-    background-size: 400%; animation: rgbMove 8s linear infinite;
+    background-size: 400%;
 }
-@keyframes rgbMove { 0%{filter:hue-rotate(0deg);} 100%{filter:hue-rotate(360deg);} }
+
+/* 1. Classic Neon Multi-Color RGB */
+.cyber-rgb-frame.classic_neo {
+    background: linear-gradient(90deg, #ff004c, #00ffcc, #3b82f6, #ff004c);
+    animation: rgbMove_classic 8s linear infinite;
+    opacity: 0.15;
+}
+@keyframes rgbMove_classic { 0%{filter:hue-rotate(0deg);} 100%{filter:hue-rotate(360deg);} }
+
+/* 2. Cosmic Cyber Aurora */
+.cyber-rgb-frame.aurora_glow {
+    background: linear-gradient(135deg, #059669, #06b6d4, #10b981, #0891b2);
+    animation: rgbMove_aurora 6s ease infinite alternate;
+    opacity: 0.16;
+}
+@keyframes rgbMove_aurora {
+    0% { background-position: 0% 50%; opacity: 0.12; }
+    100% { background-position: 100% 50%; opacity: 0.22; }
+}
+
+/* 3. Toxic Matrix Neon */
+.cyber-rgb-frame.toxic_matrix {
+    background: linear-gradient(180deg, #22c55e, #15803d, #22c55e);
+    animation: rgbMove_toxic 0.4s steps(6) infinite;
+    opacity: 0.08;
+}
+@keyframes rgbMove_toxic {
+    0% { opacity: 0.06; }
+    50% { opacity: 0.12; }
+    100% { opacity: 0.06; }
+}
+
+/* 4. Electric Sunset Glow */
+.cyber-rgb-frame.electric_sunset {
+    background: linear-gradient(45deg, #f43f5e, #d946ef, #7c3aed, #f43f5e);
+    animation: rgbMove_sunset 10s ease infinite;
+    opacity: 0.15;
+}
+@keyframes rgbMove_sunset {
+    0% { background-position: 0% 20%; opacity: 0.12; }
+    50% { background-position: 100% 80%; opacity: 0.22; }
+    100% { background-position: 0% 20%; opacity: 0.12; }
+}
+
+/* 5. Cyber Golden Amber */
+.cyber-rgb-frame.cyber_amber {
+    background: linear-gradient(90deg, #f59e0b, #ea580c, #f59e0b);
+    animation: rgbMove_amber 5s ease-in-out infinite alternate;
+    opacity: 0.14;
+}
+@keyframes rgbMove_amber {
+    0% { opacity: 0.10; }
+    100% { opacity: 0.20; filter: hue-rotate(15deg); }
+}
+
+/* 6. Mono Neon Ice Blue */
+.cyber-rgb-frame.neon_blue_mono {
+    background: linear-gradient(90deg, #0284c7, #06b6d4, #0284c7);
+    animation: rgbMove_blue_mono 6s linear infinite;
+    opacity: 0.16;
+}
+@keyframes rgbMove_blue_mono {
+    0% { opacity: 0.10; }
+    50% { opacity: 0.20; }
+    100% { opacity: 0.10; }
+}
 
 /* Footer Design */
 .cyber-footer {
@@ -135,7 +213,7 @@ body { background: #0b0f15; padding-bottom: 60px !important; }
 @keyframes glowPulse { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.1); } }
 
 .footer-brand .brand-title { font-size: 26px; font-weight: 900; color: #fff; text-shadow: 0 0 15px <?php echo $neon; ?>77; letter-spacing: 2px; }
-.footer-brand .brand-sub { font-size: 11px; color: #555; letter-spacing: 4px; text-transform: uppercase; margin-top: 5px; }
+.footer-brand .brand-sub { font-size: 11px; color: #94a3b8; letter-spacing: 4px; text-transform: uppercase; margin-top: 5px; }
 
 /* Grid for Links with increased size and sleek animations */
 .footer-grid { 
@@ -176,9 +254,10 @@ body { background: #0b0f15; padding-bottom: 60px !important; }
 .nav-item { 
     display: flex; flex-direction: row; align-items: center; justify-content: center;
     text-decoration: none; gap: 6px; transition: 0.3s;
+    padding: 14px 10px; min-width: 44px; min-height: 44px;
 }
 .n-icon { font-size: 16px; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
-.n-text { font-size: 11px; color: #999; font-weight: 700; text-transform: uppercase; }
+.n-text { font-size: 11px; color: #cbd5e1; font-weight: 700; text-transform: uppercase; }
 .nav-item:hover .n-text { color: <?php echo $neon; ?>; }
 .nav-item:hover .n-icon { text-shadow: 0 0 10px <?php echo $neon; ?>; transform: scale(1.1); }
 
@@ -197,7 +276,7 @@ body { background: #0b0f15; padding-bottom: 60px !important; }
 }
 @keyframes ping { 75%, 100% { transform: scale(1.4); opacity: 0; } }
 
-.footer-copy-big { margin-top: 35px; font-size: 14px; color: #555; }
+.footer-copy-big { margin-top: 35px; font-size: 14px; color: #94a3b8; }
 .team-link-pro { color: <?php echo $neon; ?>; text-decoration: none; }
 </style>
 
@@ -216,12 +295,8 @@ jQuery(document).ready(function($) {
             loop: true, 
             speed: 850, 
             autoplay: { delay: 5000, disableOnInteraction: false },
-            spaceBetween: 16,
+            spaceBetween: 20,
             slidesPerView: 1,
-            breakpoints: {
-                768: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 }
-            },
             thumbs: { swiper: swiperThumbs },
             on: {
                 init: function () {
@@ -737,7 +812,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <strong style="color: #fff; font-size: 15px; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'Space Grotesk', monospace;">Cookie Consent & Safeguard Panel</strong>
             </div>
             <p style="font-size: 11.5px; color: #a0aec0; margin: 0; line-height: 1.6; font-family: system-ui, sans-serif;">
-                আমরা কুুুকি ব্যবহার করি: <strong>iloveyoubd.com</strong> ট্রিকবিডি স্টাইল হ্যাকিং, আর্নিং ও সিকিউরিটি অভিজ্ঞতা উন্নত করতে গুগল অ্যাডসেন্স ও মেমোরি সেশন ট্র্যাকিং কুকি ব্যবহার করে। আমাদের সাইট ব্যবহার করে আপনি এতে সম্মতি দিচ্ছেন।
+                আমরা কুকি ব্যবহার করি: <strong>iloveyoubd.com</strong> ভিজিটরদের ব্রাউজিং অভিজ্ঞতা উন্নত করতে, এআই ও এসইও সেশন ট্র্যাকিং এবং গুগল অ্যাডসেন্স পলিসি অনুযায়ী সেফ কুকি ব্যবহার করে থাকে। সাইটটি ব্যবহার অব্যাহত রাখলে আপনি এতে সম্মত আছেন।
             </p>
         </div>
         <div style="display: flex; gap: 14px; align-items: center; margin-top: 5px;">

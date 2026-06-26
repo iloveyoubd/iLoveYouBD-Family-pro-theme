@@ -33,6 +33,6 @@ class ILYBD_Super_Assistant {
         $selected_topic = $trending_topics[array_rand($trending_topics)];
         
         IBD_Key_Rotator::log_activity("SUPER ASSISTANT: Assigned new topic to Content Engine: $selected_topic");
-        IBD_Publisher::auto_publish($selected_topic);
+        // IBD_Publisher::auto_publish($selected_topic); // Theme has the advanced autonomous autopilot engine
     }
 }

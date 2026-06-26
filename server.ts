@@ -365,13 +365,15 @@ app.post("/api/gemini/generate-image", async (req, res) => {
 
 // 4. WordPress Fixed Theme & Plugin Downloader
 app.get("/api/wordpress/download-fixed-theme", (req, res) => {
-  try {
-    ensureZipPackages();
-    console.log("[DYNAMIC ZIP] Theme successfully repackaged prior to download.");
-  } catch (err: any) {
-    console.error("[DYNAMIC ZIP] Theme repackaging failed:", err.message);
-  }
   const zipPath = path.join(process.cwd(), "dist", "ilybd-neon-v1-pro-fixed.zip");
+  if (!fs.existsSync(zipPath)) {
+    try {
+      ensureZipPackages();
+      console.log("[DYNAMIC ZIP] Theme successfully repackaged prior to download.");
+    } catch (err: any) {
+      console.error("[DYNAMIC ZIP] Theme repackaging failed:", err.message);
+    }
+  }
   if (fs.existsSync(zipPath)) {
     res.download(zipPath, "ilybd-neon-v1-pro-fixed.zip");
   } else {
@@ -380,13 +382,15 @@ app.get("/api/wordpress/download-fixed-theme", (req, res) => {
 });
 
 app.get("/api/wordpress/download-fixed-plugin", (req, res) => {
-  try {
-    ensureZipPackages();
-    console.log("[DYNAMIC ZIP] Plugin successfully repackaged prior to download.");
-  } catch (err: any) {
-    console.error("[DYNAMIC ZIP] Plugin repackaging failed:", err.message);
-  }
   const zipPath = path.join(process.cwd(), "dist", "ilybd-prime-engine-fixed.zip");
+  if (!fs.existsSync(zipPath)) {
+    try {
+      ensureZipPackages();
+      console.log("[DYNAMIC ZIP] Plugin successfully repackaged prior to download.");
+    } catch (err: any) {
+      console.error("[DYNAMIC ZIP] Plugin repackaging failed:", err.message);
+    }
+  }
   if (fs.existsSync(zipPath)) {
     res.download(zipPath, "ilybd-prime-engine-fixed.zip");
   } else {

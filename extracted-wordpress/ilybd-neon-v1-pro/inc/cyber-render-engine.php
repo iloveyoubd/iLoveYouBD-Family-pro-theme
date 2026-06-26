@@ -5,21 +5,27 @@ if (!defined('ABSPATH')) exit;
    SLIDER
 ========================= */
 add_action('ilybd_slider', function () {
-    get_template_part('template-parts/slider-main');
+    if (get_option('ily_enable_slider', 1)) {
+        get_template_part('template-parts/slider-main');
+    }
 });
 
 /* =========================
    FEATURED
 ========================= */
 add_action('ilybd_featured', function () {
-    get_template_part('template-parts/featured-main');
+    if (get_option('ily_enable_featured_posts', 1)) {
+        get_template_part('template-parts/featured-main');
+    }
 });
 
 /* =========================
    POPULAR
 ========================= */
 add_action('ilybd_popular', function () {
-    get_template_part('template-parts/popular-main');
+    if (get_option('ily_enable_popular_posts', 1)) {
+        get_template_part('template-parts/popular-main');
+    }
 });
 
 /* =========================
@@ -33,7 +39,9 @@ add_action('ilybd_latest', function () {
    CATEGORY
 ========================= */
 add_action('ilybd_category', function () {
-    // optional fallback
+    if (get_option('ily_enable_categories', 1)) {
+        // optional fallback
+    }
 });
 
 /* =========================

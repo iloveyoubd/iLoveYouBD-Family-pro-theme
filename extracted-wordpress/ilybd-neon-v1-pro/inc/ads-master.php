@@ -282,7 +282,18 @@ function ilybd_get_smart_ad_code($slot, $wrapped = true) {
     
     // Output standard visitor wrap ONLY IF non-empty
     if ($wrapped) {
-        return '<div class="ilybd-ad-pub-container ilybd-ad-slot-' . esc_attr($slot) . '" style="margin: 20px auto; text-align: center; width:100%; clear: both; display: block; overflow:hidden;">' . $code . '</div>';
+        // Reserve an elegant, non-shifting minimum space depending on the slot type
+        $min_height = '100px';
+        if (in_array($slot, ['top', 'bottom', 'middle'])) {
+            $min_height = '280px'; // standard banner space pre-reservation
+        } elseif ($slot === 'sidebar') {
+            $min_height = '300px';
+        }
+        
+        return '<div class="ilybd-ad-pub-container ilybd-ad-slot-' . esc_attr($slot) . '" style="margin: 28px auto; text-align: center; width:100%; clear: both; display: block; overflow:hidden; min-height: ' . $min_height . '; background: #070a0f; border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 16px 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); position: relative;">
+                    <div style="font-family: \'Space Grotesk\', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #505c6d; margin-bottom: 12px; font-weight: bold; width: 100%; text-align: center; display: block;">ADVERTISEMENT / বিজ্ঞাপন</div>
+                    <div style="display: inline-block; width: 100%; text-align: center; margin-top: 5px;">' . $code . '</div>
+                </div>';
     }
     
     return $code;
@@ -306,7 +317,7 @@ function ilybd_render_ad_shortcode($atts) {
    ========================================================= */
 add_filter('the_content', 'ilybd_smart_ad_engine', 99); // Safe priority
 function ilybd_smart_ad_engine($content) {
-    if (is_admin() || !is_single()) {
+    if (is_admin() || !is_single() || is_singular('ilybd_sms')) {
         return $content;
     }
     

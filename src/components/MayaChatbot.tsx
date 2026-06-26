@@ -71,20 +71,8 @@ const PRESETS = [
 ];
 
 interface MayaChatbotProps {
-  settings?: {
-    mayaApiKeys: string;
-    mayaSystemInstruction: string;
-    mayaTemperature: number;
-    referralBonusTaka?: number;
-    referralXpReward?: number;
-    refereeBonusTaka?: number;
-    refereeXpReward?: number;
-  };
-  onUpdateSettings?: (updated: {
-    mayaApiKeys?: string;
-    mayaSystemInstruction?: string;
-    mayaTemperature?: number;
-  }) => void;
+  settings?: any;
+  onUpdateSettings?: (updated: any) => void;
   selectedMood?: string;
   userStats?: any;
   isLoggedIn?: boolean;
@@ -835,8 +823,21 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
 
   const currentYear = new Date().getFullYear();
 
+  const isChatbotGlowActive = settings?.glowChatbot !== false;
+  const chatbotGlowColor = settings?.glowChatbotColor || "#00f0ff";
+
   return (
-    <div className="flex flex-col md:flex-row bg-[#070b16] rounded-3xl overflow-hidden border border-cyan-800/25 shadow-[0_0_80px_rgba(0,183,255,0.15)] max-w-7xl mx-auto h-[600px] md:h-[780px] font-sans text-slate-100 relative">
+    <div 
+      className="flex flex-col md:flex-row bg-[#070b16] rounded-3xl overflow-hidden border max-w-7xl mx-auto h-[600px] md:h-[780px] font-sans text-slate-100 relative transition-all duration-300"
+      style={isChatbotGlowActive ? {
+        boxShadow: `0 0 40px ${chatbotGlowColor}15`,
+        borderColor: `${chatbotGlowColor}35`
+      } : {
+        borderWidth: "1px",
+        borderColor: "rgba(8, 145, 178, 0.25)",
+        boxShadow: "none"
+      }}
+    >
       
       {/* --- SIDEBAR: CHAT LOG ARCHIVE --- */}
       <AnimatePresence initial={false}>

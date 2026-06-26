@@ -75,7 +75,7 @@ if (post_password_required()) return;
 </div>
 
 <style>
-/* Hierarchical Thread Styling (TrickBD & Reddit Style Connectors) */
+/* Hierarchical Thread Styling (Dynamic & Reddit Style Connectors) */
 .comment-list .children {
     list-style: none;
     margin-left: 45px;

@@ -11,33 +11,9 @@
         </div>
     </div>
 
-    <div class="post-grid">
+    <div class="ilybd-feed ilybd-post-grid-system">
         <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
-            
-            <article class="cyber-post-card">
-                <div class="post-thumb">
-                    <?php if ( has_post_thumbnail() ) : ?>
-                        <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail('medium'); ?></a>
-                    <?php else: ?>
-                        <div class="no-thumb">NO IMAGE</div>
-                    <?php endif; ?>
-                </div>
-
-                <div class="post-details">
-                    <h2 class="post-title">
-                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                    </h2>
-                    <div class="post-meta">
-                        <span>BY: <?php the_author(); ?></span> | 
-                        <span><?php echo get_the_date(); ?></span>
-                    </div>
-                    <div class="post-excerpt">
-                        <?php echo wp_trim_words(get_the_excerpt(), 15); ?>
-                    </div>
-                    <a href="<?php the_permalink(); ?>" class="read-more-btn">READ MORE</a>
-                </div>
-            </article>
-
+            <?php get_template_part('template-parts/post-card'); ?>
         <?php endwhile; else : ?>
             <div class="no-posts">
                 <p>দুঃখিত, এই ক্যাটাগরিতে এখনো কোনো পোস্ট করা হয়নি।</p>
@@ -46,7 +22,13 @@
     </div>
 
     <div class="cyber-pagination">
-        <?php the_posts_pagination(); ?>
+        <?php 
+        the_posts_pagination(array(
+            'mid_size'  => 2,
+            'prev_text' => __('« পূর্ববর্তী', 'ilybd-neon'),
+            'next_text' => __('পরবর্তী »', 'ilybd-neon'),
+        )); 
+        ?>
     </div>
 </div>
 

@@ -4,6 +4,10 @@
  * Placed professionally above homepage search section.
  */
 
+if (get_option('ilybd_enable_stories', 'yes') === 'no') {
+    return;
+}
+
 if (!is_user_logged_in()) {
     // Hidden as per user request to clean UI before login
     return;
@@ -135,7 +139,7 @@ $self_stories_json = $self_has_stories ? json_encode($user_stories[$current_user
         <div class="viewer-author-meta">
             <div class="author-avatar-img" id="viewer-author-avatar"></div>
             <div class="author-info">
-                <h4 id="viewer-author-name"></h4>
+                <h2 id="viewer-author-name" style="font-size: 14px; margin: 0;"></h2>
                 <span id="viewer-story-time" class="font-mono"></span>
             </div>
             <div class="viewer-count-tag font-mono">
@@ -177,7 +181,7 @@ $self_stories_json = $self_has_stories ? json_encode($user_stories[$current_user
 
         <!-- Live comments overlay panel -->
         <div class="viewer-comments-panel">
-            <h5 class="comments-panel-title">মন্তব্যসমূহ (<span id="viewer-comments-count">0</span>)</h5>
+            <h3 class="comments-panel-title">মন্তব্যসমূহ (<span id="viewer-comments-count">0</span>)</h3>
             <div class="comments-scrollable-area" id="viewer-comments-list">
                 <!-- Dynamically filled comment bubbles -->
             </div>
@@ -191,7 +195,7 @@ $self_stories_json = $self_has_stories ? json_encode($user_stories[$current_user
 <div class="create-story-modal-overlay" id="create-story-modal" style="display: none;">
     <div class="create-story-box">
         <div class="create-story-header">
-            <h3>📝 নতুন স্টোরি যোগ করুন</h3>
+            <h2 style="font-size: 16px; margin: 0;">📝 নতুন স্টোরি যোগ করুন</h2>
             <button class="close-create-btn" onclick="closeCreateStoryModal()">&times;</button>
         </div>
 
@@ -259,7 +263,7 @@ $self_stories_json = $self_has_stories ? json_encode($user_stories[$current_user
     border-radius: 16px;
     padding: 10px 12px;
     max-width: 650px;
-    margin: 10px auto 5px auto;
+    margin: 4px auto 5px auto;
     position: relative;
     overflow: hidden;
 }

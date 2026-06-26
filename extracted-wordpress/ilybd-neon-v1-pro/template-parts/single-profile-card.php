@@ -1,6 +1,6 @@
 <?php
 /**
- * TrickBD Final Pixel Perfect - single-profile-card.php
+ * Premium Final Pixel Perfect - single-profile-card.php
  * Sequence: Thumbnail -> Category Pills -> Title -> Author -> Stats Row
  * Fixed: Anchor links added for View, Comment, and Like sections
  */

@@ -330,6 +330,9 @@ function ilybd_adsense_cyber_intel_page() {
         update_option('ilybd_ads_intel_silent_shield', isset($_POST['silent_shield_toggle']) ? 1 : 0);
         update_option('ilybd_ads_intel_schema', isset($_POST['schema_toggle']) ? 1 : 0);
         update_option('ilybd_ads_intel_tracker', isset($_POST['tracker_toggle']) ? 1 : 0);
+        if (isset($_POST['ads_txt_content'])) {
+            update_option('ilybd_ads_txt_content', wp_strip_all_tags($_POST['ads_txt_content']));
+        }
         echo '<div class="updated notice is-dismissible"><p><strong>✅ Settings Saved Successfully! (সেটিংস সফলভাবে সংরক্ষিত হয়েছে!)</strong></p></div>';
     }
 
@@ -398,6 +401,13 @@ function ilybd_adsense_cyber_intel_page() {
                             <input type="checkbox" name="tracker_toggle" <?php checked($tracker_active, 1); ?> style="opacity:0; width:0; height:0;">
                             <span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#30363d; border-radius:34px; transition:.4s; background-color: <?php echo $tracker_active ? '#00ff41' : '#30363d'; ?>;"></span>
                         </label>
+                    </div>
+
+                    <div style="margin-bottom:20px; border-top:1px solid #21262d; padding-top:15px;">
+                        <strong style="color:#fff; font-size:15px; display:block; margin-bottom:8px;">📊 Google AdSense ads.txt Configuration (অথরাইজড সেলার ফাইল কন্টেন্ট):</strong>
+                        <?php $current_ads_txt = get_option('ilybd_ads_txt_content', "google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0"); ?>
+                        <textarea name="ads_txt_content" rows="4" style="width:100%; background:#0d1117; color:#00ff41; border:1px solid #30363d; border-radius:6px; padding:12px; font-family:'JetBrains Mono', monospace; font-size:12px; line-height:1.5; resize:vertical; outline:none;" placeholder="google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0" onfocus="this.style.borderColor='#00ff41';"><?php echo esc_textarea($current_ads_txt); ?></textarea>
+                        <p style="color:#8b949e; margin:6px 0 0 0; font-size:12px;">আপনার গুগল অ্যাডসেন্স পাবলিশার অ্যাকাউন্ট ভেরিফাই করতে গুগল প্রদত্ত ads.txt কোডটি এখানে পেস্ট করুন। এটি অটোমেটিক আপনার ডোমেনের root (/ads.txt) ইউআরএল-এ লাইভ রেন্ডার হবে যা ক্রলার ডিটেক্ট করতে পারে।</p>
                     </div>
 
                     <button type="submit" name="ilybd_save_ads_intel_settings" style="background:#00ff41; color:#0d1117; padding:10px 20px; font-weight:bold; border-radius:6px; border:none; cursor:pointer; font-size:14px; text-transform:uppercase;">

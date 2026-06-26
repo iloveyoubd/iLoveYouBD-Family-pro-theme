@@ -21,3 +21,201 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #00f0ff;
 }
+
+/* 2040 Global RGB/Neon Simulation Frame Overlays */
+.cyber-rgb-frame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.15;
+  background-size: 400%;
+  border: 4px solid transparent;
+  box-sizing: border-box;
+}
+
+.cyber-rgb-frame.classic_neo {
+  border-image: linear-gradient(90deg, #ff004c, #00ffcc, #3b82f6, #ff004c) 4;
+  animation: rgbMove_classic 8s linear infinite;
+  opacity: 0.15;
+}
+@keyframes rgbMove_classic {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.cyber-rgb-frame.aurora_glow {
+  border-image: linear-gradient(135deg, #059669, #06b6d4, #10b981, #0891b2) 4;
+  animation: rgbMove_aurora 6s ease infinite alternate;
+  opacity: 0.2;
+}
+@keyframes rgbMove_aurora {
+  0% { opacity: 0.12; }
+  100% { opacity: 0.25; }
+}
+
+.cyber-rgb-frame.toxic_matrix {
+  border-image: linear-gradient(180deg, #22c55e, #15803d, #22c55e) 4;
+  animation: rgbMove_toxic 0.4s steps(6) infinite;
+  opacity: 0.08;
+}
+@keyframes rgbMove_toxic {
+  0% { opacity: 0.06; }
+  50% { opacity: 0.12; }
+  100% { opacity: 0.06; }
+}
+
+.cyber-rgb-frame.electric_sunset {
+  border-image: linear-gradient(45deg, #f43f5e, #d946ef, #7c3aed, #f43f5e) 4;
+  animation: rgbMove_sunset 10s ease infinite;
+  opacity: 0.15;
+}
+@keyframes rgbMove_sunset {
+  0% { opacity: 0.12; }
+  50% { opacity: 0.22; }
+  100% { opacity: 0.12; }
+}
+
+.cyber-rgb-frame.cyber_amber {
+  border-image: linear-gradient(90deg, #f59e0b, #ea580c, #f59e0b) 4;
+  animation: rgbMove_amber 5s ease-in-out infinite alternate;
+  opacity: 0.14;
+}
+@keyframes rgbMove_amber {
+  0% { opacity: 0.10; }
+  100% { opacity: 0.22; filter: hue-rotate(15deg); }
+}
+
+.cyber-rgb-frame.neon_blue_mono {
+  border-image: linear-gradient(90deg, #0284c7, #06b6d4, #0284c7) 4;
+  animation: rgbMove_blue_mono 6s linear infinite;
+  opacity: 0.16;
+}
+@keyframes rgbMove_blue_mono {
+  0% { opacity: 0.10; }
+  50% { opacity: 0.22; }
+  100% { opacity: 0.10; }
+}
+
+/* ==========================================
+   2040 PREMIUM SYSTEM & DEVICE LIGHT MODE OVERRIDES
+   ========================================== */
+.light-mode-active {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Light Card & Panel Transforms */
+.light-mode-active .bg-\[\#070b13\],
+.light-mode-active .bg-\[\#070b13\]\/80,
+.light-mode-active .bg-\[\#070b13\]\/90,
+.light-mode-active .bg-\[\#05080e\],
+.light-mode-active .bg-\[\#050911\],
+.light-mode-active .bg-\[\#0b121e\],
+.light-mode-active .bg-\[\#050912\]\/80,
+.light-mode-active .bg-slate-900\/65,
+.light-mode-active .bg-slate-900\/40,
+.light-mode-active .bg-cyan-950\/10,
+.light-mode-active .bg-cyan-950\/20,
+.light-mode-active .bg-cyan-950\/40,
+.light-mode-active .bg-cyan-950\/60,
+.light-mode-active .bg-[#070b13],
+.light-mode-active .bg-slate-950\/90,
+.light-mode-active .bg-slate-950\/40,
+.light-mode-active [class*="bg-[#0e"],
+.light-mode-active [class*="bg-[#050"] {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Input Fields in Light Mode */
+.light-mode-active input, 
+.light-mode-active textarea, 
+.light-mode-active select {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+.light-mode-active input::placeholder, 
+.light-mode-active textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Custom Border Coloring */
+.light-mode-active .border-cyan-950,
+.light-mode-active .border-cyan-950\/40,
+.light-mode-active .border-cyan-950\/60,
+.light-mode-active .border-cyan-950\/80,
+.light-mode-active .border-slate-800,
+.light-mode-active .border-slate-900,
+.light-mode-active .border-slate-700,
+.light-mode-active [class*="border-cyan"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* Accentuated Typography Overrides */
+.light-mode-active .text-slate-200,
+.light-mode-active .text-slate-300,
+.light-mode-active .text-slate-400 {
+  color: #334155 !important;
+}
+
+.light-mode-active .text-slate-500,
+.light-mode-active .text-slate-400 {
+  color: #475569 !important;
+}
+
+.light-mode-active .text-[#39ff14] {
+  color: #16a34a !important; /* Elegant green readability */
+}
+.light-mode-active .text-\[\#39ff14\] {
+  color: #16a34a !important;
+}
+.light-mode-active .text-\[\#00f0ff\] {
+  color: #0284c7 !important; /* Elegant blue readability */
+}
+
+/* Clear Header & Footer Layouts */
+.light-mode-active header,
+.light-mode-active footer,
+.light-mode-active nav,
+.light-mode-active .bg-\[\#050911\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.light-mode-active .bg-\[\#0d1527\],
+.light-mode-active .bg-\[\#0b1527\] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* Hover Adjustments */
+.light-mode-active .hover\:bg-cyan-950\/40:hover {
+  background-color: #f1f5f9 !important;
+}
+.light-mode-active .hover\:bg-cyan-950\/30:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* AI Voice Reader Soundwave Pulsing Keyframe Animation */
+@keyframes soundwave {
+  0%, 100% {
+    transform: scaleY(0.4);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1.3);
+    opacity: 1;
+  }
+}
+.animate-soundwave {
+  animation: soundwave 1s infinite ease-in-out;
+}
+

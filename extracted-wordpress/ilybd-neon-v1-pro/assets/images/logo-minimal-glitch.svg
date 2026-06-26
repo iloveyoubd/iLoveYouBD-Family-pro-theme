@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+    <defs>
+        <filter id="glitch-glow" x="-10%" y="-10%" width="120%" height="120%">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+    </defs>
+
+    <g transform="translate(15, 15)">
+        <!-- Left Side glitch accent bar -->
+        <g stroke-width="2" fill="none">
+            <line x1="5" y1="20" x2="5" y2="80" stroke="#00ffff" />
+            <line x1="1" y1="23" x2="1" y2="60" stroke="#ff007f" />
+            <line x1="9" y1="40" x2="9" y2="90" stroke="#00ff66" />
+        </g>
+
+        <!-- Glitch layers -->
+        
+        <!-- Cyan Backdrop Translation -->
+        <text x="32" y="52" font-family="'Space Grotesk', sans-serif" font-size="36" font-weight="900" fill="#00ffff" letter-spacing="4" opacity="0.8" transform="translate(-2, 1)">
+            ILOVEYOUBD
+        </text>
+        
+        <!-- Magenta Backdrop Translation -->
+        <text x="32" y="52" font-family="'Space Grotesk', sans-serif" font-size="36" font-weight="900" fill="#ff007f" letter-spacing="4" opacity="0.8" transform="translate(2, -1)">
+            ILOVEYOUBD
+        </text>
+
+        <!-- Main White Body Layer -->
+        <text x="32" y="52" font-family="'Space Grotesk', sans-serif" font-size="36" font-weight="900" fill="#ffffff" letter-spacing="4" filter="url(#glitch-glow)">
+            ILOVEYOUBD
+        </text>
+
+        <!-- Horizontal scanline glitch cuts -->
+        <!-- Slices mimicking digitized interference -->
+        <rect x="25" y="32" width="220" height="1.5" fill="#00ffff" opacity="0.7" />
+        <rect x="180" y="48" width="160" height="2" fill="#ff007f" opacity="0.6" />
+        <rect x="80" y="15" width="280" height="0.8" fill="#00ff66" opacity="0.5" />
+
+        <!-- Subtitle with twin offsets -->
+        <!-- Cyan Offset -->
+        <text x="35" y="80" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#00ffff" letter-spacing="6" opacity="0.9" transform="translate(-1, 0.5)">
+            &gt; IBD_CYBER_LABS_
+        </text>
+        <!-- Magenta Offset -->
+        <text x="35" y="80" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#ff007f" letter-spacing="6" opacity="0.9" transform="translate(1, -0.5)">
+            &gt; IBD_CYBER_LABS_
+        </text>
+        <!-- White primary -->
+        <text x="35" y="80" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#ffffff" letter-spacing="6">
+            &gt; IBD_CYBER_LABS_
+        </text>
+
+        <!-- Small digital grid element on the right tail -->
+        <g transform="translate(410, 20)" fill="none" stroke="#2a303c" stroke-width="1">
+            <rect x="0" y="0" width="40" height="40" stroke="#00ffff" stroke-dasharray="1,4" opacity="0.6" />
+            <line x1="0" y1="20" x2="40" y2="20" stroke="#ff007f" stroke-dasharray="3,3" opacity="0.5" />
+            <line x1="20" y1="0" x2="20" y2="40" stroke="#ff007f" stroke-dasharray="3,3" opacity="0.5" />
+            <!-- Active diagnostic blinking dot -->
+            <rect x="17" y="17" width="6" height="6" fill="#00ff66" />
+        </g>
+    </g>
+</svg>

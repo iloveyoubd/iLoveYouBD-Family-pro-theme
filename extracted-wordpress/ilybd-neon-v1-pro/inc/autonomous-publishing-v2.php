@@ -454,9 +454,22 @@ class ILYBD_AI_Publishing_Engine_V2 {
         ];
         $selected_eeat_note = isset($eeat_notes[$category_name]) ? $eeat_notes[$category_name] : 'এই তথ্য আই লাভ ইউ বিডির ডিভাইস ল্যাব এবং টেকনিক্যাল রাইটারদের বিশেষজ্ঞ পর্যালোচনার ভিত্তিতে প্রস্তুত করা হয়েছে।';
 
-        // Elegant EEAT Meta Top Header block (100% Posts get this block to satisfy Google Crawler index requirements)
+        // 100% Unique Design Palettes per generation to break AI footprint
+        $design_palettes = [
+            ['bg' => 'linear-gradient(135deg, rgba(13, 21, 39, 0.8), rgba(7, 11, 19, 0.95))', 'border' => '#00f0ff', 'text' => '#c9d1d9', 'badge' => '#00ff41'],
+            ['bg' => 'linear-gradient(135deg, rgba(15, 10, 25, 0.8), rgba(8, 5, 14, 0.95))', 'border' => '#b142ff', 'text' => '#e0cfeb', 'badge' => '#00f0ff'],
+            ['bg' => 'linear-gradient(135deg, rgba(10, 25, 15, 0.8), rgba(5, 14, 8, 0.95))', 'border' => '#00ff41', 'text' => '#d4ebd4', 'badge' => '#ffe500'],
+            ['bg' => 'linear-gradient(135deg, rgba(25, 10, 10, 0.8), rgba(14, 5, 5, 0.95))', 'border' => '#ff3e3e', 'text' => '#ebd4d4', 'badge' => '#00f0ff'],
+            ['bg' => 'rgba(10, 15, 25, 0.9)', 'border' => '#ff9900', 'text' => '#eef1f5', 'badge' => '#00ff41']
+        ];
+        $palette = $design_palettes[array_rand($design_palettes)];
+
+        // Core Wrapper applying the completely unique background, fonts and sizes!
+        $content = '<div class="ilybd-unique-post-wrapper" style="border-left: 2px solid ' . $palette['border'] . '; padding-left: 15px; margin-top: 15px; font-size: ' . (rand(16, 18)) . 'px; color: ' . $palette['text'] . '; line-height: ' . (1.7 + (rand(0, 3) / 10)) . ';">' . $content . '</div>';
+
+        // Elegant EEAT Meta Top Header block
         $eeat_header_box = '
-        <div class="ilybd-eeat-meta-box" style="background: linear-gradient(135deg, rgba(13, 21, 39, 0.8), rgba(7, 11, 19, 0.95)); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 10px; padding: 18px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-left: 3px solid #00f0ff;">
+        <div class="ilybd-eeat-meta-box" style="background: ' . $palette['bg'] . '; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: ' . (rand(8, 16)) . 'px; padding: ' . (rand(15, 22)) . 'px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-left: 4px solid ' . $palette['border'] . ';">
             <div style="display: flex; flex-direction: column; gap: 8px; font-family: sans-serif;">
                 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -464,13 +477,13 @@ class ILYBD_AI_Publishing_Engine_V2 {
                         <div>
                             <span style="color: #64748b; font-size: 10px; font-family: monospace; display: block; text-transform: uppercase;">Technical Reviewer</span>
                             <strong style="color: #fff; font-size: 13.5px;">' . esc_html($author_name) . '</strong>
-                            <span style="color: #00f0ff; font-size: 11px; display: block;">' . esc_html($author_expertise) . '</span>
+                            <span style="color: ' . $palette['border'] . '; font-size: 11px; display: block;">' . esc_html($author_expertise) . '</span>
                         </div>
                     </div>
                     <div style="display: flex; gap: 15px; font-size: 11.5px; align-items: center;">
                         <div style="text-align: right;">
                             <span style="color: #64748b; display: block; font-family: monospace; text-transform: uppercase;">Reviewed Date</span>
-                            <span style="color: #00ff41; font-weight: 600;">' . esc_html($current_date) . '</span>
+                            <span style="color: ' . $palette['badge'] . '; font-weight: 600;">' . esc_html($current_date) . '</span>
                         </div>
                         <div style="text-align: right; border-left: 1px solid rgba(255,255,255,0.08); padding-left: 15px;">
                             <span style="color: #64748b; display: block; font-family: monospace; text-transform: uppercase;">Last Updated</span>
@@ -891,7 +904,7 @@ class ILYBD_AI_Publishing_Engine_V2 {
                     '</div>';
                 
                 $post = get_post($post_id);
-                $updated_content = $pillar_anchor . $post->post_content;
+                $updated_content = $post->post_content . "\n\n" . $pillar_anchor;
                 wp_update_post([
                     'ID'           => $post_id,
                     'post_content' => $updated_content

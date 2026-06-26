@@ -12,11 +12,11 @@ function ilybd_render_tool_ai_blog_title_generator() {
     ?>
     <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif;">
         <label class="bento-label" style="color:<?php echo $neon_color; ?>;">INPUT CORE TOPIC / কি-ওয়ার্ড দিন</label>
-        <input type="text" id="ai-title-topic" class="cyan-glow-input" placeholder="যেমন: অনলাইন ইনকাম, হ্যাকিং, বিকাশ ক্যাশআউট ট্রিক..." style="margin-bottom:15px;" onkeypress="if(event.key==='Enter') generateAITitles()">
+        <input type="text" id="ai-title-topic" class="cyan-glow-input" placeholder="যেমন: অনলাইন ইনকাম, বিকাশ অ্যাপ ক্যাশআউট, মোবাইল আর্নিং..." style="margin-bottom:15px;" onkeypress="if(event.key==='Enter') generateAITitles()">
         
         <div style="display:flex; gap:12px; margin-bottom:20px;">
             <select id="ai-title-vibe" class="cyan-glow-input" style="width: auto;">
-                <option value="clickbait">🔥 Clickbait / আকর্ষণীয় ট্রিকবিডি স্টাইল</option>
+                <option value="clickbait">🔥 Viral / আকর্ষণীয় ভাইরাল স্টাইল</option>
                 <option value="professional">💼 Professional / অফিশিয়াল গাইড</option>
                 <option value="listicle">🔟 Listicle / লিষ্টিকেল ও পয়েন্টস</option>
                 <option value="creative">🚀 Creative / ক্রিয়েটিভ ও ফিউচারিস্টিক</option>
@@ -43,7 +43,7 @@ function ilybd_render_tool_ai_blog_title_generator() {
                     "ফাঁস হয়ে গেল " + topic + " এর গোপন সিক্রেট! না দেখলে চরম মিস",
                     "কিভাবে " + topic + " করবেন? গোপন ফর্মুলা যা কেউ আপনাকে বলবে না!",
                     "মাত্র ২ মিনিটে " + topic + " করার সবচেয়ে সহজ এবং কার্যকরী উপায়",
-                    topic + " নিয়ে মেগা গাইড! ট্রিকবিডি স্টাইলে শিখে নিন পানির মতো সহজে"
+                    topic + " নিয়ে মেগা গাইড! আকর্ষণীয় উপায়ে শিখে নিন পানির মতো সহজে"
                 ],
                 professional: [
                     topic + " করার সঠিক নিয়মাবলী ও পূর্ণাঙ্গ গাইডলাইন",
@@ -411,7 +411,7 @@ function ilybd_render_tool_ai_hashtag_generator() {
     ?>
     <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif;">
         <label class="bento-label" style="color:<?php echo $neon_color; ?>;">TARGET KEYWORD / টার্গেট স্ল্যাগ দিন</label>
-        <input type="text" id="ai-hash-raw" class="cyan-glow-input" placeholder="যেমন: bkash, earning money, hacking..." style="margin-bottom:15px;">
+        <input type="text" id="ai-hash-raw" class="cyan-glow-input" placeholder="যেমন: bkash, earning money, technology, coding..." style="margin-bottom:15px;">
         
         <button onclick="generateAIHashtags()" class="cyber-action-btn" style="width:100%; margin-bottom:20px;">HUNT VIRAL HASHTAGS ➔</button>
 

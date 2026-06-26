@@ -16,7 +16,11 @@
             </div>
         </div>
 
-        <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+        <?php if (have_posts()) : while (have_posts()) : the_post(); 
+            $post_id = get_the_ID();
+            $views = get_post_meta($post_id, 'qa_views_count', true) ?: '0';
+            update_post_meta($post_id, 'qa_views_count', intval($views) + 1);
+        ?>
             <article class="qna-main-card" style="background: #0d1117; border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 16px; padding: 25px; margin-bottom: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; overflow: hidden;">
                 <!-- Corner glow element -->
                 <div style="position: absolute; top: -100px; right: -100px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(0,240,255,0.06) 0%, transparent 70%); pointer-events: none;"></div>
@@ -30,6 +34,14 @@
                         <i class="fa-solid fa-user-astronaut" style="color: #00f0ff;"></i> Asked by: 
                         <b style="color: #00f0ff;"><?php the_author(); ?></b>
                     </div>
+                    <?php 
+                    $categories = get_the_category();
+                    if (!empty($categories)) : ?>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-folder-open" style="color: #00ff41;"></i> Category: 
+                            <span style="color: #00ff41; font-weight: 600;"><?php echo esc_html($categories[0]->name); ?></span>
+                        </div>
+                    <?php endif; ?>
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <i class="fa-solid fa-eye" style="color: #3fb950;"></i> Views: 
                         <span style="color: #fff; font-weight: 600;"><?php echo get_post_meta(get_the_ID(), 'qa_views_count', true) ?: 0; ?></span>
@@ -51,6 +63,19 @@
                     <!-- Question Content Area -->
                     <div class="qna-content" style="flex: 1; font-size: 16px; line-height: 1.8; color: #e6edf3; text-align: left; font-family: system-ui, sans-serif;">
                         <?php the_content(); ?>
+
+                        <!-- Tags List -->
+                        <?php 
+                        $tags = get_the_tags();
+                        if (!empty($tags)) : ?>
+                            <div class="qna-tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 15px;">
+                                <?php foreach ($tags as $tag) : ?>
+                                    <a href="<?php echo esc_url(get_tag_link($tag->term_id)); ?>" style="background: rgba(0, 240, 255, 0.05); color: #00f0ff; border: 1.1px solid rgba(0, 240, 255, 0.2); border-radius: 6px; padding: 4px 10px; font-size: 11px; text-decoration: none; font-family: monospace; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.15)'; this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 8px rgba(0,240,255,0.3)';" onmouseout="this.style.background='rgba(0,240,255,0.05)'; this.style.borderColor='rgba(0,240,255,0.2)'; this.style.boxShadow='none';">
+                                        # <?php echo esc_html($tag->name); ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 

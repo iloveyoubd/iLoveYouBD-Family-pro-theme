@@ -70,6 +70,35 @@ function handle_cyber_bot_request() {
     
     $user_query = sanitize_text_field($_POST['user_query']);
     
+    // Dynamic Grounding: Search local WordPress database for matching articles
+    $grounded_knowledge = "";
+    $search_results = new WP_Query([
+        's'              => $user_query,
+        'posts_per_page' => 3,
+        'post_status'    => 'publish'
+    ]);
+    
+    if ($search_results->have_posts()) {
+        $articles = [];
+        while ($search_results->have_posts()) {
+            $search_results->the_post();
+            $articles[] = "- [" . get_the_title() . "] (" . get_permalink() . "): " . wp_trim_words(strip_tags(get_the_excerpt()), 30, '...');
+        }
+        wp_reset_postdata();
+        
+        $grounded_knowledge .= "\n\niloveyoubd.com-এর প্রাসঙ্গিক রেফারেন্স লিঙ্ক (অনুরোধকৃত বিষয়ে আমাদের সাইটের আর্টিকেল পেইজ):\n" . implode("\n", $articles);
+    }
+    
+    // Priority Youtube Channel Grounding
+    if (preg_match('/(video|ভিডিও|টিউটোরিয়াল|ইউটিউব|youtube|চ্যানেল|শিখব|learn|how to)/i', $user_query)) {
+        $grounded_knowledge .= "\n\niloveyoubd-এর অফিশিয়াল ইউটিউব চ্যানেল রেফারেন্স: https://www.youtube.com/@ilybd (যেখানে এই বিষয়ের প্রফেশনাল নিয়ন ভিডিও টিউটোরিয়াল রয়েছে। ব্যবহারকারীকে এই ভিডিও লিঙ্কটি দেখার জন্য উৎসাহিত করুন)।";
+    }
+
+    $modified_query = "User Query: " . $user_query;
+    if (!empty($grounded_knowledge)) {
+        $modified_query .= "\n\n[CONTEXT GROUNDING]:\n" . $grounded_knowledge . "\n\nঅনুগ্রহ করে উপরের প্রাসঙ্গিক লিঙ্ক এবং তথ্যগুলো আপনার উত্তরের ভেতরে অত্যন্ত চমৎকারভাবে যুক্ত করুন এবং রেফারেন্সসমূহ বাংলায় উপস্থাপন করুন।";
+    }
+    
     // Read optional model, system instruction, and temperature
     $target_model = isset($_POST['model']) ? sanitize_text_field($_POST['model']) : 'gemini-3.5-flash';
     $custom_sys = isset($_POST['system_instruction']) ? sanitize_text_field($_POST['system_instruction']) : 'You are Maya (মায়া), the highly professional, helpful, and extremamente competent assistant of iloveyoubd.com. Write in flawless Bangla.';
@@ -131,7 +160,7 @@ function handle_cyber_bot_request() {
                     [
                         "role" => "user",
                         "parts" => [
-                            ["text" => "Query: " . $user_query]
+                            ["text" => $modified_query]
                         ]
                     ]
                 ],

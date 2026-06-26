@@ -274,6 +274,156 @@ $neon = get_option('ilybd_main_color', '#00ff41');
                 </div>
             </div>
 
+            <!-- MEMBER 5: JOYNUL ABEDIN (MODERATOR) -->
+            <div class="team-card dev-glow" style="border-color: rgba(0, 240, 255, 0.25);">
+                <div class="card-header-accent" style="background: #00f0ff;"></div>
+                <div class="avatar-container">
+                    <div class="avatar-circle">
+                        <span class="avatar-letter">JA</span>
+                    </div>
+                    <div class="badge-tag" style="background: #00f0ff; color: #000;">LEAD MODERATOR</div>
+                </div>
+
+                <div class="member-info">
+                    <h2 class="member-name">Joynul Abedin</h2>
+                    <span class="member-role">Community Moderator & Security Lead</span>
+                    
+                    <div class="divider-line"></div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">🏠</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Address</span>
+                            <span class="meta-value">Dhaka, Bangladesh</span>
+                        </div>
+                    </div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">📞</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Expertise</span>
+                            <span class="meta-value">Malware Analysis & Safety</span>
+                        </div>
+                    </div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">📧</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Email</span>
+                            <span class="meta-value"><a href="mailto:mod@iloveyoubd.com" class="interactive-meta-link">mod@iloveyoubd.com</a></span>
+                        </div>
+                    </div>
+
+                    <div class="divider-line"></div>
+
+                    <div class="social-container">
+                        <a href="#" class="social-btn fb_user" title="Facebook ID">
+                            <span>Profile</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEMBER 6: SAJIB AHMED (EDITORIAL TEAM) -->
+            <div class="team-card ceo-glow" style="border-color: rgba(255, 170, 0, 0.25);">
+                <div class="card-header-accent" style="background: #ffaa00;"></div>
+                <div class="avatar-container">
+                    <div class="avatar-circle">
+                        <span class="avatar-letter">SA</span>
+                    </div>
+                    <div class="badge-tag" style="background: #ffaa00; color: #000;">EDITORIAL TEAM</div>
+                </div>
+
+                <div class="member-info">
+                    <h2 class="member-name">Sajib Ahmed</h2>
+                    <span class="member-role">Senior Technical Editor</span>
+                    
+                    <div class="divider-line"></div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">🏠</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Address</span>
+                            <span class="meta-value">Dhaka, Bangladesh</span>
+                        </div>
+                    </div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">📞</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Expertise</span>
+                            <span class="meta-value">EEAT Guidelines & Optimization</span>
+                        </div>
+                    </div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">📧</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Email</span>
+                            <span class="meta-value"><a href="mailto:editor@iloveyoubd.com" class="interactive-meta-link">editor@iloveyoubd.com</a></span>
+                        </div>
+                    </div>
+
+                    <div class="divider-line"></div>
+
+                    <div class="social-container">
+                        <a href="#" class="social-btn fb_user" title="Facebook ID">
+                            <span>Profile</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEMBER 7: FAHIM SHAHRIAR (CONTRIBUTOR) -->
+            <div class="team-card gemini-glow" style="border-color: rgba(0, 255, 65, 0.25);">
+                <div class="card-header-accent" style="background: #00ff41;"></div>
+                <div class="avatar-container">
+                    <div class="avatar-circle">
+                        <span class="avatar-letter">FS</span>
+                    </div>
+                    <div class="badge-tag" style="background: #00ff41; color: #000;">CONTRIBUTOR</div>
+                </div>
+
+                <div class="member-info">
+                    <h2 class="member-name">Fahim Shahriar</h2>
+                    <span class="member-role">Cybersecurity Contributor</span>
+                    
+                    <div class="divider-line"></div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">🏠</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Address</span>
+                            <span class="meta-value">Chittagong, Bangladesh</span>
+                        </div>
+                    </div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">📞</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Contributions</span>
+                            <span class="meta-value">85+ Security Blueprints</span>
+                        </div>
+                    </div>
+
+                    <div class="meta-field">
+                        <span class="meta-icon">📧</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Email</span>
+                            <span class="meta-value"><a href="mailto:fahim@iloveyoubd.com" class="interactive-meta-link">fahim@iloveyoubd.com</a></span>
+                        </div>
+                    </div>
+
+                    <div class="divider-line"></div>
+
+                    <div class="social-container">
+                        <a href="#" class="social-btn fb_user" title="Facebook ID">
+                            <span>Profile</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="policy-footer-note" style="margin-top: 40px;">

@@ -97,9 +97,12 @@ class ILYBD_Layout_Engine {
             'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt', 'comments', 'author' ),
             'rewrite'            => array( 'slug' => 'question' ),
             'show_in_rest'       => true,
+            'taxonomies'         => array( 'category', 'post_tag' ),
         );
 
         register_post_type( 'ilybd_question', $args );
+        register_taxonomy_for_object_type( 'category', 'ilybd_question' );
+        register_taxonomy_for_object_type( 'post_tag', 'ilybd_question' );
 
         // অটোমেটিক পার্মালিংক ফ্লাশ যাতে 'Post not found' বা 404 এরর চিরতরে দূর হয়
         if ( ! get_option( 'ilybd_re_flush_questions_v4' ) ) {
@@ -272,13 +275,20 @@ class ILYBD_Layout_Engine {
                     
                     // রিওয়ার্ড পয়েন্ট অ্যাড করা (প্রশ্ন করার জন্য বোনাস ২০ পয়েন্ট!)
                     if ( function_exists('ilybd_add_user_balance_or_points') ) {
-                        ilybd_add_user_balance_or_points(get_current_user_id(), 0, 20, "Community Q&A Question bonus");
+                        $q_points = intval(get_option('ilybd_eco_question_points', 20));
+                        $q_cash = floatval(get_option('ilybd_eco_question_cash', 0.00));
+                        ilybd_add_user_balance_or_points(get_current_user_id(), $q_cash, $q_points, "Community Q&A Question bonus");
                     }
 
-                    $success_msg = '<div class="qa-success" style="background:#0d1117; border:1px solid #00ff41; color:#00ff41; padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
-                        🎯 অভিনন্দন! আপনার প্রশ্নটি সফলভাবে প্রকাশ করা হয়েছে এবং ২০ পয়েন্ট যুক্ত হয়েছে। <br><br>
-                        <a href="' . esc_url(get_permalink($post_id)) . '" style="color:#fff; font-weight:bold; text-decoration:underline;">আপনার প্রশ্নটি এখানে দেখুন</a>
-                    </div>';
+                    $success_msg = sprintf(
+                        '<div class="qa-success" style="background:#0d1117; border:1px solid #00ff41; color:#00ff41; padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
+                            🎯 অভিনন্দন! আপনার প্রশ্নটি সফলভাবে প্রকাশ করা হয়েছে এবং %d পয়েন্ট ও ৳%s টাকা যুক্ত হয়েছে। <br><br>
+                            <a href="%s" style="color:#fff; font-weight:bold; text-decoration:underline;">আপনার প্রশ্নটি এখানে দেখুন</a>
+                        </div>',
+                        $q_points,
+                        number_format($q_cash, 2),
+                        esc_url(get_permalink($post_id))
+                    );
                 }
             } else {
                 $success_msg = '<p style="color:#ff003c; text-align:center; font-weight:bold; background:#0d1117; padding:12px; border-radius:8px;">দয়া করে শিরোনাম এবং বিবরণ পূরণ করুন!</p>';

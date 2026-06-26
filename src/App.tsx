@@ -4,10 +4,10 @@ import {
   Terminal, ShieldCheck, HelpCircle, User, LogIn, Plus, 
   Wallet, Bell, Home, Layout, Cpu, RefreshCw, LogOut, CheckCircle, Search, Clock, Award, Tv,
   Music, Video, Wrench, Sparkles, QrCode, Gamepad2, Mic, MicOff, ThumbsUp, Eye,
-  Gift, Copy, Share2, TrendingUp
+  Gift, Copy, Share2, TrendingUp, MessageSquare
 } from "lucide-react";
 
-import type { Post, Question, NotificationItem, UserStats, AdminSettings } from "./types";
+import type { Post, Question, NotificationItem, UserStats, AdminSettings, LedgerEntry, StoryItem } from "./types";
 import RGBBorder from "./components/RGBBorder";
 import PostContainer from "./components/PostContainer";
 import CommunityQA from "./components/CommunityQA";
@@ -20,6 +20,8 @@ import AudioLab from "./components/AudioLab";
 import VideoDownloader from "./components/VideoDownloader";
 import UnifiedTools from "./components/UnifiedTools";
 import ToolsLabHub from "./components/ToolsLabHub";
+import CyberMessenger from "./components/CyberMessenger";
+import LegalCenter from "./components/LegalCenter";
 
 // Helper keys for localStorage
 const LOCAL_POSTS_KEY = "iloveyoubd_posts_db";
@@ -28,6 +30,7 @@ const LOCAL_STATS_KEY = "iloveyoubd_stats_db";
 const LOCAL_SETTINGS_KEY = "iloveyoubd_settings_db";
 const LOCAL_NOTIFS_KEY = "iloveyoubd_notifs_db";
 const LOCAL_WITHDRAW_KEY = "iloveyoubd_withdrawals_db";
+const LOCAL_STORIES_KEY = "iloveyoubd_stories_db";
 
 const INITIAL_POSTS: Post[] = [
   {
@@ -143,6 +146,46 @@ const INITIAL_STATS: UserStats = {
   referralEarnings: 20.00
 };
 
+const INITIAL_USERS: UserStats[] = [
+  INITIAL_STATS,
+  {
+    name: "সাইবার রনি",
+    avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=ronny",
+    balance: 145.00,
+    points: 1250,
+    rank: "ELITE WHITEHAT",
+    postsPublished: 12,
+    postsPending: 0,
+    referralCode: "REF-RONNY777",
+    referredUsers: [],
+    referralEarnings: 0
+  },
+  {
+    name: "রানা মির্জা",
+    avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=rana",
+    balance: 85.50,
+    points: 980,
+    rank: "SENIOR CONTRIBUTOR",
+    postsPublished: 8,
+    postsPending: 2,
+    referralCode: "REF-MIRZA55",
+    referredUsers: [],
+    referralEarnings: 0
+  },
+  {
+    name: "সাইবার বাপ্পি",
+    avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=bappi",
+    balance: 30.00,
+    points: 250,
+    rank: "WHITEHAT CODER",
+    postsPublished: 1,
+    postsPending: 1,
+    referralCode: "REF-BAPPI007",
+    referredUsers: [],
+    referralEarnings: 0
+  }
+];
+
 const DEFAULT_SETTINGS: AdminSettings = {
   revenueSharePercent: 15,
   payoutPerView: 0.15,
@@ -153,7 +196,31 @@ const DEFAULT_SETTINGS: AdminSettings = {
   enableInteractiveNotice: true,
   googleAdSenseStatus: "active",
   enableRgbEffects: true,
+  rgbStyle: "classic_neo",
+  glowSinglePost: true,
+  glowSinglePostColor: "#00f0ff",
+  glowComments: true,
+  glowCommentsColor: "#ff003c",
+  glowUserProfile: true,
+  glowUserProfileColor: "#bd00ff",
+  glowChatbot: true,
+  glowChatbotColor: "#00f0ff",
+  glowQa: true,
+  glowQaColor: "#39ff14",
+  glowStories: true,
+  glowStoriesColor: "#bd00ff",
+  glowWallet: true,
+  glowWalletColor: "#39ff14",
+  glowSearchIndex: true,
+  glowSearchIndexColor: "#eab308",
+  defaultThemePreset: "cyber_dark",
+  allowUserCustomizer: "yes_logged_in",
+  respectDeviceDefaultTheme: false,
+  enableAdSenseSafeMode: false,
+  enableRgbLoopShift: false,
+  enableFooterRgb: true,
   enableGoogleAds: true,
+  enableStories: true,
   advertisementSnippet: `<div class="bg-cyan-950/20 border border-cyan-800/40 border-dashed rounded-lg p-3 text-center text-xs font-mono text-cyan-400">⚡ Google ADS: Active & High-CPC Optimized Banner Place</div>`,
   mayaApiKeys: "AlzaSyBAcwAPXPzNfeGQ6XHDR-EaNRsHqhkTro8",
   mayaSystemInstruction: "You are Maya (মায়া), the highly professional, helpful, and extremely competent executive AI assistant of iloveyoubd.com. Write in flawless Bangla. Answer users with high intelligence, deep reasoning, and immense professionalism.",
@@ -188,6 +255,164 @@ const INITIAL_WITHDRAWALS = [
   { id: "w-1", author: "রানা মির্জা", wallet: "01754875241 (বিকাশ)", amount: 150, status: "pending" },
   { id: "w-2", author: "সাইবার রনি", wallet: "01941258745 (নগদ)", amount: 80, status: "pending" }
 ];
+
+const INITIAL_STORIES: StoryItem[] = [
+  {
+    id: "story-1",
+    username: "Abc",
+    userAvatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=abc",
+    mediaType: "text",
+    textContent: "আজকে গুগল এডসেন্স থেকে পেমেন্ট রিসিভ করলাম! আলহামদুলিল্লাহ!",
+    timestamp: "২ ঘণ্টা আগে",
+    viewsCount: 154,
+    likesCount: 32,
+    caption: "আলহামদুলিল্লাহ!"
+  },
+  {
+    id: "story-2",
+    username: "Abrar Ahmed",
+    userAvatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=abrar",
+    mediaType: "image",
+    mediaUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop",
+    timestamp: "৩ ঘণ্টা আগে",
+    viewsCount: 210,
+    likesCount: 65,
+    caption: "Cyber Shield 2040 Setup Active 👾"
+  },
+  {
+    id: "story-3",
+    username: "Abrar Ahmed",
+    userAvatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=ahmed",
+    mediaType: "text",
+    textContent: "যারা নতুন ব্লগিং শুরু করতে চান, তারা অবশ্যই ইউনিক কন্টেন্ট নিয়ে কাজ করবেন। কপি পেস্ট বর্জন করুন!",
+    timestamp: "৪ ঘণ্টা আগে",
+    viewsCount: 98,
+    likesCount: 12,
+    caption: "নতুনদের জন্য টিপস 💡"
+  },
+  {
+    id: "story-4",
+    username: "Abrar Fahim",
+    userAvatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=fahim",
+    mediaType: "image",
+    mediaUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=600&auto=format&fit=crop",
+    timestamp: "৫ ঘণ্টা আগে",
+    viewsCount: 345,
+    likesCount: 120,
+    caption: "লিপ-সিঙ্ক প্লাগিন ট্রায়াল বুস্টিং কমপ্লিট 🎯"
+  },
+  {
+    id: "story-5",
+    username: "Abrar Fahim",
+    userAvatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=abrarfahim",
+    mediaType: "text",
+    textContent: "রেফারেল দিয়ে ইতিমধ্যে ৫০০ টাকা ব্যালেন্স আর্ন করেছি! আপনারা কে কত ইনকাম করলেন?",
+    timestamp: "৬ ঘণ্টা আগে",
+    viewsCount: 520,
+    likesCount: 180,
+    caption: "Earning Loop Active ৳"
+  }
+];
+
+const INITIAL_LEDGER: LedgerEntry[] = [
+  {
+    id: "tx-1",
+    username: "তারেক রহমান",
+    amount: 8.50,
+    currency: "BDT",
+    reason: "আর্টিকেল লিখে বোনাস (গুগল এআই ক্রলার বুস্ট করার ট্রিকস...)",
+    linkId: "post-1",
+    linkType: "post",
+    timestamp: "2026-06-05T12:00:00Z"
+  },
+  {
+    id: "tx-2",
+    username: "তারেক রহমান",
+    amount: 10.00,
+    currency: "BDT",
+    reason: "রেফারেল বোনাস - সাইবার বাপ্পি",
+    linkId: "user-bappi",
+    linkType: "referral",
+    timestamp: "2026-06-05T10:15:00Z"
+  },
+  {
+    id: "tx-3",
+    username: "তারেক রহমান",
+    amount: 10.00,
+    currency: "BDT",
+    reason: "রেফারেল বোনাস - শাওন আহমেদ",
+    linkType: "referral",
+    timestamp: "2026-06-04T15:20:00Z"
+  },
+  {
+    id: "tx-4",
+    username: "তারেক রহমান",
+    amount: 50,
+    currency: "XP",
+    reason: "রেফারেল বোনাস - সাইবার বাপ্পি",
+    linkId: "user-bappi",
+    linkType: "referral",
+    timestamp: "2026-06-05T10:15:00Z"
+  },
+  {
+    id: "tx-5",
+    username: "সাইবার রনি",
+    amount: 8.50,
+    currency: "BDT",
+    reason: "আর্টিকেল লিখে বোনাস (একাউন্ট হ্যাকিং এবং ২০৪০ সালের...)",
+    linkId: "post-2",
+    linkType: "post",
+    timestamp: "2026-06-05T09:30:00Z"
+  },
+  {
+    id: "tx-6",
+    username: "সাইবার রনি",
+    amount: 100,
+    currency: "XP",
+    reason: "কমিউনিটি সাদা টুপি কন্ট্রিবিউটর অ্যাক্টিভিটি বুস্ট",
+    linkType: "admin",
+    timestamp: "2026-06-05T08:00:00Z"
+  },
+  {
+    id: "tx-7",
+    username: "রানা মির্জা",
+    amount: 5.50,
+    currency: "BDT",
+    reason: "আর্টিকেলে লাইক অর্জিত অ্যাডসেন্স শেয়ার শেয়ার",
+    linkId: "post-2",
+    linkType: "post",
+    timestamp: "2026-06-04T11:45:00Z"
+  },
+  {
+    id: "tx-8",
+    username: "সাইবার বাপ্পি",
+    amount: 10.00,
+    currency: "BDT",
+    reason: "রেজিস্ট্রেশন সাইন আপ রেফারেল বোনাস",
+    linkType: "referral",
+    timestamp: "2026-06-05T10:15:00Z"
+  },
+  {
+    id: "tx-9",
+    username: "তারেক রহমান",
+    amount: 1.50,
+    currency: "BDT",
+    reason: "ফোরামের প্রশ্নের উত্তর দিয়ে ক্যাশব্যাক",
+    linkId: "forum-ans-1",
+    linkType: "forum",
+    timestamp: "2026-06-05T14:30:00Z"
+  },
+  {
+    id: "tx-10",
+    username: "সাইবার রনি",
+    amount: 50.00,
+    currency: "BDT",
+    reason: "আর্টেলাইট স্পেশাল পারফরম্যান্স কুপন বোনাস",
+    linkType: "admin",
+    timestamp: "2026-06-03T18:00:00Z"
+  }
+];
+
 
 const PLAY_STORE_APPS_LIST = [
   {
@@ -304,8 +529,12 @@ const PLAY_STORE_APPS_LIST = [
 
 export default function App() {
   // Navigation active tab
-  const [activeTab, setActiveTab] = useState<"home" | "add" | "profile" | "dashboard" | "ai" | "qa" | "nid" | "admin" | "tools" | "downloader" | "audiolab" | "tools-lab">("home");
+  const [activeTab, setActiveTab] = useState<
+    "home" | "add" | "profile" | "dashboard" | "ai" | "qa" | "nid" | "admin" | "tools" | "downloader" | "audiolab" | "tools-lab" | "messages" | "privacy" | "terms" | "disclaimer" | "about" | "contact-us" | "tv"
+  >("home");
+  const [selectedContactName, setSelectedContactName] = useState<string | undefined>(undefined);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [feedViewTab, setFeedViewTab] = useState<"all" | "popular">("all");
 
   // State sync and redirection triggers for Tools Lab & App Scan
   const [initialSubTool, setInitialSubTool] = useState<string | undefined>(undefined);
@@ -353,10 +582,27 @@ export default function App() {
     return local ? JSON.parse(local) : INITIAL_STATS;
   });
 
+  const [allUsers, setAllUsers] = useState<UserStats[]>(() => {
+    const local = localStorage.getItem("iloveyoubd_users_db");
+    return local ? JSON.parse(local) : INITIAL_USERS;
+  });
+
   const [adminSettings, setAdminSettings] = useState<AdminSettings>(() => {
     const local = localStorage.getItem(LOCAL_SETTINGS_KEY);
     return local ? JSON.parse(local) : DEFAULT_SETTINGS;
   });
+
+  const [stories, setStories] = useState<StoryItem[]>(() => {
+    const local = localStorage.getItem(LOCAL_STORIES_KEY);
+    return local ? JSON.parse(local) : INITIAL_STORIES;
+  });
+
+  const [activeStoryViewer, setActiveStoryViewer] = useState<StoryItem | null>(null);
+  const [showUploadStoryModal, setShowUploadStoryModal] = useState(false);
+  const [uploadStoryMediaType, setUploadStoryMediaType] = useState<"text" | "image">("text");
+  const [uploadStoryText, setUploadStoryText] = useState("");
+  const [uploadStoryUrl, setUploadStoryUrl] = useState("");
+  const [uploadStoryCaption, setUploadStoryCaption] = useState("");
 
   const [notifs, setNotifs] = useState<NotificationItem[]>(() => {
     const local = localStorage.getItem(LOCAL_NOTIFS_KEY);
@@ -374,6 +620,11 @@ export default function App() {
   const [withdrawalRequests, setWithdrawalRequests] = useState<any[]>(() => {
     const local = localStorage.getItem(LOCAL_WITHDRAW_KEY);
     return local ? JSON.parse(local) : INITIAL_WITHDRAWALS;
+  });
+
+  const [ledger, setLedger] = useState<LedgerEntry[]>(() => {
+    const local = localStorage.getItem("iloveyoubd_ledger_db");
+    return local ? JSON.parse(local) : INITIAL_LEDGER;
   });
 
   const [totalWithdrawn, setTotalWithdrawn] = useState(0);
@@ -400,6 +651,37 @@ export default function App() {
 
   // Dynamic system theme mood sync state (Classic hacker green, Ocean Cyan, Violet, malware crimson, gold)
   const [selectedMood, setSelectedMood] = useState("green");
+
+  // Dynamic device theme detection for "Mobile Default Color" representation
+  const [systemThemeMode, setSystemThemeMode] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia) {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      setSystemThemeMode(mediaQuery.matches ? "dark" : "light");
+      
+      const listener = (e: MediaQueryListEvent) => {
+        setSystemThemeMode(e.matches ? "dark" : "light");
+      };
+      mediaQuery.addEventListener("change", listener);
+      return () => mediaQuery.removeEventListener("change", listener);
+    }
+  }, []);
+
+  // 1-Click Rotating RGB Dynamic Sequence Theme Loop
+  useEffect(() => {
+    if (!adminSettings?.enableRgbLoopShift) return;
+    
+    const colors = ["green", "cyan", "violet", "crimson", "gold"];
+    const interval = setInterval(() => {
+      setSelectedMood((prev) => {
+        const nextIndex = (colors.indexOf(prev) + 1) % colors.length;
+        return colors[nextIndex];
+      });
+    }, 4000); // Transitions colors gracefully every 4 seconds
+    
+    return () => clearInterval(interval);
+  }, [adminSettings?.enableRgbLoopShift]);
 
   // Search filter
   const [postSearchQuery, setPostSearchQuery] = useState("");
@@ -500,6 +782,10 @@ export default function App() {
   }, [posts]);
 
   useEffect(() => {
+    localStorage.setItem(LOCAL_STORIES_KEY, JSON.stringify(stories));
+  }, [stories]);
+
+  useEffect(() => {
     localStorage.setItem(LOCAL_QUESTIONS_KEY, JSON.stringify(questions));
   }, [questions]);
 
@@ -512,12 +798,60 @@ export default function App() {
   }, [adminSettings]);
 
   useEffect(() => {
+    localStorage.setItem("iloveyoubd_users_db", JSON.stringify(allUsers));
+  }, [allUsers]);
+
+  // Sync logged-in user changes back to the master allUsers DB
+  useEffect(() => {
+    setAllUsers(prev => {
+      const exists = prev.some(u => u.name === userStats.name);
+      if (exists) {
+        return prev.map(u => u.name === userStats.name ? { ...u, ...userStats } : u);
+      } else {
+        return [...prev, userStats];
+      }
+    });
+  }, [userStats]);
+
+  const handleUpdateUserStats = (username: string, updated: Partial<UserStats>) => {
+    setAllUsers(prev => prev.map(u => u.name === username ? { ...u, ...updated } : u));
+    if (userStats.name === username) {
+      setUserStats(prev => ({ ...prev, ...updated }));
+    }
+  };
+
+  useEffect(() => {
     localStorage.setItem(LOCAL_NOTIFS_KEY, JSON.stringify(notifs));
   }, [notifs]);
 
   useEffect(() => {
     localStorage.setItem(LOCAL_WITHDRAW_KEY, JSON.stringify(withdrawalRequests));
   }, [withdrawalRequests]);
+
+  useEffect(() => {
+    localStorage.setItem("iloveyoubd_ledger_db", JSON.stringify(ledger));
+  }, [ledger]);
+
+  const addLedgerTransaction = (
+    username: string, 
+    amount: number, 
+    currency: "BDT" | "XP", 
+    reason: string, 
+    linkId?: string, 
+    linkType?: "post" | "comment" | "referral" | "forum" | "admin" | "other"
+  ) => {
+    const newEntry: LedgerEntry = {
+      id: `tx-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      username,
+      amount,
+      currency,
+      reason,
+      linkId,
+      linkType: linkType || "other",
+      timestamp: new Date().toISOString()
+    };
+    setLedger(prev => [newEntry, ...prev]);
+  };
 
   useEffect(() => {
     localStorage.setItem("ilybd_claimed_referrals_db", JSON.stringify(claimedMilestones));
@@ -591,6 +925,8 @@ export default function App() {
 
         setUserStats(prev => {
           const currentReferred = prev.referredUsers || [];
+          addLedgerTransaction(prev.name, tBonus, "BDT", `রেফারেল বোনাস - ${randomName}`, `user-${randomName.replace(/\s+/g, '').toLowerCase()}`, "referral");
+          addLedgerTransaction(prev.name, pBonus, "XP", `রেফারেল বোনাস - ${randomName}`, `user-${randomName.replace(/\s+/g, '').toLowerCase()}`, "referral");
           return {
             ...prev,
             balance: Number((prev.balance + tBonus).toFixed(2)),
@@ -623,6 +959,9 @@ export default function App() {
       return;
     }
 
+    addLedgerTransaction(userStats.name, rewardTaka, "BDT", `মাইলস্টোন ক্লেইম - ${milestoneName}`, `milestone-${milestoneCount}`, "other");
+    addLedgerTransaction(userStats.name, milestoneCount * 10, "XP", `মাইলস্টোন ক্লেইম - ${milestoneName}`, `milestone-${milestoneCount}`, "other");
+
     setUserStats(prev => ({
       ...prev,
       balance: Number((prev.balance + rewardTaka).toFixed(2)),
@@ -648,6 +987,8 @@ export default function App() {
         if (post.id === postId) {
           // Add payouts to this post owner profile. If it belongs to logged in user, pay out there instantly!
           if (isLoggedIn && post.author.name === userStats.name) {
+            addLedgerTransaction(userStats.name, adminSettings.payoutPerLike, "BDT", `পোস্টে লাইক পাওয়ার বোনাস (পোস্ট আইডি: ${postId})`, postId, "post");
+            addLedgerTransaction(userStats.name, 2, "XP", `পোস্টে লাইক পাওয়ার বোনাস (পোস্ট আইডি: ${postId})`, postId, "post");
             setUserStats((prev) => ({
               ...prev,
               balance: Number((prev.balance + adminSettings.payoutPerLike).toFixed(2)),
@@ -679,9 +1020,12 @@ export default function App() {
       prevPosts.map((post) => {
         if (post.id === postId) {
           if (isLoggedIn && post.author.name === userStats.name) {
+            const rewardAm = Number((adminSettings.payoutPerView * 0.5).toFixed(2));
+            addLedgerTransaction(userStats.name, rewardAm, "BDT", `কন্টেন্ট ফিডব্যাক মন্তব্য পাওয়ার ক্যাশব্যাক (পোস্ট আইডি: ${postId})`, postId, "comment");
+            addLedgerTransaction(userStats.name, 1, "XP", `কন্টেন্ট ফিডব্যাক মন্তব্য পাওয়ার বোনাস (পোস্ট আইডি: ${postId})`, postId, "comment");
             setUserStats((prev) => ({
               ...prev,
-              balance: Number((prev.balance + (adminSettings.payoutPerView * 0.5)).toFixed(2)),
+              balance: Number((prev.balance + rewardAm).toFixed(2)),
               points: prev.points + 1
             }));
           }
@@ -707,6 +1051,7 @@ export default function App() {
 
     setQuestions((prev) => [newQuestion, ...prev]);
     if (isLoggedIn) {
+      addLedgerTransaction(userStats.name, 10, "XP", `ফোরামে প্রশ্ন করার রিওয়ার্ড (${title.substring(0, 18)}...)`, newQuestion.id, "forum");
       setUserStats((prev) => ({
         ...prev,
         points: prev.points + 10
@@ -727,6 +1072,8 @@ export default function App() {
             timestamp: "এইমাত্র"
           };
           if (isLoggedIn) {
+            addLedgerTransaction(userStats.name, 1.50, "BDT", `ফোরামে সঠিক উত্তর দানের প্রাইজ`, questionId, "forum");
+            addLedgerTransaction(userStats.name, 15, "XP", `ফোরামে সঠিক উত্তর দানের প্রাইজ`, questionId, "forum");
             setUserStats((prev) => ({
               ...prev,
               balance: prev.balance + 1.50, // bonus reward
@@ -807,6 +1154,8 @@ export default function App() {
 
     setPosts((prev) => [createdPost, ...prev]);
     // Reward Publisher
+    addLedgerTransaction(userStats.name, adminSettings.payoutPerPublish, "BDT", `নতুন কন্টেন্ট পাবলিশ বোনাস: ${createdPost.title.substring(0, 20)}...`, createdPost.id, "post");
+    addLedgerTransaction(userStats.name, 25, "XP", `নতুন কন্টেন্ট পাবলিশ বোনাস: ${createdPost.title.substring(0, 20)}...`, createdPost.id, "post");
     setUserStats((prev) => ({
       ...prev,
       balance: Number((prev.balance + adminSettings.payoutPerPublish).toFixed(2)),
@@ -857,6 +1206,7 @@ export default function App() {
       status: "pending"
     };
 
+    addLedgerTransaction(userStats.name, -valueAmount, "BDT", `উইথড্রল ক্যাশআউট রিকোয়েস্ট`, orderWithdraw.id, "admin");
     setWithdrawalRequests((prev) => [orderWithdraw, ...prev]);
     setUserStats((prev) => ({
       ...prev,
@@ -870,6 +1220,7 @@ export default function App() {
     setWithdrawalRequests((prev) =>
       prev.map((r) => {
         if (r.id === id) {
+          addLedgerTransaction(r.author, r.amount, "BDT", `উইথড্রল রিকোয়েস্ট সফলভাবে পেইড/অনুমোদনের নিশ্চয়তা`, r.id, "admin");
           setTotalWithdrawn((v) => v + r.amount);
           return { ...r, status: "paid" };
         }
@@ -987,8 +1338,25 @@ export default function App() {
 
   const styleProfile = getMoodColorClasses();
 
+  const isLightMode = adminSettings?.respectDeviceDefaultTheme 
+    ? (systemThemeMode === "light") 
+    : (adminSettings?.defaultThemePreset === "light_clean");
+
+  const isAdSenseSafe = adminSettings?.enableAdSenseSafeMode;
+
   return (
-    <div className="min-h-screen bg-[#060a12] text-slate-100 font-sans transition-colors duration-500 relative pb-16">
+    <div className={`min-h-screen font-sans transition-all duration-500 relative pb-16 ${
+      isLightMode 
+        ? "light-mode-active bg-slate-50 text-slate-900" 
+        : isAdSenseSafe 
+          ? "bg-[#080d19] text-slate-100" 
+          : "bg-[#060a12] text-slate-100"
+    }`}>
+      
+      {/* 2040 Global RGB/Neon Simulation Frame Overlays */}
+      {adminSettings.enableRgbEffects && !isAdSenseSafe && (
+        <div className={`cyber-rgb-frame ${adminSettings.rgbStyle || "classic_neo"}`} />
+      )}
       
       {/* Background neon ambient aura nodes */}
       <div className="absolute top-24 left-10 w-96 h-96 rounded-full opacity-3 blur-3xl pointer-events-none" style={{ backgroundColor: styleProfile.textAccent }} />
@@ -1112,6 +1480,8 @@ export default function App() {
       <RGBBorder 
         height="h-[2.5px]" 
         disabled={!adminSettings.enableRgbEffects} 
+        stylePreset={adminSettings.rgbStyle}
+        speed={adminSettings.rgbEffectSpeed}
         activeColor={
           selectedMood === "green" ? "#39ff14" :
           selectedMood === "cyan" ? "#00f0ff" :
@@ -1248,6 +1618,17 @@ export default function App() {
               <Award className="w-3.5 h-3.5 text-[#ffae00] animate-pulse" /> প্রোফাইল সম্পাদন (১৫০XP বোনাস)
             </button>
             <button
+              id="menu-tab-messages"
+              onClick={() => setActiveTab("messages")}
+              className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+                activeTab === "messages"
+                  ? `bg-[#0c1624] border ${styleProfile.borderAccent} text-slate-100 shadow-[0_0_8px_rgba(0,240,255,0.15)]`
+                  : "text-cyan-400 hover:text-white"
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-cyan-400 animate-pulse" /> মেসেঞ্জার চ্যাট 💬
+            </button>
+            <button
               id="menu-tab-admin"
               onClick={() => setActiveTab("admin")}
               className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
@@ -1260,7 +1641,11 @@ export default function App() {
             </button>
             <a
               id="menu-tab-download-theme"
-              href="/api/wordpress/download-fixed-theme"
+              href={`${window.location.origin}/api/wordpress/download-fixed-theme`}
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(`${window.location.origin}/api/wordpress/download-fixed-theme`, '_blank');
+              }}
               download="ilybd-neon-v1-pro-fixed.zip"
               target="_blank"
               rel="noopener noreferrer"
@@ -1270,11 +1655,15 @@ export default function App() {
             </a>
             <a
               id="menu-tab-download-plugin"
-              href="/api/wordpress/download-fixed-plugin"
+              href={`${window.location.origin}/api/wordpress/download-fixed-plugin`}
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(`${window.location.origin}/api/wordpress/download-fixed-plugin`, '_blank');
+              }}
               download="ilybd-prime-engine-fixed.zip"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer bg-blue-950/80 border border-blue-500 text-blue-300 hover:bg-blue-900 shadow-[0_0_10px_rgba(59,130,246,0.3)] font-semibold animate-pulse"
+              className="flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer bg-blue-950/80 border border-blue-500 text-blue-300 hover:bg-blue-900 shadow-[0_0_10px_rgba(59,130,246,0.3)] font-semibold"
             >
               <Cpu className="w-3.5 h-3.5 text-blue-450" /> Plugin (Engine Zip) 🔌
             </a>
@@ -1363,7 +1752,7 @@ export default function App() {
       </menu>
 
       {/* CORE HERO CAROUSEL: TRENDING SLIDESHOW OPTIONS (হোম পেজ এ থাকলে শো করবে) */}
-      {activeTab === "home" && (
+      {activeTab === "home" && !selectedPostId && (
         <section className="bg-slate-950 py-7 border-b border-cyan-950/40 relative overflow-hidden">
           {/* Neon digital gridlines decorations */}
           <div className="absolute inset-0 bg-[radial-gradient(#081729_1fr,transparent_1fr)] [background-size:24px_24px] opacity-10" />
@@ -1471,104 +1860,8 @@ export default function App() {
         </section>
       )}
 
-      {/* WordPress Theme & Plugin optimization status widget */}
-      {activeTab === "home" && (
-        <section className="bg-slate-950 py-4 border-b border-cyan-950/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="bg-slate-900/45 border-2 border-emerald-500/20 rounded-2xl p-5 sm:p-7 relative overflow-hidden shadow-[0_0_20px_rgba(16,185,129,0.05)]">
-              {/* Pulsing decoration dot */}
-              <div className="absolute top-4 right-4 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[9px] font-mono font-bold text-emerald-400 tracking-wider">SYSTEM SECURE & PATCHED</span>
-              </div>
-
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-                <div className="space-y-3 flex-1">
-                  <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-900/50">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> কাস্টম থিম ও প্লাগিন সমাধান রিপোর্ট (PRO)
-                  </div>
-                  <h2 className="text-lg sm:text-2xl font-bold font-sans text-slate-100 tracking-tight leading-tight">
-                    আপনার ওয়ার্ডপ্রেস থিম এবং প্লাগিন (ILYBD Prime Engine) এর সব বাগ ও মেমরিন ক্র্যাশ সফলভাবে ঠিক করা হয়েছে!
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-4xl font-sans">
-                    আমরা আপনার দেওয়া থিম এবং <strong>ILYBD Prime Engine</strong> প্লাগিন উভয় ফাইল নিখুঁতভাবে চেক করেছি। প্লাগিনটির ডাটাবেজ টেবিলে অনুপস্থিত ভ্যালু ও কলাম যেমন <code>user_level</code> ও <code>total_earned</code> ইন্টিগ্রেট করা হয়েছে (যা আগে কুয়েরি ক্র্যাশ ঘটাত)। এছাড়াও পয়েন্ট ও ব্যালেন্স রিওয়ার্ড ইঞ্জেকশন এখন ব্যাকএন্ড ডাটাবেজ এবং ওয়ার্ডপ্রেস ইউজার মেটা ও নোটিফিকেশনের সাথে ১০০% রিয়েল-টাইমে মেলানো থাকবে!
-                  </p>
-                  
-                  {/* Grid of fixes list */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 pt-2 text-xs font-mono text-slate-300">
-                    <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">✔</span>
-                      <span>পয়েন্ট এবং ব্যালেন্স ডাটাবেস টেবিল ও ইউজার মেটা ইন্টিগ্রেশন।</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">✔</span>
-                      <span>প্লাগিন ডাটাবেস ক্র্যাশ বাগ সংশোধন (user_level এবং total_earned কলাম যুক্তকরণ)।</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">✔</span>
-                      <span>পোস্ট ক্রিয়েশন এবং আপডেট এডিটর নোটিফিকেশন সিস্টেম।</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">✔</span>
-                      <span>বিকাশ ও নগদ ক্যাশআউট রিকোয়েস্ট এবং মেটা সিংক্রোনাইজেশন।</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">✔</span>
-                      <span>লাইভ ক্যাটাগরি লোডিং, ভিউ বোনাস এবং লাইক কমিশন সিস্টেম।</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">✔</span>
-                      <span>লগইন বোনাস এবং স্পেশাল অফার ট্র্যাকিং মডিউল সামঞ্জস্যকরণ।</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Two side-by-side or stacked download boxes for Theme and Plugin */}
-                <div className="shrink-0 flex flex-col gap-4 w-full lg:w-80">
-                  <div className="flex flex-col md:flex-row lg:flex-col items-stretch gap-4 bg-slate-950/80 p-5 border border-cyan-950 rounded-xl shadow-inner">
-                    <div className="flex-1 flex flex-col items-center text-center space-y-2 border-b md:border-b-0 md:border-r lg:border-r-0 lg:border-b border-cyan-950/50 pb-4 md:pb-0 md:pr-4 lg:pr-0 lg:pb-4">
-                      <span className="text-[9px] font-mono text-emerald-400 tracking-wider font-bold uppercase">1. THEME PACKAGE (ZIP)</span>
-                      <a
-                        href="/api/wordpress/download-fixed-theme"
-                        download="ilybd-neon-v1-pro-fixed.zip"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-2 text-xs font-mono font-bold uppercase bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white py-2 px-4 rounded border border-emerald-500 shadow-lg hover:scale-[1.01] transition-all cursor-pointer"
-                      >
-                        🚀 কাস্টম থিম ডাউনলোড করুন
-                      </a>
-                      <span className="text-[9px] font-mono text-slate-400">ilybd-neon-v1-pro-fixed.zip (~7.8 MB)</span>
-                    </div>
-
-                    <div className="flex-1 flex flex-col items-center text-center space-y-2 pt-2 md:pt-0 md:pl-4 lg:pl-0 lg:pt-2">
-                      <span className="text-[9px] font-mono text-blue-400 tracking-wider font-bold uppercase">2. PLUGIN ENGINE (ZIP)</span>
-                      <a
-                        href="/api/wordpress/download-fixed-plugin"
-                        download="ilybd-prime-engine-fixed.zip"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-2 text-xs font-mono font-bold uppercase bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white py-2 px-4 rounded border border-blue-500 shadow-lg hover:scale-[1.01] transition-all cursor-pointer animate-pulse"
-                      >
-                        🔌 প্লাগিন ডাউনলোড করুন
-                      </a>
-                      <span className="text-[9px] font-mono text-slate-400">ilybd-prime-engine-fixed.zip (~3.7 MB)</span>
-                    </div>
-                  </div>
-
-                  {/* Browser sandbox warning notice */}
-                  <div className="bg-[#1c0f0f] border border-red-900/50 p-4 rounded-xl text-[11px] leading-relaxed text-red-200 shadow-md">
-                    <span className="font-bold text-red-400 block mb-1">⚠️ ডাউনলোড কাজ না করলে করণীয়:</span>
-                    গুগল এআই স্টুডিও-র বিল্ট-ইন আইফ্রেম প্রিভিউ মোডে ব্রাউজার সিকিউরিটি (Sandbox Policy) এর কারণে ফাইল ডাউনলোড ব্লক হতে পারে। ডাউনলোড করতে চাইলে দয়া করে ব্রাউজার উইন্ডোর একেবারে উপরে ডানদিকের ক্রোম আইকন বা <strong className="text-amber-305">"Open in a New Tab" (শেয়ার লিঙ্কের পাশে)</strong>-এ ক্লিক করে নতুন ট্যাবে ওয়েবসাইটটি ওপেন করুন, অথবা চ্যাট বক্সে দেওয়া ডিরেক্ট লিংকগুলো ক্লিক করুন!
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* CORE DISPLAY PAGES CONTAINER */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 md:py-8">
         <AnimatePresence mode="wait">
           
           {/* Tab 1: Home dashboard standard list */}
@@ -1578,15 +1871,85 @@ export default function App() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="space-y-10"
+              className="space-y-6 md:space-y-10"
             >
               <div className="flex flex-col lg:flex-row gap-6 items-start">
                 
                 {/* Left side column: list and search filter */}
                 <div className="lg:col-span-8 flex-1 w-full space-y-6">
+
+                  {/* STORIES CAROUSEL SHELF */}
+                  {adminSettings.enableStories !== false && !selectedPostId && (
+                    <div id="stories-shelf-container" className="bg-[#090d16] border border-cyan-950/80 p-4 rounded-2xl relative overflow-hidden shadow-xl">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-950/10 via-transparent to-pink-950/5 pointer-events-none" />
+                      
+                      <div className="flex items-center gap-4 overflow-x-auto pb-1.5 scrollbar-none custom-scrollbar select-none">
+                        
+                        {/* Current User Story (আমার স্টোরী) */}
+                        <div className="flex flex-col items-center gap-1.5 cursor-pointer group shrink-0 relative">
+                          <div 
+                            onClick={() => {
+                              const myStory = stories.find(s => s.username === userStats.name);
+                              if (myStory) {
+                                setActiveStoryViewer(myStory);
+                              } else {
+                                setShowUploadStoryModal(true);
+                              }
+                            }}
+                            className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[3px] bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 group-hover:scale-105 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] flex items-center justify-center overflow-visible"
+                          >
+                            <div className="w-full h-full rounded-full border border-slate-950 overflow-hidden bg-slate-900">
+                              <img 
+                                src={userStats.avatar} 
+                                alt="My Avatar" 
+                                className="w-full h-full object-cover rounded-full"
+                              />
+                            </div>
+                            
+                            {/* Green plus badge */}
+                            <div 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowUploadStoryModal(true);
+                              }}
+                              className="absolute bottom-1 right-1 bg-emerald-500 text-slate-950 border-2 border-slate-900 w-5 h-5 rounded-full flex items-center justify-center font-black text-xs hover:bg-emerald-400 cursor-pointer shadow-md"
+                              title="স্টোরী আপলোড করুন"
+                            >
+                              +
+                            </div>
+                          </div>
+                          <span className="text-[10px] sm:text-xs font-semibold text-slate-300 font-sans tracking-tight">আমার স্টোরী</span>
+                        </div>
+
+                        {/* Subsequent Community Stories */}
+                        {stories.map((story) => (
+                          <div 
+                            key={story.id}
+                            onClick={() => setActiveStoryViewer(story)}
+                            className="flex flex-col items-center gap-1.5 cursor-pointer group shrink-0"
+                          >
+                            <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[3px] bg-[#070b13] border-2 border-cyan-500/20 group-hover:border-cyan-400 group-hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-[0_0_8px_rgba(0,0,0,0.5)]">
+                              {/* Glowing unread indicator rings */}
+                              <div className="absolute inset-0.5 rounded-full border border-dashed border-cyan-400 animate-spin-slow pointer-events-none opacity-40 group-hover:opacity-80" />
+                              <div className="w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full overflow-hidden bg-slate-950 border border-slate-900">
+                                <img 
+                                  src={story.userAvatar} 
+                                  alt={story.username} 
+                                  className="w-full h-full object-cover rounded-full bg-slate-900"
+                                />
+                              </div>
+                            </div>
+                            <span className="text-[10px] sm:text-xs font-semibold text-slate-300 font-sans tracking-tight truncate max-w-16 sm:max-w-[72px] text-center">{story.username}</span>
+                          </div>
+                        ))}
+
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Category select filter and search bar portal */}
-                  <div id="main-feed-header" className="bg-[#090d16] border border-cyan-950 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  {!selectedPostId && (
+                    <div id="main-feed-header" className="bg-[#090d16] border border-cyan-950 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 custom-scrollbar">
                       {["All", "Hacking", "SEO Guide", "Online Earning", "Android Tech"].map((cat) => (
                         <button
@@ -1956,6 +2319,7 @@ export default function App() {
                       </AnimatePresence>
                     </div>
                   </div>
+                  )}
 
                   {/* TIMELINE TIMELINE ARTICLES FEED SHIELD */}
                   {selectedPostId ? (
@@ -2265,23 +2629,85 @@ export default function App() {
                       );
                     })()
                   ) : (
-                    /* Regular Feed Post Listings Grid */
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {filteredPostsList.length === 0 ? (
-                        <div className="md:col-span-2 text-center py-16 bg-slate-950/30 border border-cyan-950 rounded-2xl">
-                          <span className="text-slate-400 font-mono text-xs">দুঃখিত! এই ফিল্টারে কোনো ফোরাম আর্টিকেল পাওয়া যায়নি।</span>
+                    (() => {
+                      const displayedPosts = feedViewTab === "popular"
+                        ? [...filteredPostsList].sort((a, b) => b.views - a.views)
+                        : filteredPostsList;
+
+                      return (
+                        <div className="space-y-6">
+                          {/* High-Contrast Interactive Neon Tab Switcher */}
+                          <div className="flex items-center justify-between border-b border-cyan-950/60 pb-3 flex-wrap gap-4 text-left">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setFeedViewTab("all")}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold font-sans tracking-wide transition-all relative flex items-center gap-1.5 cursor-pointer ${
+                                  feedViewTab === "all"
+                                    ? "bg-cyan-950/80 text-cyan-400 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
+                                    : "text-slate-400 hover:text-slate-250"
+                                }`}
+                              >
+                                <span>⚡</span> সর্বমোট কন্টেন্ট ({filteredPostsList.length})
+                                {feedViewTab === "all" && (
+                                  <motion.div
+                                    layoutId="feedTabIndicator"
+                                    className="absolute -bottom-[13px] left-0 right-0 h-[2px] bg-cyan-400"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                  />
+                                )}
+                              </button>
+
+                              <button
+                                onClick={() => setFeedViewTab("popular")}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold font-sans tracking-wide transition-all relative flex items-center gap-1.5 cursor-pointer ${
+                                  feedViewTab === "popular"
+                                    ? "bg-purple-950/80 text-purple-300 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+                                    : "text-slate-400 hover:text-slate-250"
+                                }`}
+                              >
+                                <span>🔥</span> জনপ্রিয় হট পোস্ট ({filteredPostsList.length})
+                                {feedViewTab === "popular" && (
+                                  <motion.div
+                                    layoutId="feedTabIndicator"
+                                    className="absolute -bottom-[13px] left-0 right-0 h-[2px] bg-[#bd00ff]"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                  />
+                                )}
+                              </button>
+                            </div>
+
+                            {/* High tech label */}
+                            <div className="text-[10px] font-mono text-[#39ff14] bg-emerald-950/40 border border-[#163f19]/80 px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-bold uppercase tracking-widest leading-none">
+                              <span className="w-1.5 h-1.5 bg-[#39ff14] rounded-full animate-pulse" />
+                              <span>Ecosystem Feed</span>
+                            </div>
+                          </div>
+
+                          {/* Dynamic Content Columns Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {displayedPosts.length === 0 ? (
+                              <div className="md:col-span-2 text-center py-16 bg-[#090d16]/30 border border-cyan-950 rounded-2xl relative shadow-2xl">
+                                <span className="text-slate-400 font-mono text-xs">দুঃখিত! এই ফিল্টারে কোনো ফোরাম আর্টিকেল পাওয়া যায়নি।</span>
+                              </div>
+                            ) : (
+                              displayedPosts.map((post) => (
+                                <PostContainer
+                                  key={post.id}
+                                  post={post}
+                                  onLike={handleLikePost}
+                                  onComment={handleCommentPost}
+                                  onMessageAuthor={(authorName) => {
+                                    setSelectedContactName(authorName);
+                                    setActiveTab("messages");
+                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                  }}
+                                />
+                              ))
+                            )}
+                          </div>
                         </div>
-                      ) : (
-                        filteredPostsList.map((post) => (
-                          <PostContainer
-                            key={post.id}
-                            post={post}
-                            onLike={handleLikePost}
-                            onComment={handleCommentPost}
-                          />
-                        ))
-                      )}
-                    </div>
+                      );
+                    })()
                   )}
 
                 </div>
@@ -2871,6 +3297,26 @@ export default function App() {
             </motion.div>
           )}
 
+          {/* Tab: Cyber Socket Messenger */}
+          {activeTab === "messages" && (
+            <motion.div
+              key="messages"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="max-w-6xl mx-auto space-y-6"
+            >
+              <CyberMessenger
+                userStats={userStats}
+                setUserStats={setUserStats}
+                addSystemNotification={addSystemNotification}
+                adminSettings={adminSettings}
+                isLoggedIn={isLoggedIn}
+                selectedContactName={selectedContactName}
+                setSelectedContactName={setSelectedContactName}
+              />
+            </motion.div>
+          )}
 
           {/* Tab 6: Core User Wallet Balance & Dashboard stats details */}
           {activeTab === "dashboard" && (
@@ -2882,7 +3328,16 @@ export default function App() {
               className="max-w-4xl mx-auto space-y-6 text-left"
             >
               {/* Profile Card at Top of Dashboard */}
-              <div className="bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl relative overflow-hidden flex flex-col md:flex-row gap-6 items-center">
+              <div 
+                className="bg-[#090d16] border rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row gap-6 items-center transition-all duration-300"
+                style={adminSettings.glowUserProfile ? {
+                  boxShadow: `0 0 35px ${adminSettings.glowUserProfileColor || "#bd00ff"}15`,
+                  borderColor: `${adminSettings.glowUserProfileColor || "#bd00ff"}45`
+                } : {
+                  borderColor: "rgba(8, 145, 178, 0.25)",
+                  boxShadow: "none"
+                }}
+              >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent pointer-events-none" />
                 
                 {/* Avatar with dynamic mood border and glowing badge */}
@@ -3207,7 +3662,16 @@ export default function App() {
                 <div className="lg:col-span-12 xl:col-span-5 space-y-6">
                   
                   {/* Wallet Balance retract widget */}
-                  <div className="bg-[#090d16] border border-cyan-950 rounded-2xl p-6 shadow-2xl relative overflow-hidden text-left">
+                  <div 
+                    className="bg-[#090d16] border rounded-2xl p-6 relative overflow-hidden text-left transition-all duration-300"
+                    style={adminSettings.glowWallet ? {
+                      boxShadow: `0 0 35px ${adminSettings.glowWalletColor || "#39ff14"}15`,
+                      borderColor: `${adminSettings.glowWalletColor || "#39ff14"}45`
+                    } : {
+                      borderColor: "rgba(8, 145, 178, 0.25)",
+                      boxShadow: "none"
+                    }}
+                  >
                     <h3 className="text-sm font-bold font-mono text-emerald-400 uppercase tracking-wide mb-4 flex items-center gap-1.5">
                       <Wallet className="w-5 h-5 text-emerald-400 animate-pulse" /> বিকাশ/নগদ ক্যাশআউট গেটওয়ে
                     </h3>
@@ -3269,6 +3733,29 @@ export default function App() {
                 setPosts={setPosts}
                 currentUser={userStats}
                 addNotification={addSystemNotification}
+                allUsers={allUsers}
+                onUpdateUserStats={handleUpdateUserStats}
+                ledger={ledger}
+                setLedger={setLedger}
+                onAddLedgerTransaction={addLedgerTransaction}
+              />
+            </motion.div>
+          )}
+
+          {/* Tab 8: Legal Policy & Compliance Center */}
+          {["privacy", "terms", "disclaimer", "about", "contact-us"].includes(activeTab) && (
+            <motion.div
+              key="legal-center"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+            >
+              <LegalCenter
+                initialTab={activeTab as "privacy" | "terms" | "disclaimer" | "about" | "contact-us"}
+                onChangeTab={(tab) => {
+                  setActiveTab(tab);
+                  setSelectedPostId(null);
+                }}
               />
             </motion.div>
           )}
@@ -3277,11 +3764,25 @@ export default function App() {
       </main>
 
       {/* COMPREHENSIVE CYBER MULTI-COLUMN FOOTER */}
+      {adminSettings.enableFooterRgb !== false && (
+        <RGBBorder 
+          height="h-[3px]" 
+          disabled={!adminSettings.enableRgbEffects} 
+          stylePreset={adminSettings.rgbStyle || "classic_neo"}
+          speed={adminSettings.rgbEffectSpeed || "medium"}
+          activeColor={
+            selectedMood === "green" ? "#39ff14" :
+            selectedMood === "cyan" ? "#00f0ff" :
+            selectedMood === "violet" ? "#bd00ff" :
+            selectedMood === "crimson" ? "#ff003c" : "#eab308"
+          } 
+        />
+      )}
       <footer className="border-t border-cyan-950/50 bg-[#040811] py-10 mt-16 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-12 gap-8 text-left">
           
           {/* Col 1: About the portal */}
-          <div className="md:col-span-5 space-y-3">
+          <div className="md:col-span-4 space-y-3">
             <div className="flex items-center gap-2">
               <Terminal className={`w-5 h-5 ${styleProfile.textAccent}`} />
               <span className="font-bold text-sm tracking-widest uppercase">
@@ -3290,7 +3791,7 @@ export default function App() {
             </div>
             
             <p className="text-xs text-slate-400 font-sans leading-relaxed">
-              iloveyoubd.com হল বাংলাদেশের একমাত্র প্রযুক্তি বিষয়ক হ্যাকিং ও মাল্টি-অটোর ডিস্ট্রিবিউটেড ব্লগিং পোর্টাল। এখানে সিক্লিউড অ্যাডসেন্স কোডিং এপিআই মেম্বারদের সরাসরি আরজিবি লাইটিং বর্ডার ব্যালেন্স মনিটাইজেশন ড্যাশবোর্ডে সাপোর্ট দিয়ে থাকে।
+              iloveyoubd.com হল বাংলাদেশের বিখ্যাত প্রযুক্তি বিষয়ক হ্যাকিং ও মাল্টি-অটোর ডিস্ট্রিবিউটেড ব্লগিং পোর্টাল। এখানে সিক্লিউড অ্যাডসেন্স কোডিং এপিআই মেম্বারদের সরাসরি আরজিবি লাইটিং মনিটাইজেশন ড্যাশবোর্ডে সাপোর্ট দেওয়া হয়।
             </p>
 
             <div className="flex items-center gap-2 pt-2 text-slate-500 font-medium text-[11px] font-sans">
@@ -3302,13 +3803,13 @@ export default function App() {
           {/* Col 2: Fast index links */}
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs uppercase font-mono tracking-widest text-[#00f0ff] font-bold">পেজ সূচক (Sitemaps)</h4>
-            <ul className="space-y-2 text-sm text-slate-300 font-medium font-sans">
+            <ul className="space-y-2 text-xs text-slate-300 font-medium font-sans font-sans">
               <li>
                 <button 
                   onClick={() => { setActiveTab("home"); setSelectedPostId(null); }} 
                   className="flex items-center gap-1.5 hover:text-[#00f0ff] transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
                 >
-                  <span className="text-[#39ff14] text-xs">➔</span> হোম ফিড ও ট্রিকস
+                  <span className="text-[#39ff14] text-[10px]">➔</span> হোম ফিড ও ট্রিকস
                 </button>
               </li>
               <li>
@@ -3316,7 +3817,7 @@ export default function App() {
                   onClick={() => { setActiveTab("ai"); setSelectedPostId(null); }} 
                   className="flex items-center gap-1.5 hover:text-[#00f0ff] transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
                 >
-                  <span className="text-[#39ff14] text-xs">➔</span> গেমিনি এআই ডাস্টবোট
+                  <span className="text-[#39ff14] text-[10px]">➔</span> গেমিনি এআই ডাস্টবোট
                 </button>
               </li>
               <li>
@@ -3324,7 +3825,7 @@ export default function App() {
                   onClick={() => { setActiveTab("add"); setSelectedPostId(null); }} 
                   className="flex items-center gap-1.5 hover:text-[#00f0ff] transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
                 >
-                  <span className="text-[#39ff14] text-xs">➔</span> নতুন কন্টেন্ট আর্নিং পোর্টাল
+                  <span className="text-[#39ff14] text-[10px]">➔</span> কন্টেন্ট আর্নিং পোর্টাল
                 </button>
               </li>
               <li>
@@ -3332,7 +3833,7 @@ export default function App() {
                   onClick={() => { setActiveTab("tools-lab"); setSelectedPostId(null); }} 
                   className="flex items-center gap-1.5 hover:text-[#00f0ff] transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
                 >
-                  <span className="text-cyan-405 text-xs">➔</span> এআই টুলস ল্যাব ও ফ্যাক্টরি 🧪
+                  <span className="text-cyan-405 text-[10px]">➔</span> এআই টুলস ল্যাব 🧪
                 </button>
               </li>
               <li>
@@ -3340,42 +3841,81 @@ export default function App() {
                   onClick={() => { setActiveTab("nid"); setSelectedPostId(null); }} 
                   className="flex items-center gap-1.5 hover:text-[#00f0ff] transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
                 >
-                  <span className="text-[#39ff14] text-xs">➔</span> স্মার্ট এনআইডি কার্ড জেনারেটর
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => { setActiveTab("profile"); setSelectedPostId(null); }} 
-                  className="flex items-center gap-1.5 hover:text-[#ffae00] transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
-                >
-                  <span className="text-[#ffae00] text-xs">★</span> প্রোফাইল সম্পাদন (১৫০XP বোনাস)
+                  <span className="text-[#39ff14] text-[10px]">➔</span> এনআইডি কার্ড জেনারেটর
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Legal cyber indices */}
-          <div className="md:col-span-4 space-y-3">
-            <h4 className="text-xs uppercase font-mono tracking-widest text-[#00f0ff] font-bold">সিকিউরিটি অ্যান্ড ইনডেক্সিং</h4>
-            <div className="bg-[#070c14] border border-cyan-950 p-3 rounded text-[11px] font-sans leading-relaxed text-slate-400 space-y-1">
+          {/* Col 3: AdSense Policy & Legal Pages */}
+          <div className="md:col-span-3 space-y-3">
+            <h4 className="text-xs uppercase font-mono tracking-widest text-[#39ff14] font-bold">আইনি ও এডসেন্স নীতি (Legal Rules)</h4>
+            <ul className="space-y-2 text-xs text-slate-300 font-medium font-sans">
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("privacy"); setSelectedPostId(null); }} 
+                  className="flex items-center gap-1.5 hover:text-cyan-400 transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
+                >
+                  <span className="text-cyan-400 text-[10px]">🛡️</span> প্রাইভেসি পলিসি (Privacy Policy)
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("terms"); setSelectedPostId(null); }} 
+                  className="flex items-center gap-1.5 hover:text-purple-400 transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
+                >
+                  <span className="text-purple-300 text-[10px]">📜</span> ব্যবহারের শর্তাবলী (Terms)
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("disclaimer"); setSelectedPostId(null); }} 
+                  className="flex items-center gap-1.5 hover:text-amber-400 transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
+                >
+                  <span className="text-amber-405 text-[10px]">⚠️</span> ডিসক্লেইমার (Disclaimer)
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("about"); setSelectedPostId(null); }} 
+                  className="flex items-center gap-1.5 hover:text-emerald-400 transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
+                >
+                  <span className="text-emerald-400 text-[10px]">ℹ️</span> আমাদের সম্পর্কে (About Us)
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("contact-us"); setSelectedPostId(null); }} 
+                  className="flex items-center gap-1.5 hover:text-rose-400 transition-all duration-300 transform hover:translate-x-1 cursor-pointer leading-relaxed text-left"
+                >
+                  <span className="text-rose-400 text-[10px]">📧</span> যোগাযোগ করুন (Contact Us)
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Legal cyber indices */}
+          <div className="md:col-span-2 space-y-3">
+            <h4 className="text-xs uppercase font-mono tracking-widest text-[#bd00ff] font-bold">সিকিউরিটি ও ট্রাস্ট</h4>
+            <div className="bg-[#070c14] border border-cyan-950 p-2.5 rounded text-[10px] font-sans leading-relaxed text-slate-400 space-y-1">
               <div className="flex justify-between">
-                <span>সার্চ ইঞ্জিন ইন্ডেক্সার:</span>
-                <span className="text-emerald-400 font-mono">১০০% ভেরিফাইড</span>
+                <span>ইনডেক্সার:</span>
+                <span className="text-emerald-400 font-mono">১০০% ওকে</span>
               </div>
               <div className="flex justify-between">
-                <span>কোড সিকিউরিটি স্কোর:</span>
-                <span className="text-cyan-400 font-mono">A+ Rating</span>
+                <span>সিকিউরিটি স্কোর:</span>
+                <span className="text-cyan-400 font-mono font-bold">A+ Superb</span>
               </div>
               <div className="flex justify-between">
-                <span>ডিজিটাল ট্র্যাকিং পেমেন্টস:</span>
-                <span className="text-emerald-400 font-mono">২-ঘণ্টা বিকাশ পরিশোধ</span>
+                <span>গুগল এডসেন্স:</span>
+                <span className="text-[#39ff14] font-mono">Verified</span>
               </div>
             </div>
 
             {/* Dynamic Realtime Clock Portal */}
-            <div className="text-[10px] text-slate-500 font-mono flex items-center gap-1.5 justify-end pt-1">
-              <Clock className="w-3.5 h-3.5" />
-              <span>মুহূর্তের সময়: 2026-05-21 • Dhaka UTC</span>
+            <div className="text-[9px] text-slate-500 font-mono flex items-center gap-1.5 justify-end pt-1">
+              <Clock className="w-3 h-3" />
+              <span>Dhaka UTC • Active</span>
             </div>
           </div>
 
@@ -3668,6 +4208,305 @@ export default function App() {
           <span>প্রোফাইল</span>
         </button>
       </nav>
+
+      {/* PERSISTENT NEON FLOATING CHAT FAB */}
+      <div className="fixed bottom-24 md:bottom-8 right-6 z-40">
+        <button
+          onClick={() => {
+            setActiveTab("messages");
+            setSelectedPostId(null);
+          }}
+          className="group relative w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-tr from-cyan-950/90 to-blue-900/90 border border-cyan-400 hover:border-[#39ff14]/70 shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(57,255,20,0.4)] transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer"
+        >
+          {/* Pulsing indicator ring */}
+          <span className="absolute -inset-1.5 rounded-full border border-cyan-400/30 animate-ping pointer-events-none" />
+          
+          {/* Unread message badge indicator */}
+          <span className="absolute -top-1 -right-1 bg-red-500 border border-slate-950 text-white font-extrabold text-[9px] w-5 h-5 rounded-full flex items-center justify-center shadow-lg font-mono tracking-tighter">
+            ৩
+          </span>
+
+          <MessageSquare className="w-6.5 h-6.5 text-[#00f0ff] group-hover:text-[#39ff14] transition-colors" />
+
+          {/* Hover tooltip */}
+          <div className="absolute right-16 bg-[#040810] border border-cyan-950 p-2 rounded-lg text-[10.5px] font-semibold text-cyan-300 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-xl pointer-events-none font-mono">
+            💬 সাইবার মেসেঞ্জার চ্যাট
+          </div>
+        </button>
+      </div>
+
+      {/* Dynamic Cyber Story Lightbox Viewer */}
+      <AnimatePresence>
+        {activeStoryViewer && (
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#050911] border border-cyan-500/20 rounded-2xl w-full max-w-lg overflow-hidden relative shadow-[0_0_60px_rgba(0,240,255,0.25)] flex flex-col text-left"
+            >
+              {/* Header profile */}
+              <div className="p-4 bg-[#080d16] border-b border-cyan-950 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 to-indigo-500 overflow-hidden flex items-center justify-center">
+                    <img 
+                      src={activeStoryViewer.userAvatar} 
+                      alt={activeStoryViewer.username} 
+                      className="w-full h-full object-cover rounded-full bg-slate-900"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-xs sm:text-sm font-bold text-white tracking-tight leading-none">{activeStoryViewer.username}</h3>
+                    <span className="text-[9px] font-mono text-cyan-400 mt-1 block">{activeStoryViewer.timestamp}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setActiveStoryViewer(null)}
+                  className="p-1 px-3 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-lg hover:bg-slate-850 cursor-pointer text-xs font-mono"
+                >
+                  বন্ধ করুন ×
+                </button>
+              </div>
+
+              {/* Story content area */}
+              <div className="flex-1 min-h-[300px] flex items-center justify-center p-6 relative overflow-hidden bg-[#02050b]">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,240,255,0.08),transparent)] pointer-events-none" />
+
+                {activeStoryViewer.mediaType === "text" ? (
+                  <div className="text-center max-w-md relative z-10 px-4 space-y-4">
+                    <div className="inline-block text-[#00f0ff] font-mono text-xl animate-bounce">❝</div>
+                    <p className="text-sm sm:text-base md:text-lg font-semibold text-slate-100 tracking-wide leading-relaxed font-sans">
+                      {activeStoryViewer.textContent}
+                    </p>
+                    <div className="inline-block text-[#00f0ff] font-mono text-xl rotate-180">❝</div>
+                  </div>
+                ) : (
+                  <div className="h-full w-full max-h-[350px] relative z-10 flex flex-col justify-center items-center">
+                    <img 
+                      src={activeStoryViewer.mediaUrl} 
+                      alt="Story Media" 
+                      className="max-h-[300px] object-contain rounded-lg border border-cyan-950/40 shadow-xl"
+                    />
+                    {activeStoryViewer.caption && (
+                      <p className="text-xs font-sans font-medium text-[#00f0ff] bg-slate-950/90 border border-cyan-950 px-3 py-1.5 rounded-md mt-4 text-center max-w-sm tracking-wider">
+                        {activeStoryViewer.caption}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Engagement statistics bar */}
+              <div className="p-4 bg-[#080d16] border-t border-cyan-950 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
+                  <span className="flex items-center gap-1">
+                    👁 {activeStoryViewer.viewsCount} ভিউস
+                  </span>
+                  <span className="flex items-center gap-1 text-pink-500">
+                    ♥ {activeStoryViewer.likesCount} লাইকস
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setStories(prev => prev.map(s => {
+                        if (s.id === activeStoryViewer.id) {
+                          const updated = { ...s, likesCount: s.likesCount + 1 };
+                          setActiveStoryViewer(updated);
+                          return updated;
+                        }
+                        return s;
+                      }));
+                      addSystemNotification(`${activeStoryViewer.username}-এর স্টোরীতে আপনি রিয়েক্ট করেছেন!`, "like");
+                    }}
+                    className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded bg-pink-950/60 hover:bg-pink-900/80 text-pink-400 border border-pink-800/40 hover:border-pink-500 transition-all cursor-pointer"
+                  >
+                    🚀 লাভ রিয়েক্ট!
+                  </button>
+                  <button
+                    onClick={() => {
+                      const currentIdx = stories.findIndex(s => s.id === activeStoryViewer.id);
+                      if (currentIdx !== -1 && currentIdx < stories.length - 1) {
+                        setActiveStoryViewer(stories[currentIdx + 1]);
+                      } else {
+                        setActiveStoryViewer(stories[0]);
+                      }
+                    }}
+                    className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-400 border border-cyan-800/45 hover:border-cyan-400 transition-all cursor-pointer"
+                  >
+                    পরবর্তী →
+                  </button>
+                </div>
+              </div>
+
+              {/* High-CPC ads container (Safe spacing index layout) */}
+              {adminSettings.enableGoogleAds && (
+                <div className="p-2 bg-[#02050b] text-center border-t border-cyan-950/30">
+                  <div className="text-[8px] tracking-[0.2em] uppercase font-mono text-slate-600 mb-1">স্পন্সরড স্লট (Safe Container Policy)</div>
+                  <div dangerouslySetInnerHTML={{ __html: adminSettings.advertisementSnippet || '' }} />
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Dynamic Cyber Story Upload Form modal */}
+      <AnimatePresence>
+        {showUploadStoryModal && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#090d16] border border-cyan-500/40 rounded-2xl w-full max-w-md overflow-hidden relative shadow-[0_0_50px_rgba(0,240,255,0.2)] text-left"
+            >
+              <div className="h-[2px] bg-gradient-to-r from-cyan-400 via-indigo-500 to-[#39ff14]" />
+              
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-sm sm:text-base font-bold font-sans tracking-tight text-white flex items-center gap-2">
+                    ⚡ আমার নতুন স্টোরী শেয়ার করুন
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setShowUploadStoryModal(false);
+                      setUploadStoryText("");
+                      setUploadStoryUrl("");
+                      setUploadStoryCaption("");
+                    }}
+                    className="p-1 px-2.5 text-slate-400 hover:text-white bg-slate-950 border border-cyan-950/60 hover:border-cyan-500 rounded text-xs font-mono cursor-pointer"
+                  >
+                    বন্ধ করুন ×
+                  </button>
+                </div>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (uploadStoryMediaType === "text" && !uploadStoryText.trim()) {
+                      alert("অনুগ্রহ করে আপনার স্টোরী কন্টেন্ট লিখুন!");
+                      return;
+                    }
+                    if (uploadStoryMediaType === "image" && !uploadStoryUrl.trim()) {
+                      alert("অনুগ্রহ করে একটি ইমেজ ইউআরএল (Image URL) প্রদান করুন!");
+                      return;
+                    }
+
+                    const newStory: StoryItem = {
+                      id: `story-custom-${Date.now()}`,
+                      username: userStats.name,
+                      userAvatar: userStats.avatar,
+                      mediaType: uploadStoryMediaType,
+                      textContent: uploadStoryMediaType === "text" ? uploadStoryText : undefined,
+                      mediaUrl: uploadStoryMediaType === "image" ? uploadStoryUrl : undefined,
+                      caption: uploadStoryCaption.trim() || undefined,
+                      timestamp: "এইমাত্র",
+                      viewsCount: 1,
+                      likesCount: 0
+                    };
+
+                    setStories(prev => [newStory, ...prev]);
+
+                    setUserStats(prev => {
+                      const updated = {
+                        ...prev,
+                        balance: Number((prev.balance + 1.50).toFixed(2)),
+                        points: prev.points + 15
+                      };
+                      return updated;
+                    });
+
+                    addSystemNotification(`অভিনন্দন! আপনার স্টোরী সফলভাবে পাবলিশ হয়েছে। আপনার ব্যালেন্স ও XP বৃদ্ধি করা হয়েছে! ✨`, "earning");
+
+                    setShowUploadStoryModal(false);
+                    setUploadStoryText("");
+                    setUploadStoryUrl("");
+                    setUploadStoryCaption("");
+                  }}
+                  className="space-y-4"
+                >
+                  <div className="flex border-b border-cyan-950 pb-2 mb-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setUploadStoryMediaType("text")}
+                      className={`text-xs font-mono px-3 py-1.5 rounded transition-all cursor-pointer ${
+                        uploadStoryMediaType === "text"
+                          ? "bg-cyan-950 text-[#00f0ff] border border-cyan-800"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      ⌨ টেক্সট স্টোরী
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUploadStoryMediaType("image")}
+                      className={`text-xs font-mono px-3 py-1.5 rounded transition-all cursor-pointer ${
+                        uploadStoryMediaType === "image"
+                          ? "bg-cyan-950 text-[#00f0ff] border border-cyan-800"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      🖼 ইমেজ স্টোরী
+                    </button>
+                  </div>
+
+                  {uploadStoryMediaType === "text" ? (
+                    <div>
+                      <label className="block text-xs font-mono text-slate-400 mb-1">স্টোরী টেক্সট (বাংলায় লিখুন):</label>
+                      <textarea
+                        required
+                        rows={3}
+                        value={uploadStoryText}
+                        onChange={(e) => setUploadStoryText(e.target.value)}
+                        placeholder="আজকের বিশেষ টিপস বা গুরুত্বপূর্ণ বার্তাটি শেয়ার করুন..."
+                        className="w-full text-xs font-sans bg-[#0b121e] border border-cyan-950 focus:border-cyan-400 focus:outline-none rounded-lg p-3 text-slate-100 placeholder-slate-500"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-mono text-slate-400 mb-1">ইমেজ ছবির লিংক (URL):</label>
+                      <input
+                        required
+                        type="url"
+                        value={uploadStoryUrl}
+                        onChange={(e) => setUploadStoryUrl(e.target.value)}
+                        placeholder="https://images.unsplash.com/photo-..."
+                        className="w-full text-xs font-mono bg-[#0b121e] border border-cyan-950 focus:border-cyan-400 focus:outline-none rounded-lg p-3 text-slate-100 placeholder-slate-500"
+                      />
+                      <span className="text-[9px] font-mono text-slate-500 mt-1 block">💡 Unsplash বা যেকোনো ফ্রি ইমেজ ছবির URL হোস্ট পেস্ট করতে পারেন।</span>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-mono text-slate-400 mb-1">স্টোরী ক্যাপশন (Caption):</label>
+                    <input
+                      type="text"
+                      value={uploadStoryCaption}
+                      onChange={(e) => setUploadStoryCaption(e.target.value)}
+                      placeholder="যেমন: আলহামদুলিল্লাহ বা Cyber Update"
+                      className="w-full text-xs bg-[#0b121e] border border-cyan-950 focus:border-cyan-400 focus:outline-none rounded-lg p-2.5 text-slate-100"
+                    />
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3 rounded border border-cyan-950/60 text-[10.5px] leading-relaxed text-[#39ff14] font-mono">
+                    💰 স্টোরী পাবলিশ বোনাস: ১.৫০ ৳ ব্যালেন্স এবং ১৫ XP ইনস্ট্যান্ট যুক্ত করা হবে!
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-cyan-400 to-[#39ff14] hover:opacity-90 text-[#070b13] font-bold text-xs py-2.5 rounded-lg cursor-pointer font-sans text-center transition-opacity"
+                  >
+                    স্টোরী পাবলিশ করুন 🚀
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

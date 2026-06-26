@@ -56,16 +56,79 @@ jQuery(document).ready(function($) {
     }
 
     const powerBadge = $('#cyber-power-badge');
-    if (powerBadge.length) {
-        let speedMult = '1X';
-        if (userTierName === 'Member') speedMult = '2X';
-        if (userTierName === 'Elite') speedMult = '4X';
-        powerBadge.html(`POWER: ${userTierName.toUpperCase()} (${speedMult} SPEED)`);
+    if (typeof cyber_bot_obj !== 'undefined' && cyber_bot_obj.power_tier) {
+        const tier = cyber_bot_obj.power_tier;
+        let speedLabel = "1X SPEED";
+        if (tier.level === 2) speedLabel = "2X FORCE";
+        if (tier.level === 3) speedLabel = "4X TURBO";
+        if (tier.level === 4) speedLabel = "MAX POWER";
+        
+        powerBadge.html(`⚡ ${tier.badge} (${speedLabel})`);
+        
+        const styleTagId = 'maya-power-compiled-styles';
+        $('#' + styleTagId).remove();
+        
+        const customCss = `
+            #cyber-chat-window, .active-window-grid {
+                border: ${tier.border} !important;
+                box-shadow: 0 0 25px ${tier.glow} !important;
+            }
+            .chat-header {
+                border-bottom: 1.5px solid ${tier.color}33 !important;
+            }
+            .welcome-orb {
+                border-color: ${tier.color} !important;
+                box-shadow: 0 0 20px ${tier.glow} !important;
+            }
+            #send-btn {
+                background: ${tier.color} !important;
+                box-shadow: 0 0 10px ${tier.glow} !important;
+                color: #000 !important;
+            }
+            .indicator-inner {
+                color: ${tier.color} !important;
+            }
+            .custom-wp-select {
+                border-color: ${tier.color}66 !important;
+            }
+            .preset-card:hover {
+                border-color: ${tier.color} !important;
+                box-shadow: 0 0 12px ${tier.glow}44 !important;
+            }
+            .sparkle-anim-svg {
+                color: ${tier.color} !important;
+                filter: drop-shadow(0 0 4px ${tier.color});
+            }
+        `;
+        
+        if (modelSelect.length) {
+            if (tier.level === 1) {
+                modelSelect.find('option[value="gemini-3.1-pro-preview"]').text('🔒 Maya Pro (Requires Level 2+)').attr('disabled', true);
+                modelSelect.find('option[value="maya-ultra"]').text('🔒 Maya Ultra (Requires Level 3+)').attr('disabled', true);
+            } else if (tier.level === 2) {
+                modelSelect.find('option[value="maya-ultra"]').text('🔒 Maya Ultra (Requires Level 3+)').attr('disabled', true);
+            }
+        }
+        
+        $('<style>').attr('id', styleTagId).html(customCss).appendTo('head');
+        
         powerBadge.css({
-            'border-color': userTierColor,
-            'color': userTierColor,
-            'background': 'rgba(' + hexToRgb(userTierColor) + ', 0.08)'
+            'border-color': tier.color,
+            'color': tier.color,
+            'background': 'rgba(' + hexToRgb(tier.color) + ', 0.08)'
         });
+    } else {
+        if (powerBadge.length) {
+            let speedMult = '1X';
+            if (userTierName === 'Member') speedMult = '2X';
+            if (userTierName === 'Elite') speedMult = '4X';
+            powerBadge.html(`POWER: ${userTierName.toUpperCase()} (${speedMult} SPEED)`);
+            powerBadge.css({
+                'border-color': userTierColor,
+                'color': userTierColor,
+                'background': 'rgba(' + hexToRgb(userTierColor) + ', 0.08)'
+            });
+        }
     }
 
     // --- SHADOW TERMINAL & SIMPLIFIED MODES ---

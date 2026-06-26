@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 add_action('admin_menu', function() {
     add_submenu_page(
-        'ilybd-master-panel', 
+        'ilybd-settings', 
         'Featured Control',
         'Featured Control',
         'manage_options',

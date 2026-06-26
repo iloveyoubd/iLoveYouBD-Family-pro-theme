@@ -2,7 +2,7 @@
 /**
  * ILYBD CATEGORY SECTION - REPAIRED UTF-8 VERSION
  */
-$categories = get_categories(['hide_empty' => false]);
+$categories = get_categories(['hide_empty' => true]);
 
 if (!function_exists('ilybd_get_category_icon')) {
     function ilybd_get_category_icon($slug){

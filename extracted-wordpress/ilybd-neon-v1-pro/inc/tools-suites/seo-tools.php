@@ -108,10 +108,10 @@ function ilybd_render_tool_meta_tag_generator() {
         </div>
         
         <label class="bento-label" style="color:<?php echo $neon_color; ?>;">SITE DESCRIPTION / বিবরণ</label>
-        <textarea id="meta-site-desc" class="cyan-glow-input" style="height:60px; margin-bottom:15px;" placeholder="যেমন: বাংলাদেশের ১ নম্বর সাইবার সিকিউরিটি ও আর্নিং ফোরাম..."></textarea>
+        <textarea id="meta-site-desc" class="cyan-glow-input" style="height:60px; margin-bottom:15px;" placeholder="যেমন: বাংলাদেশের নির্ভরযোগ্য প্রযুক্তি ও ওয়েব প্রোগ্রামিং টিউটোরিয়াল পোর্টাল..."></textarea>
         
         <label class="bento-label" style="color:<?php echo $neon_color; ?>;">KEYWORDS / কিওয়ার্ডস</label>
-        <input type="text" id="meta-site-keywords" class="cyan-glow-input" placeholder="যেমন: tech, hacking, free, adsense..." style="margin-bottom:15px;">
+        <input type="text" id="meta-site-keywords" class="cyan-glow-input" placeholder="যেমন: tech, programming, tutorials, ai, software..." style="margin-bottom:15px;">
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
             <div>
@@ -421,7 +421,7 @@ function ilybd_render_tool_open_graph_generator() {
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
             <div>
                 <label class="bento-label" style="color:<?php echo $neon_color; ?>;">OG TITLE / টাইটেল</label>
-                <input type="text" id="og-title-in" class="cyan-glow-input" placeholder="যেমন: বিকাশ হ্যাকিং অ্যালার্ম">
+                <input type="text" id="og-title-in" class="cyan-glow-input" placeholder="যেমন: বিকাশ সিকিউরিটি নির্দেশিকা">
             </div>
             <div>
                 <label class="bento-label" style="color:<?php echo $neon_color; ?>;">OG TYPE</label>
@@ -550,7 +550,7 @@ function ilybd_render_tool_keyword_clustering_tool() {
     ?>
     <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif;">
         <label class="bento-label" style="color:<?php echo $neon_color; ?>;">PASTE KEYWORDS (ONE PER LINE) / কিওয়ার্ড লিস্ট দিন</label>
-        <textarea id="cluster-raw" class="cyan-glow-input" style="height:120px; margin-bottom:15px;" placeholder="যেমন: বিকাশ কুপন কোড&#10;বিকাশ হ্যাকিং ট্রিক&#10;ফ্রি ইন্টারনেট রবি..."></textarea>
+        <textarea id="cluster-raw" class="cyan-glow-input" style="height:120px; margin-bottom:15px;" placeholder="যেমন: বিকাশ কুপন কোড&#10;বিকাশ সিকিউরিটি টিপস&#10;ইন্টারনেট স্পিড টেস্ট..."></textarea>
 
         <button onclick="groupClusterKeywords()" class="cyber-action-btn" style="width:100%; margin-bottom:20px;">GROUP INTENT CLUSTERS ➔</button>
 

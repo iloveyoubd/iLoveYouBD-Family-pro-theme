@@ -47,7 +47,7 @@ add_action('after_setup_theme', function () {
         'cyber-ui-settings.php', 'user-dashboard.php', 'post-layouts.php', 'featured-control.php',
         'settings-core.php', 'settings-slider.php', 'settings-featured.php', 'settings-popular.php',
         'ily-admin-settings.php', 'cyber-layout-engine.php', 'cyber-render-engine.php', 'speed-optimizer.php', 'autonomous-publishing-v2.php', 'seo-engine.php', 'command-central-helpers.php',
-        'ilybd-tools-engine.php', 'ilybd-tools-views.php'
+        'ilybd-tools-engine.php', 'ilybd-tools-views.php', 'cyber-social-hub.php', 'cyber-security-autopilot.php', 'google-services-integrator.php', 'cyber-biometric-honeypot.php', 'nextgen-autopilot-sections.php', 'qa-autopilot-engine.php'
     ];
     foreach ($modules as $file) {
         $path = get_template_directory() . '/inc/' . $file;
@@ -103,8 +103,8 @@ function ilybd_set_post_views($postID) {
         if (!isset($_COOKIE[$cookie_key])) {
             setcookie($cookie_key, '1', time() + 3600 * 4, '/'); // ৪ ঘন্টা সেশন
             
-            $view_points = 1; // ১ পয়েন্ট
-            $view_cash = 0.05; // ০.০৫ টাকা
+            $view_points = intval(get_option('ilybd_eco_view_points', 1));
+            $view_cash = floatval(get_option('ilybd_eco_view_cash', 0.05));
             ilybd_update_user_economy($author_id, $view_points, $view_cash);
         }
     }
@@ -119,6 +119,57 @@ function ilybd_get_post_views($postID) {
 add_action('wp_head', function () {
     if (is_single()) { ilybd_set_post_views(get_the_ID()); }
 });
+
+// Remove EEAT and Technical Reviewer boilerplate text from excerpts globally
+add_filter('get_the_excerpt', 'ilybd_strip_pillar_text_from_excerpt', 20, 2);
+function ilybd_strip_pillar_text_from_excerpt($excerpt, $post) {
+    if (!$post) {
+        return $excerpt;
+    }
+
+    $content = $post->post_content;
+
+    // Check if the content contains our custom wrapper and EEAT blocks
+    if (strpos($content, 'ilybd-unique-post-wrapper') !== false) {
+        // Extract content inside the unique wrapper
+        if (preg_match('/<div class="ilybd-unique-post-wrapper"[^>]*>(.*?)<\/div>\s*$/is', $content, $matches)) {
+            $excerpt_base = $matches[1];
+        } else {
+            $excerpt_base = $content;
+        }
+
+        // Strip known injected widget blocks to avoid showing them in excerpt previews
+        $excerpt_base = preg_replace('/<div class="ilybd-key-takeaways-box".*?<\/div>/is', '', $excerpt_base);
+        $excerpt_base = preg_replace('/<div class="ilybd-human-experience-box".*?<\/div>/is', '', $excerpt_base);
+        $excerpt_base = preg_replace('/<div class="ilybd-pros-cons-grid".*?<\/div>/is', '', $excerpt_base);
+        $excerpt_base = preg_replace('/<div class="ilybd-interactive-poll-box".*?<\/div>/is', '', $excerpt_base);
+        $excerpt_base = preg_replace('/<div class="ilybd-trusted-sources-block".*?<\/div>/is', '', $excerpt_base);
+        $excerpt_base = preg_replace('/<div class="ilybd-auto-comparison-table-wrapper".*?<\/div>/is', '', $excerpt_base);
+        $excerpt_base = preg_replace('/<div class="post-inline-image".*?<\/div>/is', '', $excerpt_base);
+        $excerpt_base = preg_replace('/<div class="ilybd-inline-recommendation".*?<\/div>/is', '', $excerpt_base);
+
+        // Strip HTML tags and normalize spaces
+        $clean_text = wp_strip_all_tags($excerpt_base);
+        $clean_text = preg_replace('/\s+/u', ' ', $clean_text);
+        
+        $excerpt = wp_trim_words($clean_text, 16, '...');
+    } else {
+        // Plain text fallback regex cleanup for older or legacy posts
+        if (strpos($excerpt, 'Technical Reviewer') !== false || strpos($excerpt, 'অফিসিয়াল ইইএটি') !== false) {
+            $excerpt = preg_replace('/(✍️\s*)?Technical Reviewer.*?অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:[^\.]*(\.|$)?/mui', '', $excerpt);
+        }
+        if (strpos($excerpt, 'Topic Cluster Pillar') !== false) {
+            $excerpt = preg_replace('/🧬?\s*Topic Cluster Pillar Resource:.*?আমাদের প্রধান ক্যাটাগরি পিলারে ক্লিক করে এই বিষয়ের পূর্ণাঙ্গ বিবরণ পড়ুন:[^\.]*(\.|$)?/mui', '', $excerpt);
+        }
+    }
+
+    $excerpt = trim($excerpt);
+    if ($excerpt === '...' || empty($excerpt)) {
+        $excerpt = '';
+    }
+
+    return $excerpt;
+}
 
 /* =====================================
    5. ADVANCED COMMENTS SYSTEM (FINAL FIX)
@@ -308,6 +359,36 @@ function ilybd_handle_share() {
     wp_send_json_error();
 }
 
+// --- ৭.৪.৫ পোস্ট রেটিং বা রিভিউ সিস্টেম (AJAX) ---
+add_action('wp_ajax_ilybd_handle_rating', 'ilybd_handle_rating');
+add_action('wp_ajax_nopriv_ilybd_handle_rating', 'ilybd_handle_rating');
+
+function ilybd_handle_rating() {
+    $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+    $rating  = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
+    if ($post_id && $rating >= 1 && $rating <= 5) {
+        $rating_key = '_ilybd_rating_score_' . $post_id;
+        $rating_count_key = '_ilybd_rating_count_' . $post_id;
+        
+        $current_rating = (float) get_post_meta($post_id, $rating_key, true) ?: 4.8;
+        $rating_count = (int) get_post_meta($post_id, $rating_count_key, true) ?: 15;
+        
+        // Calculate new weighted average
+        $new_count = $rating_count + 1;
+        $new_rating = (($current_rating * $rating_count) + $rating) / $new_count;
+        $new_rating = round($new_rating, 1);
+        
+        update_post_meta($post_id, $rating_key, $new_rating);
+        update_post_meta($post_id, $rating_count_key, $new_count);
+        
+        wp_send_json_success(array(
+            'rating' => $new_rating,
+            'count' => $new_count
+        ));
+    }
+    wp_send_json_error();
+}
+
 // --- ৭.৫ কমেন্ট এডিট সিস্টেম (AJAX) ---
 add_action('wp_ajax_ilybd_edit_comment', 'ilybd_edit_comment_ajax');
 
@@ -382,7 +463,9 @@ function ilybd_handle_report() {
    CATEGORY HOOK RENDER
 ========================= */
 add_action('ilybd_category', function(){
-    get_template_part('template-parts/category-section');
+    if (get_option('ily_enable_categories', 1)) {
+        get_template_part('template-parts/category-section');
+    }
 });
 
 /* =====================================
@@ -586,6 +669,9 @@ function cyberx_settings_page() {
 
 // REGISTER SHORTSCODE TO LOAD MODULE INSTANTLY
 add_shortcode('ilybd_social_hub', function() {
+    if (function_exists('cyber_social_hub_render_html')) {
+        return cyber_social_hub_render_html();
+    }
     ob_start();
     get_template_part('template-parts/social-hub');
     return ob_get_clean();
@@ -676,7 +762,12 @@ function ilybd_neon_cyber_bot_scripts() {
     }
     if ( file_exists( $js_file ) ) {
         wp_enqueue_script( 'cyber-bot-script', get_template_directory_uri() . '/assets/js/cyber-bot-script.js', array('jquery'), $js_ver, true );
-        wp_localize_script( 'cyber-bot-script', 'cyber_bot_obj', array('ajax_url' => admin_url( 'admin-ajax.php' )));
+        
+        $power_tier = function_exists('ilybd_get_chatbot_power_tier') ? ilybd_get_chatbot_power_tier() : null;
+        wp_localize_script( 'cyber-bot-script', 'cyber_bot_obj', array(
+            'ajax_url'   => admin_url( 'admin-ajax.php' ),
+            'power_tier' => $power_tier
+        ));
     }
 }
 add_action( 'wp_enqueue_scripts', 'ilybd_neon_cyber_bot_scripts' );
@@ -703,7 +794,12 @@ function ilybd_get_notifications(){
     $noti = is_array($noti) ? $noti : [];
     
     $normalized = [];
+    $unread_count = 0;
     foreach ($noti as $item) {
+        $is_read = isset($item['read']) && $item['read'] == 1;
+        if (!$is_read) {
+            $unread_count++;
+        }
         $normalized[] = [
             'id'        => isset($item['id']) ? $item['id'] : '',
             'text'      => isset($item['text']) ? $item['text'] : '',
@@ -711,10 +807,43 @@ function ilybd_get_notifications(){
             'link'      => isset($item['link']) ? $item['link'] : '',
             'time'      => isset($item['time']) ? $item['time'] : '',
             'timestamp' => isset($item['timestamp']) ? $item['timestamp'] : time(),
+            'read'      => $is_read ? 1 : 0
         ];
     }
     
-    wp_send_json_success(['count' => count($normalized), 'items' => array_slice(array_reverse($normalized), 0, 3)]);
+    wp_send_json_success([
+        'count' => $unread_count,
+        'total_count' => count($normalized),
+        'items' => array_slice(array_reverse($normalized), 0, 10)
+    ]);
+}
+
+/* =========================
+   AJAX: MARK NOTIFICATIONS READ
+========================= */
+add_action('wp_ajax_ilybd_mark_notifications_read', 'ilybd_mark_notifications_read');
+function ilybd_mark_notifications_read() {
+    $user_id = get_current_user_id();
+    if(!$user_id){ wp_send_json_error(); }
+    $noti = get_user_meta($user_id, 'notifications', true);
+    if (is_array($noti)) {
+        foreach ($noti as &$item) {
+            $item['read'] = 1;
+        }
+        update_user_meta($user_id, 'notifications', $noti);
+    }
+    wp_send_json_success(['message' => 'All marked as read']);
+}
+
+/* =========================
+   AJAX: CLEAR NOTIFICATIONS
+========================= */
+add_action('wp_ajax_ilybd_clear_notifications', 'ilybd_clear_notifications');
+function ilybd_clear_notifications(){
+    $user_id = get_current_user_id();
+    if(!$user_id){ wp_send_json_error(); }
+    delete_user_meta($user_id, 'notifications');
+    wp_send_json_success(['message' => 'All notifications cleared']);
 }
 
 /* =========================
@@ -724,25 +853,7 @@ add_action('widgets_init', function () {
     register_sidebar(['name' => 'Main Sidebar', 'id' => 'main-sidebar', 'before_widget' => '<div class="widget-box">', 'after_widget' => '</div>', 'before_title' => '<h3 class="widget-title">', 'after_title' => '</h3>']);
 });
 
-add_action('admin_menu', function () {
-    add_menu_page('Google Scripts', 'Google Scripts', 'manage_options', 'cyberx-google-scripts', 'cyberx_google_settings_page', 'dashicons-google', 100);
-});
-
-function cyberx_google_settings_page() {
-    if (isset($_POST['cyberx_save_google_code'])) {
-        update_option('cyberx_header_scripts', stripslashes($_POST['cyberx_header_scripts']));
-        echo '<div class="updated"><p>Saved!</p></div>';
-    }
-    $current_code = get_option('cyberx_header_scripts', '');
-    ?>
-    <div class="wrap"><h1>CyberX Google Scripts</h1><form method="post"><textarea name="cyberx_header_scripts" rows="10" cols="70" style="background:#111;color:#0f0;"><?php echo esc_textarea($current_code); ?></textarea><br><input type="submit" name="cyberx_save_google_code" class="button-primary" value="Save Changes"></form></div>
-    <?php
-}
-
-add_action('wp_head', function() {
-    $script = get_option('cyberx_header_scripts', '');
-    if (!empty($script)) { echo stripslashes($script); }
-}, 1);
+// Google Services are now fully driven by our custom OOP Singleton component in inc/google-services-integrator.php
 
 // --- Talking Tom Pro System ---
 function ilovebd_cyber_game_system() {
@@ -958,7 +1069,8 @@ function ilybd_add_user_notification($user_id, $message, $link = '') {
         'text'      => $message,
         'link'      => $link,
         'time'      => current_time('mysql'),
-        'timestamp' => time()
+        'timestamp' => time(),
+        'read'      => 0
     ];
     $notifications[] = $new_noti;
     update_user_meta($user_id, 'notifications', $notifications);
@@ -967,6 +1079,34 @@ function ilybd_add_user_notification($user_id, $message, $link = '') {
 // --- ১.২ গ্লোবাল পয়েন্ট ও ব্যালেন্স রেসপনসিবল এডিটর ---
 function ilybd_update_user_economy($user_id, $points_delta, $balance_delta, $message = '') {
     if (!$user_id) return;
+    
+    // Safety check filter to allow dynamic tracking and bot-activity prevention loops (Google Adsense Safe)
+    $is_authorized = apply_filters('ilybd_update_user_economy_auth', true, $user_id, $points_delta, $balance_delta);
+    if (!$is_authorized) {
+        return;
+    }
+    
+    // ১.২.০ প্লাগিন ইঞ্জিন লোডেড থাকলে সরাসরি সিকিউর লেজারে রাইট করা হবে
+    if ( function_exists('ilybd_add_user_balance_or_points') ) {
+        $clean_reason = !empty($message) ? strip_tags($message) : "কমিউনিটি ইন্টারেক্টিভ কন্ট্রিবিউশন বোনাস";
+        $link_type = 'other';
+        if (strpos($clean_reason, 'পোস্ট') !== false || strpos($clean_reason, 'পাবলিশ') !== false) {
+            $link_type = 'post';
+        } elseif (strpos($clean_reason, 'মন্তব্য') !== false || strpos($clean_reason, 'কমেন্ট') !== false) {
+            $link_type = 'comment';
+        } elseif (strpos($clean_reason, 'রেফার') !== false) {
+            $link_type = 'referral';
+        } elseif (strpos($clean_reason, 'চ্যাট') !== false || strpos($clean_reason, 'মেসেজ') !== false) {
+            $link_type = 'forum';
+        }
+        
+        ilybd_add_user_balance_or_points($user_id, $balance_delta, $points_delta, $clean_reason, '', $link_type);
+        
+        if (!empty($message)) {
+            ilybd_add_user_notification($user_id, $message);
+        }
+        return;
+    }
     
     // ১.২.১ পয়েন্ট আপডেট এবং সিংক্রোনাইজেশন
     $points = (int) get_user_meta($user_id, 'ilybd_total_points', true);
@@ -996,8 +1136,8 @@ function ilybd_award_published_post_rewards($new_status, $old_status, $post) {
     if ($new_status === 'publish' && $old_status !== 'publish' && $post->post_type === 'post') {
         $author_id = $post->post_author;
         
-        $points_reward = 25; // ২৫ পয়েন্ট
-        $cash_reward = 5.50; // ৫.৫০ টাকা
+        $points_reward = intval(get_option('ilybd_eco_post_points', 25));
+        $cash_reward = floatval(get_option('ilybd_eco_post_cash', 5.50));
         
         $msg = sprintf("📝 আপনার পোস্টটি অনুমোদিত ও পাবলিশ করা হয়েছে! আপনি লাভ করেছেন %d XP এবং ৳%s টাকা।", $points_reward, number_format($cash_reward, 2));
         ilybd_update_user_economy($author_id, $points_reward, $cash_reward, $msg);
@@ -1020,12 +1160,18 @@ function ilybd_award_comment_rewards($comment_ID, $comment_approved, $commentdat
         // কমেন্ট কারী রেজিস্ট্রার্ড ইউজার হলে রিওয়ার্ড দিন
         if ($user_id) {
             $is_question = (get_post_type($post_id) === 'ilybd_question');
-            $points_reward = $is_question ? 15 : 5; // ফোরামে উত্তর দিলে ১৫ পয়েন্ট, সাধারণ পোস্টে ৫ কমেন্ট পয়েন্ট
-            $cash_reward = $is_question ? 1.50 : 0.50; // ফোরামে ১.৫০ টাকা, সাধারণ কমেন্টে ০.৫০ টাকা
             
             if ($is_question) {
+                $points_reward = intval(get_option('ilybd_eco_answer_points', 15));
+                $cash_reward = floatval(get_option('ilybd_eco_answer_cash', 1.50));
                 $msg = sprintf("💡 ফোরামে প্রশ্নের সঠিক উত্তর প্রদানের জন্য %d XP এবং ৳%s টাকা বোনাস পেয়েছেন!", $points_reward, number_format($cash_reward, 2));
+            } elseif ($comment && $comment->comment_parent) {
+                $points_reward = intval(get_option('ilybd_eco_reply_points', 5));
+                $cash_reward = floatval(get_option('ilybd_eco_reply_cash', 0.50));
+                $msg = sprintf("💬 সাইটে কমেন্টের চমৎকার রিপ্লে বা উত্তর দেওয়ার জন্য %d XP এবং ৳%s টাকা পেয়েছেন!", $points_reward, number_format($cash_reward, 2));
             } else {
+                $points_reward = intval(get_option('ilybd_eco_comment_points', 5));
+                $cash_reward = floatval(get_option('ilybd_eco_comment_cash', 0.50));
                 $msg = sprintf("💬 সাইটে গঠনমূলক কমেন্ট করার জন্য %d XP এবং ৳%s টাকা পেয়েছেন!", $points_reward, number_format($cash_reward, 2));
             }
             ilybd_update_user_economy($user_id, $points_reward, $cash_reward, $msg);
@@ -1080,12 +1226,17 @@ function ilybd_comment_approval_reward_transition($comment_id, $comment_status) 
             $is_question = (get_post_type($post_id) === 'ilybd_question');
             
             if ($user_id) {
-                $points_reward = $is_question ? 15 : 5;
-                $cash_reward = $is_question ? 1.50 : 0.50;
-                
                 if ($is_question) {
+                    $points_reward = intval(get_option('ilybd_eco_answer_points', 15));
+                    $cash_reward = floatval(get_option('ilybd_eco_answer_cash', 1.50));
                     $msg = sprintf("💡 ফোরামে আপনার উত্তরটি রিভিউ শেষে এপ্রুভ হয়েছে! আপনি %d XP এবং ৳%s টাকা বোনাস লাভ করেছেন।", $points_reward, number_format($cash_reward, 2));
+                } elseif ($comment && $comment->comment_parent) {
+                    $points_reward = intval(get_option('ilybd_eco_reply_points', 5));
+                    $cash_reward = floatval(get_option('ilybd_eco_reply_cash', 0.50));
+                    $msg = sprintf("💬 কমেন্ট রিপ্লে রিভিউ শেষে এপ্রুভ হয়েছে! আপনি %d XP এবং ৳%s টাকা লাভ করেছেন।", $points_reward, number_format($cash_reward, 2));
                 } else {
+                    $points_reward = intval(get_option('ilybd_eco_comment_points', 5));
+                    $cash_reward = floatval(get_option('ilybd_eco_comment_cash', 0.50));
                     $msg = sprintf("💬 আপনার একটি কমেন্টটি রিভিউ শেষে এপ্রুভ হয়েছে! আপনি %d XP এবং ৳%s টাকা লাভ করেছেন।", $points_reward, number_format($cash_reward, 2));
                 }
                 ilybd_update_user_economy($user_id, $points_reward, $cash_reward, $msg);
@@ -2333,19 +2484,19 @@ if (!function_exists('ilybd_sanitize_and_format_social_link')) {
 add_action('init', function () {
     register_post_type('apps', array(
         'labels' => array(
-            'name'               => 'আইবিডি অ্যাপস',
-            'singular_name'      => 'আইবিডি অ্যাপ',
-            'add_new'            => 'নতুন অ্যাপ যোগ করুন',
-            'add_new_item'       => 'নতুন আইবিডি অ্যাপ যোগ করুন',
-            'edit_item'          => 'অ্যাপ এডিট করুন',
-            'new_item'           => 'নতুন অ্যাপ',
-            'all_items'          => 'সব আইবিডি অ্যাপস',
-            'view_item'          => 'অ্যাপ দেখুন',
-            'search_items'       => 'অ্যাপ খুঁজুন',
-            'not_found'          => 'কোনো অ্যাপ পাওয়া যায়নি',
-            'not_found_in_trash' => 'ট্র্যাশে কোনো অ্যাপ পাওয়া যায়নি',
+            'name'               => 'IBD Apps',
+            'singular_name'      => 'IBD App',
+            'add_new'            => 'Add New App',
+            'add_new_item'       => 'Add New IBD App',
+            'edit_item'          => 'Edit App',
+            'new_item'           => 'New App',
+            'all_items'          => 'All IBD Apps',
+            'view_item'          => 'View App',
+            'search_items'       => 'Search Apps',
+            'not_found'          => 'No Apps found',
+            'not_found_in_trash' => 'No Apps found in Trash',
             'parent_item_colon'  => '',
-            'menu_name'          => 'আইবিডি অ্যাপস',
+            'menu_name'          => '📱 IBD Apps',
         ),
         'public'             => true,
         'publicly_queryable' => true,
@@ -2446,6 +2597,279 @@ add_action('save_post', function ($post_id) {
 }, 10, 1);
 
 // ১২.৪ হোমপেজ ফিডে পোস্টের সংখ্যা যেভাবে ছিল সেভাবেই রাখা থাকবে
+
+/* =========================================================
+   PWA (PROGRESSIVE WEB APP) & MANIFEST SETUP
+   ========================================================= */
+
+add_action('rest_api_init', function () {
+    register_rest_route('ilybd/v1', '/manifest', array(
+        'methods' => 'GET',
+        'callback' => 'ilybd_generate_pwa_manifest',
+        'permission_callback' => '__return_true'
+    ));
+});
+
+function ilybd_generate_pwa_manifest() {
+    $neon_color = get_option('ilybd_main_color', '#00ff41');
+    $site_name = get_bloginfo('name');
+    $desc = get_bloginfo('description');
+
+    $manifest = array(
+        "name" => $site_name,
+        "short_name" => "ILYBD",
+        "description" => $desc,
+        "start_url" => "/",
+        "display" => "standalone",
+        "background_color" => "#030712",
+        "theme_color" => $neon_color,
+        "icons" => array(
+            array(
+                "src" => get_site_icon_url(192) ? get_site_icon_url(192) : "https://image.pollinations.ai/prompt/cyberpunk%20neon%20logo?width=192&height=192&nologo=true",
+                "sizes" => "192x192",
+                "type" => "image/png"
+            ),
+            array(
+                "src" => get_site_icon_url(512) ? get_site_icon_url(512) : "https://image.pollinations.ai/prompt/cyberpunk%20neon%20logo?width=512&height=512&nologo=true",
+                "sizes" => "512x512",
+                "type" => "image/png"
+            )
+        )
+    );
+
+    $response = new WP_REST_Response($manifest);
+    $response->header('Content-Type', 'application/json; charset=utf-8');
+    return $response;
+}
+
+add_action('wp_head', function() {
+    $manifest_url = rest_url('ilybd/v1/manifest');
+    $neon_color = get_option('ilybd_main_color', '#00ff41');
+    echo '<link rel="manifest" href="' . esc_url($manifest_url) . '">' . "\n";
+    echo '<meta name="theme-color" content="' . esc_attr($neon_color) . '">' . "\n";
+});
+
+// Inline Service Worker for Offline Fallback & Install Prompt
+add_action('wp_footer', function() {
+    ?>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            var swContent = `
+            const CACHE_NAME = 'ilybd-pwa-cache-v1';
+            const urlsToCache = [ '/' ];
+            self.addEventListener('install', event => {
+                event.waitUntil(caches.open(CACHE_NAME).then(cache => { return cache.addAll(urlsToCache); }));
+            });
+            self.addEventListener('fetch', event => {
+                event.respondWith(caches.match(event.request).then(response => { return response || fetch(event.request); }));
+            });
+            `;
+            var blob = new Blob([swContent], { type: 'text/javascript' });
+            var swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).then(function(registration) {
+                console.log('ILYBD PWA ServiceWorker registration successful');
+            }).catch(function(err) {
+                console.log('ILYBD PWA ServiceWorker registration failed: ', err);
+            });
+        });
+    }
+    </script>
+    <?php
+});
+
+/* =========================================================
+   USER ENGAGEMENT & SEO BOOSTERS (Inline Related + Feedback + AdBlock)
+   ========================================================= */
+
+// 1. Inject Inline Related Posts
+add_filter('the_content', 'ilybd_inject_inline_related_posts');
+function ilybd_inject_inline_related_posts($content) {
+    if (!is_single() || get_option('ilybd_enable_inline_related', 'yes') !== 'yes') {
+        return $content;
+    }
+    
+    if (get_post_type() !== 'post') {
+        return $content;
+    }
+
+    $paragraphs = explode('</p>', $content);
+    $total_paragraphs = count($paragraphs);
+    
+    // Don't inject if post is too short
+    if ($total_paragraphs < 6) return $content;
+
+    $insert_position = floor($total_paragraphs * 0.4);
+
+    $categories = get_the_category();
+    if (empty($categories)) return $content;
+    
+    $related_posts = get_posts(array(
+        'category__in' => array($categories[0]->term_id),
+        'post__not_in' => array(get_the_ID()),
+        'posts_per_page' => 1,
+        'orderby' => 'rand'
+    ));
+
+    if (!empty($related_posts)) {
+        $rel_post = $related_posts[0];
+        $rel_title = esc_html($rel_post->post_title);
+        $rel_link = esc_url(get_permalink($rel_post->ID));
+        $neon_color = get_option('ilybd_main_color', '#00ff41');
+
+        $injection_html = "
+        <div class='ilybd-inline-related' style='margin: 25px 0; padding: 15px 20px; background: rgba(0,0,0,0.4); border-left: 4px solid {$neon_color}; border-radius: 0 8px 8px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5);'>
+            <span style='color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; font-weight: 800;'><i class='fa-solid fa-bolt' style='color: {$neon_color};'></i> Recommended For You</span>
+            <a href='{$rel_link}' style='color: #fff; font-size: 15px; font-weight: 700; text-decoration: none; line-height: 1.5; display: inline-block; transition: all 0.2s;' onmouseover='this.style.color=\"{$neon_color}\"' onmouseout='this.style.color=\"#fff\"'>
+                {$rel_title}
+            </a>
+        </div>";
+
+        array_splice($paragraphs, $insert_position, 0, $injection_html);
+    }
+    
+    return implode('</p>', $paragraphs);
+}
+
+// 2. Feedback Widget (Was this helpful?) & Anti-Adblock
+add_filter('the_content', 'ilybd_inject_feedback_and_adblock_widget');
+function ilybd_inject_feedback_and_adblock_widget($content) {
+    if (!is_single() || get_post_type() !== 'post') {
+        return $content;
+    }
+
+    $neon_color = get_option('ilybd_main_color', '#00ff41');
+    $prepend_html = '';
+    $append_html = '';
+
+    // Anti-Adblock (Prepend)
+    if (get_option('ilybd_enable_anti_adblock', 'no') === 'yes') {
+        $prepend_html = "
+        <div id='ilybd-adblock-notice' style='display:none; margin-bottom: 25px; padding: 15px 20px; background: rgba(255, 62, 62, 0.1); border: 1px solid rgba(255, 62, 62, 0.3); border-radius: 8px; color: #ff3e3e;'>
+            <h4 style='margin: 0 0 5px 0; font-size: 15px; display:flex; align-items:center; gap:8px;'><i class='fa-solid fa-triangle-exclamation'></i> Please Support Us</h4>
+            <p style='margin: 0; font-size: 13px; color: #f87171;'>It looks like you are using an AdBlocker. To keep our high-quality content free, please whitelist our site. We ensure our ads are safe and non-intrusive.</p>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var adBlockEnabled = false;
+                var testAd = document.createElement('div');
+                testAd.innerHTML = '&nbsp;';
+                testAd.className = 'adsbox';
+                testAd.style.position = 'absolute';
+                testAd.style.top = '-1000px';
+                document.body.appendChild(testAd);
+                
+                if (testAd.offsetHeight === 0) {
+                    adBlockEnabled = true;
+                }
+                testAd.remove();
+                
+                if(adBlockEnabled) {
+                    document.getElementById('ilybd-adblock-notice').style.display = 'block';
+                }
+            }, 1000);
+        });
+        </script>";
+    }
+
+    // Cyber Tools Promo (Append)
+    $append_html .= do_shortcode('[cyber_tools_widget]');
+
+    // Feedback Widget (Append)
+    if (get_option('ilybd_enable_feedback_widget', 'yes') === 'yes') {
+        $append_html .= "
+        <div id='ilybd-feedback-widget' style='margin-top: 40px; padding: 25px; background: rgba(7, 11, 19, 0.6); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; text-align: center;'>
+            <h4 style='color: #fff; font-size: 16px; margin: 0 0 15px 0;'>Did you find this article helpful?</h4>
+            <div id='ilybd-feedback-buttons' style='display: flex; justify-content: center; gap: 15px;'>
+                <button onclick='submitIlybdFeedback(\"yes\")' style='background: rgba(0,255,65,0.1); border: 1px solid rgba(0,255,65,0.3); color: #00ff41; padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;' onmouseover='this.style.background=\"rgba(0,255,65,0.2)\"' onmouseout='this.style.background=\"rgba(0,255,65,0.1)\"'><i class='fa-solid fa-thumbs-up'></i> Yes</button>
+                <button onclick='submitIlybdFeedback(\"no\")' style='background: rgba(255,62,62,0.1); border: 1px solid rgba(255,62,62,0.3); color: #ff3e3e; padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;' onmouseover='this.style.background=\"rgba(255,62,62,0.2)\"' onmouseout='this.style.background=\"rgba(255,62,62,0.1)\"'><i class='fa-solid fa-thumbs-down'></i> No</button>
+            </div>
+            <div id='ilybd-feedback-response' style='display: none; margin-top: 15px; color: #cbd5e1; font-size: 14px;'></div>
+        </div>
+        <script>
+        function submitIlybdFeedback(type) {
+            var responseDiv = document.getElementById('ilybd-feedback-response');
+            var buttonsDiv = document.getElementById('ilybd-feedback-buttons');
+            buttonsDiv.style.display = 'none';
+            responseDiv.style.display = 'block';
+            if(type === 'yes') {
+                responseDiv.innerHTML = '<span style=\"color:#00ff41;\"><i class=\"fa-solid fa-circle-check\"></i> Thank you! Your feedback helps us improve our EEAT quality score. Please consider sharing this with your friends!</span>';
+            } else {
+                responseDiv.innerHTML = '<span><i class=\"fa-solid fa-envelope\"></i> Thank you for your honest feedback. We will review and improve this article shortly.</span>';
+            }
+        }
+        </script>
+        ";
+    }
+
+    return $prepend_html . $content . $append_html;
+}
+
+// 4. Smart Content Locker (SEO Safe)
+add_shortcode('ilybd_lock', 'ilybd_smart_content_locker_shortcode');
+function ilybd_smart_content_locker_shortcode($atts, $content = null) {
+    if (is_null($content)) return '';
+
+    // Allow Googlebot and Search Engine Crawlers to bypass the lock for SEO!
+    $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
+    $is_bot = preg_match('/bot|crawl|slurp|spider|mediapartners/i', $user_agent);
+
+    if ($is_bot || current_user_can('manage_options')) {
+        return '<div class="ilybd-unlocked-content seo-indexed">' . do_shortcode($content) . '</div>';
+    }
+
+    // If logged in, show content
+    if (is_user_logged_in()) {
+        return '<div class="ilybd-unlocked-content" style="border-left: 3px solid #00ff41; padding-left: 15px; margin: 20px 0;">' . do_shortcode($content) . '</div>';
+    }
+
+    $neon_color = get_option('ilybd_main_color', '#00ff41');
+
+    // Locked State HTML
+    $html = '<div class="ilybd-content-locker" style="margin: 30px 0; padding: 30px 20px; background: rgba(15, 23, 42, 0.9); border: 2px dashed rgba(0, 240, 255, 0.3); border-radius: 12px; text-align: center; position: relative; overflow: hidden;">';
+    $html .= '<div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,240,255,0.05) 0%, transparent 60%); animation: rotate-border 10s linear infinite;"></div>';
+    $html .= '<div style="position: relative; z-index: 2;">';
+    $html .= '<i class="fa-solid fa-lock" style="font-size: 32px; color: #ff3e3e; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,62,62,0.5));"></i>';
+    $html .= '<h3 style="color: #fff; font-size: 20px; margin: 0 0 10px 0; font-weight: 800;">Secure Content Locked</h3>';
+    $html .= '<p style="color: #94a3b8; font-size: 14px; margin: 0 0 20px 0; line-height: 1.6;">This exclusive content is protected. Please login or register to unlock it immediately. It is 100% free!</p>';
+    $html .= '<a href="' . esc_url(wp_login_url(get_permalink())) . '" style="background: ' . $neon_color . '; color: #000; padding: 10px 25px; border-radius: 6px; font-weight: 900; text-decoration: none; display: inline-block; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,255,65,0.3); transition: all 0.3s;" onmouseover="this.style.transform=\'scale(1.05)\';" onmouseout="this.style.transform=\'scale(1)\';"><i class="fa-solid fa-key"></i> Login to Unlock</a>';
+    $html .= '</div></div>';
+
+    return $html;
+}
+add_shortcode('cyber_tools_widget', 'ilybd_cyber_tools_widget_shortcode');
+function ilybd_cyber_tools_widget_shortcode($atts) {
+    if (!function_exists('ilybd_get_all_tools')) return '';
+    
+    $tools = ilybd_get_all_tools();
+    // Get 3 random tools
+    $keys = array_keys($tools);
+    shuffle($keys);
+    $random_keys = array_slice($keys, 0, 3);
+    
+    $neon_color = get_option('ilybd_main_color', '#00ff41');
+    
+    $html = '<div class="ilybd-tools-widget" style="margin: 30px 0; padding: 20px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0,240,255,0.2); border-radius: 12px;">';
+    $html .= '<h4 style="color: #00f0ff; margin-top: 0; margin-bottom: 15px; font-size: 16px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-toolbox"></i> Free Premium SEO & AI Tools</h4>';
+    $html .= '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">';
+    
+    foreach ($random_keys as $key) {
+        $tool = $tools[$key];
+        $url = esc_url(home_url("/tools/{$key}/"));
+        $html .= '<a href="' . $url . '" style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.borderColor=\'' . $neon_color . '\'; this.style.transform=\'translateY(-2px)\';" onmouseout="this.style.borderColor=\'rgba(255,255,255,0.05)\'; this.style.transform=\'none\';">';
+        $html .= '<span style="font-size: 24px; display: block; margin-bottom: 8px;">' . esc_html($tool['icon']) . '</span>';
+        $html .= '<strong style="color: #fff; font-size: 14px; display: block; margin-bottom: 4px;">' . esc_html($tool['name']) . '</strong>';
+        $html .= '<span style="color: #94a3b8; font-size: 11px; display: block; line-height: 1.4;">' . esc_html($tool['desc_bn']) . '</span>';
+        $html .= '</a>';
+    }
+    
+    $html .= '</div>';
+    $html .= '<div style="margin-top: 15px; text-align: center;"><a href="' . esc_url(home_url('/tools/')) . '" style="color: ' . $neon_color . '; font-size: 12px; text-decoration: none; font-weight: bold;">View All 50+ Tools &rarr;</a></div>';
+    $html .= '</div>';
+    
+    return $html;
+}
 
 
 

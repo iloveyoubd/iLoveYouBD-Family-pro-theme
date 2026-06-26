@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 ========================= */
 add_action('admin_menu', function() {
     add_submenu_page(
-        'ilybd-master-panel',
+        'ilybd-settings',
         'Popular Engine',
         'Popular Posts',
         'manage_options',
@@ -29,23 +29,22 @@ function ilybd_popular_settings_page() {
 
     // Save handler with Nonce Security
     if(isset($_POST['ilybd_popular_save'])){
+        $popular_enabled = isset($_POST['popular_enable']) ? 1 : 0;
+        update_option('popular_enable', $popular_enabled);
+        update_option('ily_enable_popular_posts', $popular_enabled);
         update_option('popular_title', sanitize_text_field($_POST['popular_title']));
         update_option('popular_post_count', (int)$_POST['popular_post_count']);
-        update_option('popular_meta_key', sanitize_text_field($_POST['popular_meta_key']));
+        update_option('popular_source', sanitize_text_field($_POST['popular_source']));
         update_option('popular_sort_order', sanitize_text_field($_POST['popular_sort_order']));
-        update_option('popular_enable', isset($_POST['popular_enable']) ? 1 : 0);
 
-        echo '<div class="notice notice-success is-dismissible" style="border-left-color:'.$neon_main.';"><p><b>Popular Engine settings updated!</b></p></div>';
+        echo '<div class="notice notice-success is-dismissible" style="border-left-color:'.$neon_main.'; background:#161b22; color:#fff;"><p><b>Popular Engine settings updated successfully!</b></p></div>';
     }
 
     $title = get_option('popular_title', '🔥 POPULAR NOW');
     $count = get_option('popular_post_count', 4);
-    $meta  = get_option('popular_meta_key', 'ilybd_post_views_count');
-    if ($meta === 'post_views_count' || empty($meta)) {
-        $meta = 'ilybd_post_views_count';
-    }
+    $p_source = get_option('popular_source', 'views');
     $order = get_option('popular_sort_order', 'DESC');
-    $enable = get_option('popular_enable', 1);
+    $enable = get_option('ily_enable_popular_posts', 1);
     ?>
 
     <style>
@@ -66,11 +65,12 @@ function ilybd_popular_settings_page() {
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 5px;
-        }
+         }
         .form-table th {
             color: #f0f6fc;
             font-weight: 600;
             padding: 20px 10px 20px 0;
+            width: 250px;
         }
         .ilybd-input {
             background: #010409 !important;
@@ -79,11 +79,11 @@ function ilybd_popular_settings_page() {
             border-radius: 6px !important;
             padding: 10px !important;
             transition: 0.3s !important;
+            outline: none;
         }
         .ilybd-input:focus {
             border-color: <?php echo $neon_main; ?> !important;
             box-shadow: 0 0 8px <?php echo $neon_main; ?>44 !important;
-            outline: none;
         }
         .ilybd-save-btn {
             background: <?php echo $neon_main; ?> !important;
@@ -107,17 +107,15 @@ function ilybd_popular_settings_page() {
     <div class="wrap">
         <div class="ilybd-settings-wrap">
             <h1 class="ilybd-neon-title">🚀 Popular Engine Control</h1>
-            <p style="color:#8b949e; margin-bottom: 30px;">Configure the ranking algorithm for your popular posts section.</p>
+            <p style="color:#8b949e; margin-bottom: 30px;">কনফিগার করুন আপনার হোমপেজের পপুলার পোস্ট ফিল্টারিং সিস্টেম।</p>
 
             <form method="post">
                 <table class="form-table">
                     <tr>
                         <th>Enable Popular Section</th>
                         <td>
-                            <label class="switch">
-                                <input type="checkbox" name="popular_enable" <?php checked($enable, 1); ?>>
-                                <span class="slider round"></span>
-                            </label>
+                            <input type="checkbox" name="popular_enable" <?php checked($enable, 1); ?> style="accent-color:<?php echo $neon_main; ?>; transform: scale(1.3);" />
+                            <b style="color:#fff; margin-left:10px;">হোমপেজে পপুলার পোস্ট মডিউল চালু রাখুন (Enable Popular Section)</b>
                         </td>
                     </tr>
 
@@ -133,31 +131,36 @@ function ilybd_popular_settings_page() {
                         <th>Posts to Show</th>
                         <td>
                             <input type="number" name="popular_post_count" value="<?php echo esc_attr($count); ?>" min="1" max="50" class="ilybd-input" style="width: 100px;" />
-                            <p class="desc-text">কয়টি পোস্ট গ্রিডে শো করবে। (Max: 50)</p>
+                            <p class="desc-text">কয়টি পোস্ট গ্রিডে শো করবে। (সর্বোচ্চ ৫০টি)</p>
                         </td>
                     </tr>
 
                     <tr>
-                        <th>Ranking Source (Meta Key)</th>
+                        <th>Popularity Metric Source</th>
                         <td>
-                            <input type="text" name="popular_meta_key" value="<?php echo esc_attr($meta); ?>" class="ilybd-input" style="width: 100%; max-width: 450px;" />
-                            <p class="desc-text">সার্চের সোর্স: <b>post_views_count</b> (ভিউ অনুযায়ী) অথবা <b>_likes</b> (লাইক অনুযায়ী)।</p>
+                            <select name="popular_source" class="ilybd-input" style="width: 100%; max-width: 450px;">
+                                <option value="views" <?php selected($p_source, 'views'); ?>>🔥 Total Organic Views (সবচেয়ে বেশি বার দেখা পোস্ট)</option>
+                                <option value="likes" <?php selected($p_source, 'likes'); ?>>❤️ Highly Liked (সবচেয়ে বেশি লাইক পাওয়া পোস্ট)</option>
+                                <option value="comments" <?php selected($p_source, 'comments'); ?>>💬 Conversation Starter (সবচেয়ে বেশি কমেন্ট করা পোস্ট)</option>
+                                <option value="latest" <?php selected($p_source, 'latest'); ?>>🕒 Latest Published (নতুন প্রকাশিত লেটেস্ট পোস্ট)</option>
+                            </select>
+                            <p class="desc-text">কোন মেট্রিক বা সোর্স ট্র্যাক করে কন্টেন্ট এর জনপ্রিয়তা পজিশন গণনা করা হবে।</p>
                         </td>
                     </tr>
 
                     <tr>
-                        <th>Sort Algorithm</th>
+                        <th>Sort Ordering Algorithm</th>
                         <td>
                             <select name="popular_sort_order" class="ilybd-input" style="width: 100%; max-width: 450px;">
-                                <option value="DESC" <?php selected($order,'DESC'); ?>>Trending (Highest First)</option>
-                                <option value="ASC" <?php selected($order,'ASC'); ?>>Old Gems (Lowest First)</option>
+                                <option value="DESC" <?php selected($order,'DESC'); ?>>Hot Popularity (Most values at the top)</option>
+                                <option value="ASC" <?php selected($order,'ASC'); ?>>Cool Gems (Least values at the top)</option>
                             </select>
                         </td>
                     </tr>
                 </table>
 
                 <button type="submit" name="ilybd_popular_save" class="ilybd-save-btn">
-                    Update Engine Settings
+                    Update Popular Engine
                 </button>
             </form>
         </div>

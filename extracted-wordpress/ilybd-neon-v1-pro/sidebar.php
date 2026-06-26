@@ -111,7 +111,7 @@ $system_nodes_online = ($total_online_count === 0);
                     <div class="rank-tag"><?php echo $rank_badge; ?></div>
                     
                     <div class="leader-avatar">
-                        <a href="<?php echo esc_url($profile_url); ?>">
+                        <a href="<?php echo esc_url($profile_url); ?>" aria-label="<?php echo esc_attr($display_name); ?> profile">
                             <?php echo get_avatar($u_id, 32); ?>
                         </a>
                     </div>
@@ -186,7 +186,7 @@ $system_nodes_online = ($total_online_count === 0);
                 ?>
                     <div class="online-item">
                         <div class="online-avatar-wrapper">
-                            <a href="<?php echo esc_url($profile_url); ?>">
+                            <a href="<?php echo esc_url($profile_url); ?>" aria-label="<?php echo esc_attr($display_name); ?> profile">
                                 <?php echo get_avatar($u_id, 36); ?>
                             </a>
                             <span class="live-status-dot"></span>
@@ -314,7 +314,7 @@ $system_nodes_online = ($total_online_count === 0);
                     <span style="font-size: 10px; color:#fff; font-family: monospace;" class="random-pps" data-city="ctg">18 pps</span>
                 </div>
                 <div class="heat-tile active-ping" style="padding: 6px; background: rgba(177, 0, 255, 0.12); border: 1px solid #b100ff; border-radius: 6px; text-align: center;">
-                    <span style="font-size: 8px; font-family: monospace; color:#b100ff; display:block; font-weight:bold;">SYL</span>
+                    <span style="font-size: 8px; font-family: monospace; color:#d884ff; display:block; font-weight:bold;">SYL</span>
                     <span style="font-size: 10px; color:#fff; font-family: monospace;" class="random-pps" data-city="syl">9 pps</span>
                 </div>
                 <div class="heat-tile active-ping" style="padding: 6px; background: rgba(255, 183, 0, 0.12); border: 1px solid #ffb700; border-radius: 6px; text-align: center;">
@@ -437,7 +437,7 @@ $system_nodes_online = ($total_online_count === 0);
     .header-sub {
         font-size: 10px;
         font-weight: 700;
-        color: #4a5568;
+        color: #cbd5e1; /* Increased contrast */
         letter-spacing: 1px;
     }
 
@@ -629,7 +629,7 @@ $system_nodes_online = ($total_online_count === 0);
     .score-unit {
         font-size: 8px;
         font-weight: 800;
-        color: #4a5568;
+        color: #cbd5e1; /* Increased contrast */
         letter-spacing: 0.5px;
         margin-top: 2px;
     }
@@ -757,7 +757,7 @@ $system_nodes_online = ($total_online_count === 0);
     .online-xp-meta {
         font-size: 9px;
         font-weight: 700;
-        color: #64748b;
+        color: #cbd5e1; /* Increased contrast */
     }
 
     /* Connection Bars */

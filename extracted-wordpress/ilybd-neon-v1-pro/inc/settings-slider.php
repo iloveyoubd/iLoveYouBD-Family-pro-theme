@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 ========================= */
 add_action('admin_menu', function() {
     add_submenu_page(
-        'ilybd-master-panel',
+        'ilybd-settings',
         'Slider Engine',
         'Slider Settings',
         'manage_options',
@@ -27,6 +27,8 @@ function ilybd_slider_settings_page() {
     $neon_main = esc_attr(get_option('ilybd_main_color', '#00ff41'));
 
     if(isset($_POST['ilybd_slider_save'])) {
+        $slider_enabled = isset($_POST['ily_enable_slider']) ? 1 : 0;
+        update_option('ily_enable_slider', $slider_enabled);
         update_option('slider_auto_play', isset($_POST['slider_auto_play']) ? 1 : 0);
         update_option('slider_post_count', (int)$_POST['slider_post_count']);
         update_option('slider_animation_speed', (int)$_POST['slider_animation_speed']);
@@ -36,11 +38,12 @@ function ilybd_slider_settings_page() {
         echo '<div class="updated" style="border-left-color:'.$neon_main.'; background:#161b22; color:#fff;"><p>🚀 Slider Engine updated successfully.</p></div>';
     }
 
+    $enable = get_option('ily_enable_slider', 1);
     $auto   = get_option('slider_auto_play', 1);
-    $count  = get_option('slider_post_count', 5);
-    $speed  = get_option('slider_animation_speed', 800);
-    $delay  = get_option('slider_delay', 3000);
-    $source = get_option('slider_source', 'popular');
+    $count  = get_option('slider_post_count', 9); // Default to 9 as requested: 3 items in desktop
+    $speed  = get_option('slider_animation_speed', 850);
+    $delay  = get_option('slider_delay', 5000);
+    $source = get_option('slider_source', 'latest');
     ?>
 
     <style>
@@ -78,10 +81,18 @@ function ilybd_slider_settings_page() {
             <form method="post">
                 <table class="form-table">
                     <tr>
+                        <th>Enable Slider Section</th>
+                        <td>
+                            <input type="checkbox" name="ily_enable_slider" <?php checked($enable, 1); ?> style="accent-color:<?php echo $neon_main; ?>; transform: scale(1.3);" />
+                            <b style="color: #fff; margin-left:10px;">হোমপেজে হিরো স্লাইডার সেকশনটি সচল রাখুন (Enable Slider Showcase)</b>
+                        </td>
+                    </tr>
+
+                    <tr>
                         <th>Auto Play</th>
                         <td>
                             <input type="checkbox" name="slider_auto_play" <?php checked($auto,1); ?> style="accent-color:<?php echo $neon_main; ?>; transform: scale(1.3);" />
-                            <span style="margin-left:10px;">স্লাইডার কি অটোমেটিক চলবে?</span>
+                            <span style="margin-left:10px;">স্লাইডার কি অটোমেটিক চলবে? (Enable Slide Autoplay Loop)</span>
                         </td>
                     </tr>
 

@@ -313,8 +313,8 @@ body.login {
     flex-direction: column;
     max-width: 1360px;
     margin: 0 auto;
-    padding: 24px 16px 80px 16px;
-    gap: 30px;
+    padding: 6px 16px 80px 16px; /* Reduced padding-top to eliminate the empty gap above History / Stories option on mobile */
+    gap: 15px; /* Compact gap from 30px to 15px for higher bento grid density */
 }
 
 .ilybd-feed-container {
@@ -347,6 +347,8 @@ body.login {
     .ilybd-layout {
         flex-direction: row;
         align-items: flex-start;
+        padding-top: 20px; /* Comfortable padding on desktop */
+        gap: 28px; /* Balanced side-by-side gap for desktop layout */
     }
     
     .ilybd-feed-container {
@@ -375,5 +377,181 @@ body.login {
     }
     .site-sidebar::-webkit-scrollbar-thumb:hover {
         background: rgba(0, 255, 65, 0.4);
+    }
+}
+
+/* ==============================================================
+   [2040 NEXT-GEN CYBERPUNK PAGINATION HOOKS]
+   ============================================================== */
+
+/* WordPress screen reader utility - critical fix to hide "Posts pagination" */
+.screen-reader-text {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    word-wrap: normal !important;
+}
+
+.ilybd-pagination,
+.cyber-pagination {
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+    background: rgba(13, 21, 39, 0.4);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    max-width: 100%;
+}
+
+.ilybd-pagination .navigation,
+.cyber-pagination .navigation {
+    display: inline-block;
+}
+
+.ilybd-pagination .nav-links,
+.cyber-pagination .nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Base button decoration for each pagination step */
+.ilybd-pagination .page-numbers,
+.cyber-pagination .page-numbers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 16px;
+    font-family: 'Space Grotesk', 'Rajdhani', 'JetBrains Mono', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    color: #cbd5e1;
+    background: rgba(13, 21, 39, 0.7);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    border-radius: 10px;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.5px;
+}
+
+.ilybd-pagination .page-numbers::before,
+.cyber-pagination .page-numbers::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 240, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+/* Hover feedback matching cyan cyberpunk line */
+.ilybd-pagination a.page-numbers:hover,
+.cyber-pagination a.page-numbers:hover {
+    color: #ffffff;
+    background: rgba(13, 21, 39, 0.9);
+    border-color: #00f0ff;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 8px rgba(0, 240, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.ilybd-pagination a.page-numbers:hover::before,
+.cyber-pagination a.page-numbers:hover::before {
+    left: 100%;
+}
+
+/* Active number styling using emerald neon green */
+.ilybd-pagination .page-numbers.current,
+.cyber-pagination .page-numbers.current {
+    color: #050505;
+    background: linear-gradient(135deg, #00ff41, #00ff88);
+    border-color: #00ff41;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+    transform: scale(1.06);
+    pointer-events: none;
+}
+
+/* DOTS / ellipsis */
+.ilybd-pagination .page-numbers.dots,
+.cyber-pagination .page-numbers.dots {
+    border-color: transparent;
+    background: transparent;
+    color: #64748b;
+    box-shadow: none;
+    font-size: 16px;
+    min-width: 25px;
+    pointer-events: none;
+}
+
+/* Micro styling for Previous and Next steps */
+.ilybd-pagination .page-numbers.prev,
+.ilybd-pagination .page-numbers.next,
+.cyber-pagination .page-numbers.prev,
+.cyber-pagination .page-numbers.next {
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 8px 18px;
+    border-color: rgba(0, 240, 255, 0.4);
+    background: rgba(13, 21, 39, 0.82);
+}
+
+.ilybd-pagination .page-numbers.prev:hover,
+.cyber-pagination .page-numbers.prev:hover {
+    border-color: #ff003c; /* Pink neon hover for Prev */
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.4);
+}
+
+.ilybd-pagination .page-numbers.next:hover,
+.cyber-pagination .page-numbers.next:hover {
+    border-color: #00f0ff; /* Cyan neon hover for Next */
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+/* Responsive adjustment for extra clean feel */
+@media screen and (max-width: 500px) {
+    .ilybd-pagination,
+    .cyber-pagination {
+        padding: 15px 10px;
+    }
+    .ilybd-pagination .nav-links,
+    .cyber-pagination .nav-links {
+        gap: 6px;
+    }
+    .ilybd-pagination .page-numbers,
+    .cyber-pagination .page-numbers {
+        min-width: 38px;
+        min-height: 38px;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    .ilybd-pagination .page-numbers.prev,
+    .ilybd-pagination .page-numbers.next,
+    .cyber-pagination .page-numbers.prev,
+    .cyber-pagination .page-numbers.next {
+        padding: 6px 10px;
     }
 }

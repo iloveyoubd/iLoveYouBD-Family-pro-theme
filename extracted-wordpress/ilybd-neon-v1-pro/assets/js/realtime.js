@@ -25,14 +25,36 @@ jQuery(document).ready(function($){
 
             /* NEW NOTIFICATION DETECTED */
             if(data.count > lastCount){
-
                 let newItems = data.items;
+                let shownNotifications = JSON.parse(localStorage.getItem('ilybd_shown_notifs') || '[]');
+                let playedNew = false;
 
                 newItems.forEach(function(n){
-                    showRealtimeNotification(n.text || n.message, n.link);
+                    if (!n.read && !shownNotifications.includes(n.id)) {
+                        showRealtimeNotification(n.text || n.message, n.link);
+                        shownNotifications.push(n.id);
+                        playedNew = true;
+                    }
                 });
 
-                playNotiSound();
+                localStorage.setItem('ilybd_shown_notifs', JSON.stringify(shownNotifications));
+
+                if (playedNew) {
+                    playNotiSound();
+                }
+            }
+
+            // Sync badges across the page
+            let badgeEl = $('.nav-link .badge, .badge');
+            if (data.count > 0) {
+                badgeEl.text(data.count).show();
+                let tabBadge = $('#db-notif-badge');
+                if (tabBadge.length) {
+                    tabBadge.text(data.count).show();
+                }
+            } else {
+                badgeEl.hide();
+                $('#db-notif-badge').hide();
             }
 
             lastCount = data.count;

@@ -611,6 +611,91 @@ add_action('template_redirect', function() {
     }
 });
 
+// Filter WordPress Document Title to inject perfectly matched tool titles for SEO
+add_filter('document_title_parts', function($title_parts) {
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $path = parse_url($request_uri, PHP_URL_PATH);
+    
+    // Matched specific tool route
+    if (preg_match('/^\/tools\/([a-zA-Z0-9-]+)\/?$/', $path, $matches)) {
+        $slug = $matches[1];
+        if ($slug !== 'category') {
+            $tools = ilybd_get_all_tools();
+            if (isset($tools[$slug])) {
+                $tool = $tools[$slug];
+                $title_parts['title'] = esc_html($tool['name']) . ' (' . esc_html($tool['name_bn']) . ')';
+                $title_parts['tagline'] = 'Free Online SEO Tools';
+            }
+        }
+    }
+    // Matched category route
+    elseif (preg_match('/^\/tools\/category\/([a-zA-Z0-9-]+)\/?$/', $path, $matches)) {
+        $cat_slug = $matches[1];
+        $cats = ilybd_get_tools_categories();
+        if (isset($cats[$cat_slug])) {
+            $title_parts['title'] = esc_html($cats[$cat_slug]['name']) . ' - Best ' . esc_html($cats[$cat_slug]['name']);
+        }
+    }
+    // Matched base tools hub
+    elseif (preg_match('/^\/tools\/?$/', $path)) {
+        $title_parts['title'] = 'Advanced Digital Tools Hub (50+ Free Premium SEO, AI & Web Tools)';
+    }
+
+    return $title_parts;
+}, 10, 1);
+
+// Add dynamic meta tags (description, Open Graph, Twitter Cards) for Tools pages
+add_action('wp_head', function() {
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $path = parse_url($request_uri, PHP_URL_PATH);
+    
+    // Matched specific tool route
+    if (preg_match('/^\/tools\/([a-zA-Z0-9-]+)\/?$/', $path, $matches)) {
+        $slug = $matches[1];
+        if ($slug !== 'category') {
+            $tools = ilybd_get_all_tools();
+            if (isset($tools[$slug])) {
+                $tool = $tools[$slug];
+                $title = esc_html($tool['name']) . ' (' . esc_html($tool['name_bn']) . ') - Free Online Tool';
+                $desc = esc_attr($tool['desc_en'] . ' ' . $tool['desc_bn'] . ' Start using this free online tool now on ILOVEYOUBD.COM.');
+                $url = esc_url(home_url("/tools/{$slug}/"));
+                $icon = esc_attr($tool['icon']);
+                
+                // Construct a dynamic placeholder OG image url since tools don't have featured images directly in DB
+                $rand_seed = crc32($slug);
+                $og_image = "https://image.pollinations.ai/prompt/" . urlencode("cyberpunk neon glowing technology abstract icon " . $tool['name']) . "?width=1200&height=630&nologo=true&seed=" . $rand_seed . "&model=flux";
+
+                echo "\n<!-- ILOVEYOUBD.COM Tools Advanced SEO Meta -->\n";
+                echo "<meta name=\"description\" content=\"{$desc}\">\n";
+                echo "<meta property=\"og:title\" content=\"{$title}\">\n";
+                echo "<meta property=\"og:description\" content=\"{$desc}\">\n";
+                echo "<meta property=\"og:url\" content=\"{$url}\">\n";
+                echo "<meta property=\"og:type\" content=\"website\">\n";
+                echo "<meta property=\"og:image\" content=\"{$og_image}\">\n";
+                echo "<meta name=\"twitter:card\" content=\"summary_large_image\">\n";
+                echo "<meta name=\"twitter:title\" content=\"{$title}\">\n";
+                echo "<meta name=\"twitter:description\" content=\"{$desc}\">\n";
+                echo "<meta name=\"twitter:image\" content=\"{$og_image}\">\n";
+                echo "<script type=\"application/ld+json\">\n";
+                echo json_encode([
+                    "@context" => "https://schema.org",
+                    "@type" => "SoftwareApplication",
+                    "name" => $tool['name'],
+                    "description" => $tool['desc_en'],
+                    "applicationCategory" => "BrowserApplication",
+                    "operatingSystem" => "All",
+                    "offers" => [
+                        "@type" => "Offer",
+                        "price" => "0",
+                        "priceCurrency" => "USD"
+                    ]
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n";
+                echo "</script>\n";
+            }
+        }
+    }
+}, 1);
+
 /* =========================================================================
    3. SECURE ANALYTICS & DUMB DUMP TRACKER (VIEWS/USAGE ENGINE)
    ========================================================================= */

@@ -26,37 +26,66 @@ $neon = get_option('ilybd_main_color', '#00ff41');
                 <div class="faq-accordion-group">
                     
                     <details class="faq-item" open>
-                        <summary class="faq-question">🌟 What is the primary purpose of ILYBD System?</summary>
+                        <summary class="faq-question">🌟 What is the primary purpose of ILYBD System? (আমাদের মূল উদ্দেশ্য কি?)</summary>
                         <div class="faq-answer">
-                            <p>ILYBD (iloveyoubd.com) is built primarily as a high-fidelity information system and educational network. We design open-source automation scripts, high-speed laboratory tools, and customized WordPress template optimization kits designed to provide top performance rankings for developers globally.</p>
+                            <p><strong>EN:</strong> ILYBD (iloveyoubd.com) is built primarily as a high-fidelity information system and educational network. We design open-source automation scripts, high-speed laboratory tools, and customized WordPress template optimization kits designed to provide top performance rankings for developers globally.</p>
+                            <p style="color: #00ff41; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> iloveyoubd.com মূলত একটি আধুনিক ইনফরমেশন সিস্টেম এবং শিক্ষামূলক নেটওয়ার্ক। আমরা ওপেন সোর্স অটোমেশন স্ক্রিপ্ট, হাই-স্পিড লাব টুলস এবং কাস্টমাইজড ওয়ার্ডপ্রেস অপ্টিমাইজেশন কিট তৈরি করি যা ডেভেলপারদের সাইটের পারফরম্যান্স বাড়িয়ে সার্চ ইঞ্জিনে উচ্চ র‍্যাংকিং পেতে সাহায্য করে।</p>
                         </div>
                     </details>
 
                     <details class="faq-item">
-                        <summary class="faq-question">🛡️ Are the configuration files and apps hosted on ILYBD system safe?</summary>
+                        <summary class="faq-question">👥 How does the Multi-Author & Contributors Hub work? (মাল্টি-অথর সিস্টেম কিভাবে কাজ করে?)</summary>
                         <div class="faq-answer">
-                            <p>Absolutely. Every application, tool, and setup configuration code published on our servers undergoes strict inspection inside our laboratory environments to detect backdoor code, adware, or malware. We prioritize secure user interactions and ensure no files run harmful background scripts before public deployment.</p>
+                            <p><strong>EN:</strong> Our platform features a specialized multi-author rendering system where community contributors and expert technical writers can share their knowledge. Contributors hold personal profile cards featured inside our Authors Hub page, allowing readers to explore articles based on authorship metrics.</p>
+                            <p style="color: #00f0ff; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> আমাদের প্ল্যাটফর্মে রয়েছে একটি মাল্টি-অথর কন্টেন্ট ও রাইটিং সিস্টেম। যেখানে আমাদের নিবন্ধিত টেকনিক্যাল রাইটারগণ ও কোডাররা তাদের মূল্যবান আইটি টিউটোরিয়াল এবং কনফিগারেশন ফাইল শেয়ার করতে পারেন। ডাইনামিক অথর হাবের মাধ্যমে পাঠক প্রতিটি লেখকের বিস্তারিত মেম্বার প্রোফাইল দেখে কন্টেন্ট সহজে নেভিগেট করতে পারবেন।</p>
                         </div>
                     </details>
 
                     <details class="faq-item">
-                        <summary class="faq-question">⚡ How are the user avatars optimized in the theme?</summary>
+                        <summary class="faq-question">🪙 What are ILYBD Engagement Points, and how to track them? (পয়েন্ট সিস্টেম কি এবং তা ট্র্যাকিং করার নিয়ম?)</summary>
                         <div class="faq-answer">
-                            <p>We use our customized <code>ilybd_get_optimized_avatar_url</code> filters. When users upload profile images on our user dashboard, our engine automatically downsizes and encodes them into .webp formats (like 120px/150px) to decrease load size, improving overall FCP (First Contentful Paint) scoring for search optimization.</p>
+                            <p><strong>EN:</strong> The Point & Reward system represents an engagement metric for registered nodes. Users earn active points by checking into their interactive dashboards daily, leaving valuable comments on programming codes, and sharing tutorials. These points are securely processed and reflected on the user's main live telemetry dashboard panel.</p>
+                            <p style="color: #ffaa00; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> নিবন্ধিত মেম্বারদের জন্য এটি একটি আকর্ষণীয় রিওয়ার্ড সিস্টেম। ব্যবহারকারীরা প্রতিদিন ড্যাশবোর্ডে লগইন করে, কোডিং টিউটোরিয়ালে ফিডব্যাক দিয়ে বা কন্টেন্ট শেয়ার করে পয়েন্ট অর্জন করতে পারেন। এই অর্জিত পয়েন্টগুলো ব্যবহারকারীর ব্যক্তিগত ড্যাশবোর্ডের লাইভ টেলিম্যাট্রি প্যানেলে সম্পূর্ণ নির্ভুলভাবে স্বয়ংক্রিয়ভাবে আপডেট হয়।</p>
                         </div>
                     </details>
 
                     <details class="faq-item">
-                        <summary class="faq-question">💬 How can I contribute or report problems in the forum?</summary>
+                        <summary class="faq-question">💼 How can users earn from Earning Guides and Referrals? (আর্নিং এবং রেফারেল গাইডলাইন থেকে কিভাবে আয় করা যায়?)</summary>
                         <div class="faq-answer">
-                            <p>First, register a free user node. After logging into your community dashboard, you can open connection threads inside the live Community Q&A forum page or click our floating "AI Chat" bridge inside the slim navbar to transmit bug reports directly to our engineers.</p>
+                            <p><strong>EN:</strong> We host a series of premium, Google AdSense-safe, and zero-spam online monetization guidelines on our customized landing hubs. We share legitimate, structured tutorials and secure affiliate referral keys to help regional freelancers monetize their coding, web design, or content creation talents safely without thin-content penalties.</p>
+                            <p style="color: #10b981; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> আমাদের সাইটে গুগল অ্যাডসেন্স ফ্রেন্ডলি ও নিরাপদ অনলাইন আর্নিং গাইডলাইন শেয়ার করা হয়ে থাকে। সম্পূর্ণ স্প্যামমুক্ত এবং ফলপ্রসূ ফ্রিল্যান্সিং, ওয়েব ডিজাইন বা কোডিং স্কিল ব্যবহার করে আয় করার জন্য প্রয়োজনীয় মেথড ও বিশ্বস্ত রেফারেল লিংকের বিস্তারিত নির্দেশিকা এখানে সাজানো রয়েছে যা শতভাগ সিকিউর।</p>
                         </div>
                     </details>
 
                     <details class="faq-item">
-                        <summary class="faq-question">🌐 Why does PageSpeed Insights load fast on our network?</summary>
+                        <summary class="faq-question">📺 Are the Cyber TV Streams policy-compliant & safe? (সাইবার টিভি স্ট্রিম কি শতভাগ নিরাপদ ও পলিসি-সম্মত?)</summary>
                         <div class="faq-answer">
-                            <p>Our structures enforce high-speed CSS optimization filters. We utilize techniques such as asynchronous loading for large external files, critical assets preloading (like featured category thumbnails), and light image sizes. This lowers initial blocking, granting an outstanding mobile/desktop ranking of 90+ on Core Web Vitals checks.</p>
+                            <p><strong>EN:</strong> Yes, absolutely. Our IBD Cyber TV Stream Engine acts strictly as a lightweight, clean client parsing publicly broadcasted, free-to-air IPTV streams (.m3u databases) of Bangladesh. It requires no popups, no tracking cookies, and runs no intrusive scripts, maintaining 100% compliance with Google Publisher and AdSense Policies.</p>
+                            <p style="color: #ec4899; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> হ্যাঁ, সম্পূর্ণ পলিসি-সম্মত। আমাদের সাইবার লাইভ টিভি সিস্টেমটি মূলত বাংলাদেশের উন্মুক্ত ও বৈধ পাবলিক ডোমেইনের ফ্রি-টু-এয়ার (Free-to-Air) টিভি চ্যানেলগুলোর লিংক খুবই স্বচ্ছ ও সুশৃঙ্খল উপায়ে প্রদর্শন করে। এটি সম্পূর্ণ কুকি-ট্র্যাকিং ও পপআপ বিজ্ঞাপনমুক্ত হওয়ায় গুগল অ্যাডসেন্স নিয়মনীতির সাথে শতভাগ সামঞ্জস্যপূর্ণ।</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary class="faq-question">🛠️ What is the Engineering Tools Lab and Free-Net Config module? (টুলস ল্যাব এবং ফ্রী-নেট কনফিগ মডিউল কি?)</summary>
+                        <div class="faq-answer">
+                            <p><strong>EN:</strong> The Tools Lab is an interactive coding playground where our team deploys lightweight tools, and internet speed validators. It also includes free internet configuration encoders that allow users to generate optimal parameters for high-speed browsing securely.</p>
+                            <p style="color: #3b82f6; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> আমাদের টুলস ল্যাব হচ্ছে একটি শিক্ষামূলক কোডিং প্লেগ্রাউন্ড যেখানে লাইটওয়েট ডাটা কনভার্টার, গ্লোবাল আইপি ডিটেক্টর এবং ইন্টারনেট স্পিড চেকার টুলস রয়েছে। পাশাপাশি ব্যবহারকারীরা ফ্রিমিয়াম স্পিড অপ্টিমাইজেশন করতে প্রয়োজনীয় হাই-স্পিড নেভিগেশন প্যারামিটার জেনারেট করে নিতে পারেন।</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary class="faq-question">🛡️ What is PuroCheck APK/File Safety verification? (প্যুরোচেক ফাইল/এপিকে ভেরিফিকেশন কি?)</summary>
+                        <div class="faq-answer">
+                            <p><strong>EN:</strong> PuroCheck is our unique automated file scan framework. Before any file or Android application is registered inside our Secure Apps Center, the backend inspects it against security checklists to guarantee it does not contain aggressive malware, backdoor configurations, or hidden scripts. Every file displays its signature status to reassure users.</p>
+                            <p style="color: #10b981; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> PuroCheck (প্যুরোচেক) হলো আমাদের নিজস্ব ডেডিকেটেড অটোমেটিক সিকিউরিটি ফ্রেমওয়ার্ক। আমাদের অ্যাপস সেন্টার থেকে কোনো ফাইল বা অ্যান্ড্রোয়েড এপিকে (APK) রিলিজ করার পূর্বে সেটিকে ম্যালওয়্যার ও ব্যাকডোর স্ক্রিপ্ট থেকে সতর্কতার সাথে পরীক্ষা করা হয় এবং ক্লিন সার্টিফিকেট প্রদানের পরই ডাউনলোড গেটওয়েতে যুক্ত করা হয়।</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary class="faq-question">🌐 Why does PageSpeed Insights load fast on our network? (আমাদের সাইট এত ফাস্ট লোড হয় কেন?)</summary>
+                        <div class="faq-answer">
+                            <p><strong>EN:</strong> Our structures enforce high-speed CSS optimization filters. We utilize techniques such as asynchronous loading for large external files, critical assets preloading (like featured category thumbnails), and light image sizes. This lowers initial blocking, granting an outstanding mobile/desktop ranking of 90+ on Core Web Vitals checks.</p>
+                            <p style="color: #00ff41; font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;"><strong>BN:</strong> আমাদের সিস্টেমে খুবই আধুনিক লাইটওয়েট কোড আর্কিটেকচার এবং সিএসএস অপ্টিমাইজেশন ফিল্টার প্রয়োগ করা হয়েছে। বড় ইমেজগুলোকে স্বয়ংক্রিয়ভাবে সংকুচিত ওয়েবপ (.webp) ফাইলে রূপান্তর করার কারণে সাইটটির লোডিং টাইম প্রায় শূন্যের কাছাকাছি চলে আসে, যা গুগল পেজস্পীড স্কেলিং-এ ৯০+ স্কোর ধরে রাখতে সাহায্য করে।</p>
                         </div>
                     </details>
 

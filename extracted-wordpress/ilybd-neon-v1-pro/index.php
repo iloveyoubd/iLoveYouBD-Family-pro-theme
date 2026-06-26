@@ -11,6 +11,83 @@
         do_action('ilybd_after_header'); 
         get_template_part('template-parts/messenger-stories');
         ?>
+        
+        <?php if (get_option('ily_enable_brand_manifesto', 0)) : ?>
+        <!-- ⚡ Elegant & Closeable Welcome Hero Section (Dismissible via LocalStorage) -->
+        <div id="ilybd-welcome-hero" class="ilybd-brand-manifesto-hero" style="background: linear-gradient(135deg, #0d1527 0%, #070b13 100%); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 16px; max-width: 100%; margin: 15px 15px 25px 15px; padding: 22px 25px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: opacity 0.4s ease, transform 0.4s ease; display: none;">
+            <div style="position: absolute; top:0; right:0; width: 120px; height: 120px; background: rgba(0, 240, 255, 0.03); filter: blur(50px); border-radius: 50%;"></div>
+            
+            <!-- Dismiss Button -->
+            <button onclick="dismissWelcomeHero()" aria-label="Dismiss banner" style="position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #8b949e; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; transition: all 0.2s ease; z-index: 10; outline: none;" onmouseover="this.style.color='#ff3e3e'; this.style.background='rgba(255, 62, 62, 0.1)';" onmouseout="this.style.color='#8b949e'; this.style.background='rgba(255,255,255,0.04)';">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="manifesto-grid-wrapper" style="display: grid; grid-template-columns: 2.2fr 1.1fr; gap: 20px; align-items: center;">
+                <div>
+                    <span style="display: inline-block; font-family: monospace; font-size: 9.5px; font-weight: bold; background: rgba(0, 255, 65, 0.08); border: 1px solid rgba(0, 255, 65, 0.2); color: #00ff41; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;"><i class="fa-solid fa-graduation-cap"></i> Technology & Learning Hub</span>
+                    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: bold; margin: 0 0 8px 0; color: #fff; letter-spacing: 0.3px;">ILOVEYOUBD.COM &mdash; প্রযুক্তি ও মুক্ত তথ্যশালা</h2>
+                    <p style="font-size: 13px; line-height: 1.6; color: #a0aec0; margin: 0 0 12px 0;">
+                        স্বাগতম প্রযুক্তি শিক্ষা ও কোডিং পোর্টালে! এখানে আপনি পাবেন সম্পূর্ণ ইউনিক এবং বিস্তারিত গাইডলাইন, কাজের সমাধান, কোডিং টিউটোরিয়াল এবং অনলাইন রিসোর্স যা আপনার কারিগরি দক্ষতাকে নিরাপদে উন্নত করবে। প্রতিটি টিউটোরিয়াল প্রকাশ করার পূর্বে সতর্কতার সাথে যাচাই সম্পন্ন হয়।
+                    </p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                        <span style="font-size: 10.5px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 3px 10px; border-radius: 20px; color: #e2e8f0; font-family: monospace;">✓ 1500+ Words EEAT</span>
+                        <span style="font-size: 10.5px; background: rgba(0,255,65,0.04); border: 1px solid rgba(0,255,65,0.15); padding: 3px 10px; border-radius: 20px; color: #00ff41; font-family: monospace;">✓ AdSense Policy Compliant</span>
+                    </div>
+                </div>
+                <div class="manifesto-sidebar-box" style="background: rgba(255,255,255,0.01); border-left: 2px solid rgba(0, 240, 255, 0.12); padding: 3px 0 3px 18px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 11.5px; line-height: 1.4;">
+                        <b style="color: #fff; display: block; margin-bottom: 2px;">⚡ প্রধান বিষয়সমূহ:</b>
+                        <span style="color: #a0aec0;">প্রোগ্রামিং, সার্ভার স্পিড অপ্টিমাইজেশন, ক্যারিয়ার গাইডলাইন ও অনলাইন পোর্টাল সমাধান।</span>
+                    </div>
+                    <div style="font-size: 11.5px; line-height: 1.3;">
+                        <b style="color: #fff; display: block; margin-bottom: 2px;">💬 লক্ষ্য ও উদ্দেশ্য:</b>
+                        <span style="color: #a0aec0;">শিক্ষার্থীদের প্রযুক্তিতে দক্ষ করে তুলতে এবং সার্চ ইঞ্জিনে সঠিক ও মানসম্মত তথ্য উপস্থাপন করা।</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Welcome banner visibility & dismiss tracking logic
+            document.addEventListener("DOMContentLoaded", function() {
+                const welcomeContainer = document.getElementById('ilybd-welcome-hero');
+                if (welcomeContainer && !localStorage.getItem('ilybd_welcome_hero_dismissed')) {
+                    welcomeContainer.style.display = 'block';
+                }
+            });
+
+            function dismissWelcomeHero() {
+                const welcomeContainer = document.getElementById('ilybd-welcome-hero');
+                if (welcomeContainer) {
+                    welcomeContainer.style.opacity = '0';
+                    welcomeContainer.style.transform = 'translateY(-10px)';
+                    setTimeout(() => {
+                        welcomeContainer.style.display = 'none';
+                        localStorage.setItem('ilybd_welcome_hero_dismissed', 'true');
+                    }, 400);
+                }
+            }
+        </script>
+        
+        <style>
+            @media (max-width: 768px) {
+                .manifesto-grid-wrapper {
+                    grid-template-columns: 1fr !important;
+                    gap: 15px !important;
+                }
+                .manifesto-sidebar-box {
+                    border-left: none !important;
+                    border-top: 1px solid rgba(0,240,255,0.15) !important;
+                    padding-left: 0 !important;
+                    padding-top: 10px !important;
+                }
+                .ilybd-brand-manifesto-hero {
+                    margin: 10px 10px 20px 10px !important;
+                    padding: 18px !important;
+                }
+            }
+        </style>
+        <?php endif; ?>
         <!-- 🔥 ULTRAPRO NEON SEARCH SYSTEM -->
         <div class="search-section-wrapper" style="max-width: 650px; margin: 10px auto 10px auto; padding: 0 15px; text-align: center;">
             <form role="search" method="get" class="cyber-search-form" action="<?php echo esc_url(home_url('/')); ?>" style="position: relative; display: flex; align-items: center; justify-content: center; width: 100%;">
@@ -29,10 +106,10 @@
         ?>
 
         <section class="latest-posts-wrapper">
-            <div class="section-head latest-head">
+            <h2 class="section-head latest-head" style="margin:0; padding:0; font-weight:normal; border:none;">
                 <span class="label">⚡ LATEST POSTS</span>
                 <span class="line"></span>
-            </div>
+            </h2>
 
             <?php do_action('ilybd_latest'); ?>
 
@@ -43,19 +120,30 @@
                     <?php endwhile; ?>
                 </div>
 
+                <?php 
+                $ily_pagination = get_the_posts_pagination(array(
+                    'mid_size'  => 2,
+                    'prev_text' => __('« পূর্ববর্তী', 'ilybd-neon'),
+                    'next_text' => __('পরবর্তী »', 'ilybd-neon'),
+                )); 
+                if (!empty($ily_pagination)) :
+                ?>
                 <div class="ilybd-pagination">
-                    <?php the_posts_pagination(); ?>
+                    <?php echo $ily_pagination; ?>
                 </div>
+                <?php endif; ?>
             <?php else : ?>
                 <div class="no-posts" style="color: #8b949e; padding: 40px; text-align: center;">No posts found.</div>
             <?php endif; ?>
         </section>
 
+        <?php if (get_option('ily_enable_community_qa', 1)) : ?>
         <section class="community-qa-wrapper">
-            <div class="section-head qa-head">
+            <h2 class="section-head qa-head" style="margin:0; padding:0; font-weight:normal; border:none;">
                 <span class="label">💬 COMMUNITY Q&A</span>
                 <span class="line"></span>
-            </div>
+            </h2>
+            <h3 class="screen-reader-text">Recent Questions List</h3>
 
             <div class="qa-content-box">
                 <?php echo do_shortcode('[recent_questions count="5"]'); ?>
@@ -63,11 +151,13 @@
                 <div class="qa-footer-action">
                     <p class="qa-helper-text">আপনার কোনো প্রযুক্তিগত সমস্যা আছে? আমাদের বিশেষজ্ঞদের জানান।</p>
                     <a href="<?php echo home_url('/ask-question'); ?>" class="ask-btn-main">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg>
                         প্রশ্ন করুন
                     </a>
                 </div>
             </div>
         </section>
+        <?php endif; ?>
 
         <style>
         /* Community Q&A Design Upgrades */
@@ -106,15 +196,30 @@
             background: linear-gradient(90deg, #00ff41, transparent) !important;
         }
 
-        /* Reddish-Purple Gradient Card Background */
+        /* Reddish-Purple Gradient Card Background - NEXT LEVEL */
         .qa-content-box {
-            background: linear-gradient(135deg, #6e00ff 0%, #ff4b2b 100%) !important; /* Matches single post profile card perfectly */
-            border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+            background: linear-gradient(135deg, rgba(110, 0, 255, 0.95) 0%, rgba(255, 75, 43, 0.95) 100%) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 20px rgba(110,0,255,0.4) !important;
             padding: 24px !important;
             border-radius: 16px !important;
             position: relative;
             overflow: hidden;
+            animation: qa-box-pulse 8s infinite alternate ease-in-out;
+        }
+
+        @keyframes qa-box-pulse {
+            0% { box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3), 0 0 20px rgba(110,0,255,0.2); }
+            100% { box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3), 0 0 40px rgba(255,75,43,0.4); }
+        }
+
+        .qa-content-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg opacity="0.05" xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="2" cy="2" r="2" fill="%23ffffff"/></svg>') repeat;
+            z-index: 1;
+            pointer-events: none;
         }
 
         /* List Container spacing */
@@ -277,24 +382,39 @@
         }
 
         .ask-btn-main {
-            background: #ffffff !important;
+            background: linear-gradient(135deg, #00ff41 0%, #00e5ff 100%) !important;
             color: #000000 !important;
-            padding: 8px 20px !important;
-            border-radius: 6px !important;
+            padding: 10px 24px !important;
+            border-radius: 8px !important;
             font-weight: 800 !important;
             font-size: 13px !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-            transition: all 0.2s ease !important;
+            box-shadow: 0 4px 15px rgba(0, 255, 65, 0.4) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             text-decoration: none !important;
-            display: inline-block !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
             border: none !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ask-btn-main::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+
+        .ask-btn-main:hover::after {
+            left: 150%;
         }
 
         .ask-btn-main:hover {
-            background: #00ff41 !important;
-            color: #000000 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 16px rgba(0, 255, 65, 0.4) !important;
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 8px 25px rgba(0, 255, 65, 0.6) !important;
         }
 
         /* Mobile Responsive Optimization Mode */
@@ -351,6 +471,19 @@
             }
         }
         </style>
+
+        <?php
+        // 🚀 NEXT-GEN CYBER ECOSYSTEM MODULAR SECTIONS (SMS, STORIES, PHONE REVIEWS)
+        if (get_option('ilybd_enable_sms_section', 'yes') !== 'no') {
+            do_action('ilybd_render_sms_section');
+        }
+        if (get_option('ilybd_enable_story_section', 'yes') !== 'no') {
+            do_action('ilybd_render_story_section');
+        }
+        if (get_option('ilybd_enable_phone_review_section', 'yes') !== 'no') {
+            do_action('ilybd_render_phone_review_section');
+        }
+        ?>
 
         <!-- 📱 DYNAMIC GOOGLE PLAY STORE SAFE DISCOVERY PORTAL --><?php
         $apps_list = array(
@@ -566,12 +699,12 @@
         if (get_option('ilybd_show_app_section', 1)) :
         ?>
         <section class="play-store-apps-wrapper" style="margin-top: 40px; margin-bottom: 45px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-            <div class="section-head play-head" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <h2 class="section-head play-head" style="margin:0; padding:0; font-weight:normal; border:none; display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                 <span class="label" style="background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%) !important; color: #ffffff !important; font-weight: 800 !important; text-transform: uppercase !important; letter-spacing: 1px !important; padding: 6px 14px !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; font-size: 12px !important; box-shadow: 0 4px 12px rgba(0, 240, 255, 0.25) !important;">
                     <i class="fa-brands fa-google-play" style="margin-right: 4px;"></i> GPLAY CLOUD APP HUB (নিরাপদ ডাউনলোড সেন্টার)
                 </span>
                 <span class="line" style="flex-grow: 1; height: 1px; background: linear-gradient(90deg, #00f0ff, transparent) !important;"></span>
-            </div>
+            </h2>
 
             <div class="play-store-container" style="background: linear-gradient(135deg, #051021 0%, #030812 100%) !important; border: 1.5px solid rgba(0, 240, 255, 0.2) !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45) !important; padding: 24px !important; border-radius: 16px !important; position: relative; overflow: hidden; border-top-width: 4px; border-top-color: #00f0ff !important;">
                 

@@ -131,7 +131,7 @@ body.hacker-mode-active .cyber-post-item {
 /* মোবাইল অপ্টিমাইজেশন */
 @media (max-width: 768px) {
     .trending-grid { grid-template-columns: 1fr; }
-    .cyber-post-main { flex-direction: row; } /* TrickBD স্টাইল থাম্বনেইল পাশে থাকবে */
+    .cyber-post-main { flex-direction: row; } /* কম্প্যাক্ট স্টাইল থাম্বনেইল পাশে থাকবে */
     .cyber-post-thumb img { width: 80px; height: 60px; }
     .cyber-post-title a { font-size: 15px; }
 }

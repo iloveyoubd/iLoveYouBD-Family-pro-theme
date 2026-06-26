@@ -83,15 +83,15 @@ function ilybd_prime_init() {
 add_action( 'plugins_loaded', 'ilybd_prime_init' );
 
 /**
- * সেকশন ৩: এক্সটার্নাল লাইব্রেরি ও কোর ক্লাস (Gemini, OpenAI, Publisher)
+ * সেকশন ৩: এক্সটার্নাল লাইব্রেরি ও কোর ক্লাস (The theme natively handles Gemini, OpenAI, Publisher)
+ * Removed duplicate class inclusion to prevent duplication with ilybd-neon-v1-pro theme
  */
+// Core engine is inside theme, loading only plugin-specific admin control panels.
 require_once ILYBD_PLUGIN_DIR . 'inc/class-ibd-key-rotator.php';
-require_once ILYBD_PLUGIN_DIR . 'inc/class-ibd-gemini.php';
-require_once ILYBD_PLUGIN_DIR . 'inc/class-ibd-openai.php';
-require_once ILYBD_PLUGIN_DIR . 'inc/class-ibd-publisher.php';
 require_once ILYBD_PLUGIN_DIR . 'admin/settings-panel.php';
 require_once ILYBD_PLUGIN_DIR . 'admin/private-monitor.php';
 require_once ILYBD_PLUGIN_DIR . 'admin/super-assistant-gui.php';
+require_once ILYBD_PLUGIN_DIR . 'admin/live-sync.php';
 
 /**
  * সেকশন ৪: এসেট ম্যানেজমেন্ট (CSS/JS)
@@ -168,6 +168,15 @@ add_action('admin_menu', function() {
         'ilybd-nid-control',
         (class_exists('ILYBD_NID_Control') ? [new ILYBD_NID_Control(), 'render_nid_control_page'] : null)
     );
+
+    add_submenu_page(
+        'ibd-api-settings',
+        'Live Sync & Update',
+        'Live Sync & Update',
+        'manage_options',
+        'ilybd-live-sync',
+        'ilybd_live_sync_page'
+    );
 });
 
 /**
@@ -218,3 +227,207 @@ register_activation_hook( __FILE__, function() {
     }
     flush_rewrite_rules();
 });
+
+/**
+ * সেকশন ১০: UI/UX & Dynamic 2040 Styles Front-End Injector (গ্লো ও থিম কালার ইন্টিগ্রেশন)
+ */
+add_action('wp_head', 'ilybd_inject_dynamic_styles', 99);
+function ilybd_inject_dynamic_styles() {
+    $respect_device = get_option('ilybd_respect_device_theme', 'no');
+    $enable_loop = get_option('ilybd_enable_rgb_loop', 'no');
+    $safe_mode = get_option('ilybd_adsense_safe_mode', 'no');
+    
+    $color_post = get_option('ilybd_color_post_card', '#00f0ff');
+    $color_comment = get_option('ilybd_color_comment_box', '#ff003c');
+    $color_profile = get_option('ilybd_color_user_profile', '#bd00ff');
+    $color_chatbot = get_option('ilybd_color_chatbot', '#00f0ff');
+    $color_qa = get_option('ilybd_color_qa_forum', '#39ff14');
+    $color_story = get_option('ilybd_color_story_shelf', '#bd00ff');
+    $color_wallet = get_option('ilybd_color_wallet', '#39ff14');
+    $color_search = get_option('ilybd_color_search_index', '#eab308');
+
+    echo "\n" . '<!-- ILYBD Dynamic 2040 Styles Customizer Engine -->' . "\n";
+    echo '<style id="ilybd-dynamic-customizer-variables">';
+    
+    if ($safe_mode === 'yes') {
+        // Safe mode reduces glow dramatically, stops loops, very raw and solid for AdSense inspectors
+        echo '
+        :root {
+            --neon: #00ff41 !important;
+            --custom-post-glow: rgba(0, 0, 0, 0.2) !important;
+            --custom-comment-glow: rgba(0, 0, 0, 0.2) !important;
+            --custom-profile-glow: rgba(0, 0, 0, 0.2) !important;
+            --custom-chatbot-glow: rgba(0, 0, 0, 0.2) !important;
+            --custom-qa-glow: rgba(0, 0, 0, 0.2) !important;
+            --custom-story-glow: rgba(0, 0, 0, 0.2) !important;
+            --custom-wallet-glow: rgba(0, 0, 0, 0.2) !important;
+            --custom-search-glow: rgba(0, 0, 0, 0.2) !important;
+            --box-shadow-multiplier: 0 !important;
+        }
+        /* Revoke heavy text shadows and intense box glows for AdSense compliance */
+        *, *::before, *::after {
+            box-shadow: none !important;
+            text-shadow: none !important;
+            animation-duration: 0s !important;
+            transition-duration: 0.15s !important;
+        }
+        .logo-text {
+            background: none !important;
+            -webkit-text-fill-color: #00ff41 !important;
+            color: #00ff41 !important;
+            text-shadow: none !important;
+            filter: none !important;
+        }
+        .user-hi b {
+            background: transparent !important;
+            color: #00ff41 !important;
+            text-shadow: none !important;
+            filter: none !important;
+        }
+        .rgb-line, .rgb-bottom {
+            background: #30363d !important;
+            animation: none !important;
+            opacity: 0.5 !important;
+        }
+        ';
+    } else {
+        // Normal Mode / High-End Cyber Mode
+        echo '
+        :root {
+            --custom-post-glow: ' . esc_attr($color_post) . ';
+            --custom-comment-glow: ' . esc_attr($color_comment) . ';
+            --custom-profile-glow: ' . esc_attr($color_profile) . ';
+            --custom-chatbot-glow: ' . esc_attr($color_chatbot) . ';
+            --custom-qa-glow: ' . esc_attr($color_qa) . ';
+            --custom-story-glow: ' . esc_attr($color_story) . ';
+            --custom-wallet-glow: ' . esc_attr($color_wallet) . ';
+            --custom-search-glow: ' . esc_attr($color_search) . ';
+        }
+        ';
+
+        if ($enable_loop === 'yes') {
+            // Animating CSS variables rotation loop every 16s
+            echo '
+            @keyframes ilybdRgbGlowLoop {
+                0% {
+                    --custom-post-glow: ' . esc_attr($color_post) . ';
+                    --custom-comment-glow: ' . esc_attr($color_comment) . ';
+                    --custom-profile-glow: ' . esc_attr($color_profile) . ';
+                    --custom-chatbot-glow: ' . esc_attr($color_chatbot) . ';
+                }
+                25% {
+                    --custom-post-glow: ' . esc_attr($color_comment) . ';
+                    --custom-comment-glow: ' . esc_attr($color_profile) . ';
+                    --custom-profile-glow: ' . esc_attr($color_chatbot) . ';
+                    --custom-chatbot-glow: ' . esc_attr($color_qa) . ';
+                }
+                50% {
+                    --custom-post-glow: ' . esc_attr($color_profile) . ';
+                    --custom-comment-glow: ' . esc_attr($color_chatbot) . ';
+                    --custom-profile-glow: ' . esc_attr($color_qa) . ';
+                    --custom-chatbot-glow: ' . esc_attr($color_post) . ';
+                }
+                75% {
+                    --custom-post-glow: ' . esc_attr($color_chatbot) . ';
+                    --custom-comment-glow: ' . esc_attr($color_qa) . ';
+                    --custom-profile-glow: ' . esc_attr($color_post) . ';
+                    --custom-chatbot-glow: ' . esc_attr($color_comment) . ';
+                }
+                100% {
+                    --custom-post-glow: ' . esc_attr($color_post) . ';
+                    --custom-comment-glow: ' . esc_attr($color_comment) . ';
+                    --custom-profile-glow: ' . esc_attr($color_profile) . ';
+                    --custom-chatbot-glow: ' . esc_attr($color_chatbot) . ';
+                }
+            }
+            :root {
+                animation: ilybdRgbGlowLoop 16s linear infinite !important;
+            }
+            ';
+        }
+
+        // Apply custom glow styles on elements in WordPress pages!
+        $post_rgb = ilybd_hex_to_rgb_helper($color_post);
+        $comment_rgb = ilybd_hex_to_rgb_helper($color_comment);
+        $profile_rgb = ilybd_hex_to_rgb_helper($color_profile);
+        $chatbot_rgb = ilybd_hex_to_rgb_helper($color_chatbot);
+        $qa_rgb = ilybd_hex_to_rgb_helper($color_qa);
+        $story_rgb = ilybd_hex_to_rgb_helper($color_story);
+        $wallet_rgb = ilybd_hex_to_rgb_helper($color_wallet);
+        $search_rgb = ilybd_hex_to_rgb_helper($color_search);
+
+        echo "
+        /* Dynamic Shadow and Borders Integration based on Admin choices */
+        .single-post-card, .post-card, .card-post {
+            border-color: var(--custom-post-glow) !important;
+            box-shadow: 0 0 20px rgba(" . esc_attr($post_rgb) . ", 0.12) !important;
+            transition: all 0.3s ease;
+        }
+        .comment-respond, .comment-box, .section-comments, .comment-list li {
+            border-color: var(--custom-comment-glow) !important;
+            box-shadow: 0 0 20px rgba(" . esc_attr($comment_rgb) . ", 0.12) !important;
+        }
+        .user-profile-card, .dashboard-user-card, .member-card, .profile-card-glow {
+            border-color: var(--custom-profile-glow) !important;
+            box-shadow: 0 0 25px rgba(" . esc_attr($profile_rgb) . ", 0.15) !important;
+        }
+        .maya-chatbot-wrapper, .chatbot-container, .interactive-assistant {
+            border-color: var(--custom-chatbot-glow) !important;
+            box-shadow: 0 0 25px rgba(" . esc_attr($chatbot_rgb) . ", 0.15) !important;
+        }
+        .community-qa-card, .qa-post, .forum-card {
+            border-color: var(--custom-qa-glow) !important;
+            box-shadow: 0 0 18px rgba(" . esc_attr($qa_rgb) . ", 0.12) !important;
+        }
+        .story-shelf-wrapper, .stories-grid, .story-card {
+            border-color: var(--custom-story-glow) !important;
+            box-shadow: 0 0 20px rgba(" . esc_attr($story_rgb) . ", 0.12) !important;
+        }
+        .wallet-balance-card, .balance-retract-widget, .payout-widget {
+            border-color: var(--custom-wallet-glow) !important;
+            box-shadow: 0 0 25px rgba(" . esc_attr($wallet_rgb) . ", 0.15) !important;
+        }
+        .search-container, .search-index-card, .search-box-field {
+            border-color: var(--custom-search-glow) !important;
+            box-shadow: 0 0 20px rgba(" . esc_attr($search_rgb) . ", 0.12) !important;
+        }
+        ";
+    }
+
+    if ($respect_device === 'yes') {
+        echo '
+        @media (prefers-color-scheme: light) {
+            body {
+                background: #f8fafc !important;
+                color: #0f172a !important;
+            }
+            .wrap, .sidebar, .card, .post-card, header, .cyber-dropdown-menu, .single-post-card {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                border-color: rgba(15, 23, 42, 0.08) !important;
+            }
+            .logo-text {
+                filter: none !important;
+            }
+        }
+        ';
+    }
+
+    echo '</style>' . "\n";
+}
+
+// Helper to convert hex to rgb
+function ilybd_hex_to_rgb_helper($hex) {
+    $hex = str_replace("#", "", $hex);
+    if(strlen($hex) == 3) {
+        $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+        $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+        $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+    } else {
+        $r = hexdec(substr($hex,0,2));
+        $g = hexdec(substr($hex,2,2));
+        $b = hexdec(substr($hex,4,2));
+    }
+    return "$r, $g, $b";
+}
+

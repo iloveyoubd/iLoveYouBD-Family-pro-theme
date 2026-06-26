@@ -195,18 +195,69 @@ get_header(); ?>
         <!-- Right Side: Interaction Form -->
         <div class="cyber-form-box">
             <h2 style="color: var(--cyber-neon); margin-bottom: 25px;">Establish Connection</h2>
-            <form action="#" method="POST">
-                <label style="color: var(--cyber-text); font-size: 12px;">Full Identity</label>
+            
+            <?php
+            $submission_success = false;
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cyber_transmission_nonce'])) {
+                $submission_success = true;
+                $sender_name = sanitize_text_field($_POST['name']);
+                $sender_email = sanitize_email($_POST['email']);
+                $inquiry_type = sanitize_text_field($_POST['inquiry_type']);
+                $transmission_subject = sanitize_text_field($_POST['subject']);
+                $message_content = sanitize_textarea_field($_POST['message']);
+                
+                // Store in option log (to view in WP settings if desired) for total resilience
+                $transmission_log = get_option('ilybd_contact_submissions', []);
+                if (!is_array($transmission_log)) { $transmission_log = []; }
+                $transmission_log[] = [
+                    'time' => current_time('mysql'),
+                    'name' => $sender_name,
+                    'email' => $sender_email,
+                    'type' => $inquiry_type,
+                    'subject' => $transmission_subject,
+                    'content' => $message_content,
+                    'status' => 'PENDING_REVIEW'
+                ];
+                update_option('ilybd_contact_submissions', array_slice($transmission_log, -50)); // store last 50
+            }
+            
+            if ($submission_success): ?>
+                <div class="transmission-status-success" style="background: rgba(0, 255, 65, 0.05); border: 1px dashed var(--cyber-neon); border-radius: 8px; padding: 25px; margin-bottom: 20px;">
+                    <h3 style="color: var(--cyber-neon); margin: 0 0 10px 0; font-family: monospace;"><i class="fa-solid fa-square-rss"></i> TRANSMISSION ESTABLISHED</h3>
+                    <p style="font-size: 13.5px; line-height: 1.6; color: #8b949e; margin-bottom: 15px;">
+                        Secure satellite handshakes verified. Your transmission was successfully optimized, encrypted, and compiled. Our response team will audit this payload within 12 standard terminal hours.
+                    </p>
+                    <div style="font-family: monospace; font-size: 11px; color: var(--cyber-neon); background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px;">
+                        • Origin: <?php echo esc_html($sender_email); ?><br>
+                        • Class: <?php echo esc_html($inquiry_type); ?><br>
+                        • Handshake: SECURE_EST_<?php echo rand(100000, 999999); ?><br>
+                        • Status: UPLINK_ONLINE
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <form action="" method="POST">
+                <input type="hidden" name="cyber_transmission_nonce" value="1">
+                
+                <label style="color: var(--cyber-text); font-size: 12px; display: block; margin-bottom: 6px;">Full Identity / নাম</label>
                 <input type="text" name="name" class="cyber-field" placeholder="Full Name" required>
 
-                <label style="color: var(--cyber-text); font-size: 12px;">Secure Email</label>
+                <label style="color: var(--cyber-text); font-size: 12px; display: block; margin-bottom: 6px;">Secure Email / ইমেইল</label>
                 <input type="email" name="email" class="cyber-field" placeholder="yourname@email.com" required>
 
-                <label style="color: var(--cyber-text); font-size: 12px;">Transmission Subject</label>
-                <input type="text" name="subject" class="cyber-field" placeholder="Inquiry Type">
+                <label style="color: var(--cyber-text); font-size: 12px; display: block; margin-bottom: 6px;">Connection Vector / মেসেজের ধরণ</label>
+                <select name="inquiry_type" class="cyber-field" style="background:#0d1117; color: var(--cyber-neon); cursor: pointer;" required>
+                    <option value="General Support">General Support (সাধারণ সহযোগিতা)</option>
+                    <option value="Bug Report Form">Bug Report Form (বাগ বা ত্রুটির সমাধান)</option>
+                    <option value="Report Abuse / Spam">Report Abuse / DMCA Violation (অভিযোগ ও কপিরাইট)</option>
+                    <option value="Editorial Contribution">Editorial Contribution / Partnership (পেশাদার কন্ট্রিবিউটর)</option>
+                </select>
 
-                <label style="color: var(--cyber-text); font-size: 12px;">Message Content</label>
-                <textarea name="message" class="cyber-field" rows="5" placeholder="Write your message here..." required></textarea>
+                <label style="color: var(--cyber-text); font-size: 12px; display: block; margin-bottom: 6px;">Transmission Reference / বিষয়</label>
+                <input type="text" name="subject" class="cyber-field" placeholder="Subject Reference" required>
+
+                <label style="color: var(--cyber-text); font-size: 12px; display: block; margin-bottom: 6px;">Payload Content / বিস্তারিত মেসেজ</label>
+                <textarea name="message" class="cyber-field" rows="5" placeholder="Please detail your query, issue, or report..." required></textarea>
 
                 <button type="submit" class="execute-btn">Execute Transmission</button>
             </form>

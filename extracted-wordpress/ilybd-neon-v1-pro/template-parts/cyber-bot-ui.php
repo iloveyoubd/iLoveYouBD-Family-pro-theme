@@ -32,10 +32,14 @@
                 <button id="sidebar-toggle-trigger" class="custom-icon-btn" title="আর্কাইভ টগল">=</button>
                 
                 <div class="bot-info-meta">
-                    <span class="header-title">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" class="sparkle-anim-svg">
-                            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-                        </svg>
+                    <span class="header-title" style="display: flex; align-items: center; gap: 6px;">
+                        <?php if (get_option('ilybd_enable_cyber_shield', 'yes') === 'yes'): ?>
+                            <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/icon-cyber-shield.svg'); ?>" alt="Cyber Shield" style="width: 20px; height: 20px; filter: drop-shadow(0 0 8px #00f0ff); flex-shrink: 0;" referrerPolicy="no-referrer">
+                        <?php else: ?>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" class="sparkle-anim-svg" style="flex-shrink:0;">
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                            </svg>
+                        <?php endif; ?>
                         মায়া (Maya AI)
                     </span>
                     <span class="header-status-badge">GEMINI ENGINE READY</span>

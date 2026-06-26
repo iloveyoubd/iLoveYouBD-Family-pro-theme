@@ -40,7 +40,7 @@ class ILYBD_Wallet_System {
      */
     public function get_user_commission_rate( $user_id ) {
         $data = $this->get_user_wallet_data( $user_id );
-        $level = $data ? $data->user_level : 1;
+        $level = $data ? (int)$data->user_level : 1;
 
         if ( $level >= 50 ) {
             return 0.20; // ২০%
@@ -56,32 +56,13 @@ class ILYBD_Wallet_System {
      * $original_revenue: ওই পোস্ট থেকে আপনার মোট এডসেন্স ইনকাম (আনুমানিক)
      */
     public function process_ad_revenue_share( $user_id, $post_id, $original_revenue ) {
-        global $wpdb;
-
         $commission_rate = $this->get_user_commission_rate( $user_id );
         $user_share = $original_revenue * $commission_rate;
 
-        // ইউজারের ব্যালেন্সে টাকা যোগ করা
-        $wpdb->query( $wpdb->prepare(
-            "UPDATE {$this->table_wallet} 
-             SET balance = balance + %f, total_earned = total_earned + %f 
-             WHERE user_id = %d",
-            $user_share, $user_share, $user_id
-        ));
+        if ( function_exists('ilybd_add_user_balance_or_points') ) {
+            $rev_reason = sprintf( "পোস্ট আইডি %d এর প্রিমিয়াম অ্যাড রেভিনিউ শেয়ার বোনাস", $post_id );
+            ilybd_add_user_balance_or_points($user_id, $user_share, 0, $rev_reason, (string)$post_id, 'post');
 
-        // স্ট্যাটাস টেবিলে রেকর্ড রাখা
-        $wpdb->insert( $this->table_stats, array(
-            'post_id' => $post_id,
-            'user_id' => $user_id,
-            'revenue' => $user_share,
-            'timestamp' => current_time( 'mysql' )
-        ));
-
-        // --- SYNCHRONIZATION WITH USER META ---
-        $current_bd_data = $this->get_user_wallet_data( $user_id );
-        if ( $current_bd_data ) {
-            update_user_meta( $user_id, 'user_balance', (float) $current_bd_data->balance );
-            
             // নোটিফিকেশন যুক্ত করুন
             if ( function_exists( 'ilybd_add_user_notification' ) ) {
                 $n_msg = sprintf("💰 পোস্ট আইডি %d এর এড রেভিনিউ শেয়ার থেকে ৳%s আর্ন করেছেন!", $post_id, number_format($user_share, 2));
@@ -94,35 +75,9 @@ class ILYBD_Wallet_System {
      * পয়েন্ট যোগ করা এবং অটো লেভেল-আপ
      */
     public function add_points( $user_id, $points_to_add, $reason = '' ) {
-        global $wpdb;
-
-        // চেক করা ইউজার আগে থেকে টেবিলে আছে কি না
-        $exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$this->table_wallet} WHERE user_id = %d", $user_id ) );
-
-        if ( ! $exists ) {
-            $wpdb->insert( $this->table_wallet, array( 'user_id' => $user_id, 'points' => 0, 'balance' => 0 ) );
-        }
-
-        // পয়েন্ট আপডেট
-        $wpdb->query( $wpdb->prepare(
-            "UPDATE {$this->table_wallet} SET points = points + %d WHERE user_id = %d",
-            $points_to_add, $user_id
-        ));
-
-        // লেভেল আপ লজিক: প্রতি ৫০০ পয়েন্টে ১ লেভেল বাড়বে
-        $current_points = $wpdb->get_var( $wpdb->prepare( "SELECT points FROM {$this->table_wallet} WHERE user_id = %d", $user_id ) );
-        $new_level = floor( $current_points / 500 ) + 1;
-
-        $wpdb->update( $this->table_wallet, array( 'user_level' => $new_level ), array( 'user_id' => $user_id ) );
-
-        // --- SYNCHRONIZATION WITH USER META ---
-        update_user_meta( $user_id, 'ilybd_total_points', $current_points );
-        update_user_meta( $user_id, 'user_points', $current_points );
-        update_user_meta( $user_id, 'ilybd_points', $current_points );
-
-        if ( function_exists( 'ilybd_add_user_notification' ) && !empty($reason) ) {
-            $reason_text = __($reason, 'ilybd-prime');
-            ilybd_add_user_notification($user_id, sprintf("🎯 আপনি পেয়েছেন %d XP! (কারণ: %s)", $points_to_add, $reason_text));
+        if ( function_exists('ilybd_add_user_balance_or_points') && $points_to_add != 0 ) {
+            $log_reason = !empty($reason) ? $reason : "কমিউনিটি সাদা টুপি কন্ট্রিবিউটর অ্যাক্টিভিটি বুস্ট";
+            ilybd_add_user_balance_or_points($user_id, 0, $points_to_add, $log_reason);
         }
     }
 
@@ -130,6 +85,9 @@ class ILYBD_Wallet_System {
      * ইউজারের কারেন্ট ব্যালেন্স ও ডাটা গেট করা
      */
     public function get_user_wallet_data( $user_id ) {
+        if ( function_exists( 'ilybd_ensure_user_wallet_initialized' ) ) {
+            return ilybd_ensure_user_wallet_initialized( $user_id );
+        }
         global $wpdb;
         return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table_wallet} WHERE user_id = %d", $user_id ) );
     }
@@ -164,6 +122,12 @@ class ILYBD_Wallet_System {
                 'status' => 'pending'
             ];
             update_user_meta($user_id, 'ilybd_withdrawals', $withdrawals);
+
+            // লেজার ট্রানজেকশন বিয়োগ রাইট করা
+            if ( function_exists( 'ilybd_add_ledger_transaction' ) ) {
+                $withdraw_log_reason = sprintf( "উইথড্রল ক্যাশআউট রিকোয়েস্ট (%s নম্বর: %s)", strtoupper($method), $account_no );
+                ilybd_add_ledger_transaction( $user_id, -$amount, 'BDT', $withdraw_log_reason, $req_id, 'admin' );
+            }
 
             if ( function_exists( 'ilybd_add_user_notification' ) ) {
                 $n_msg = sprintf("💸 ৳%s টাকার উইথড্রয়াল রিকোয়েস্ট (%s) পেন্ডিং এ সাবমিট করা হয়েছে।", number_format($amount, 2), $method);

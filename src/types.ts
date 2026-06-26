@@ -78,7 +78,31 @@ export interface AdminSettings {
   enableInteractiveNotice: boolean;
   googleAdSenseStatus: 'active' | 'pending' | 'restricted';
   enableRgbEffects: boolean;
+  rgbStyle?: string;
+  glowSinglePost?: boolean;
+  glowSinglePostColor?: string;
+  glowComments?: boolean;
+  glowCommentsColor?: string;
+  glowUserProfile?: boolean;
+  glowUserProfileColor?: string;
+  glowChatbot?: boolean;
+  glowChatbotColor?: string;
+  glowQa?: boolean;
+  glowQaColor?: string;
+  glowStories?: boolean;
+  glowStoriesColor?: string;
+  glowWallet?: boolean;
+  glowWalletColor?: string;
+  glowSearchIndex?: boolean;
+  glowSearchIndexColor?: string;
+  defaultThemePreset?: 'cyber_dark' | 'emerald_glow' | 'light_clean' | 'electric_sunset_dark' | 'classic_midnight';
+  allowUserCustomizer?: 'yes_logged_in' | 'yes_everyone' | 'no_admin_only';
+  respectDeviceDefaultTheme?: boolean;
+  enableAdSenseSafeMode?: boolean;
+  enableRgbLoopShift?: boolean;
+  enableFooterRgb?: boolean;
   enableGoogleAds: boolean;
+  enableStories?: boolean;
   advertisementSnippet: string;
   mayaApiKeys: string;
   mayaSystemInstruction: string;
@@ -91,3 +115,28 @@ export interface AdminSettings {
   refereeBonusTaka?: number;   // Bonus Taka for registered user (referee)
   refereeXpReward?: number;    // XP points for registered user (referee)
 }
+
+export interface LedgerEntry {
+  id: string;
+  username: string;
+  amount: number; // Added or deducted value
+  currency: "BDT" | "XP";
+  reason: string; // "আর্টিকেল লিখে বোনাস", "রেফারেল সাকসেসফুল", etc.
+  linkId?: string; // post ID or element details
+  linkType?: "post" | "comment" | "referral" | "forum" | "admin" | "other";
+  timestamp: string; // ISO standard/human timestamp
+}
+
+export interface StoryItem {
+  id: string;
+  username: string;
+  userAvatar: string;
+  mediaType: "image" | "text";
+  mediaUrl?: string;
+  textContent?: string;
+  timestamp: string;
+  viewsCount: number;
+  likesCount: number;
+  caption?: string;
+}
+

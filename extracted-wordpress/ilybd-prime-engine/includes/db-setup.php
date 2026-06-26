@@ -37,9 +37,35 @@ function ilybd_initialize_db_tables() {
         PRIMARY KEY  (id)
     ) $charset_collate;";
 
+    // ৩. রিয়াল-টাইম রেভিনিউ ও এক্সপি লেনদেন লেজার টেবিল (২০৪০ অন-চেইন স্টাইল)
+    $table_ledger = $wpdb->prefix . 'ilybd_ledger';
+    $sql_ledger = "CREATE TABLE IF NOT EXISTS $table_ledger (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        user_id bigint(20) NOT NULL,
+        amount float DEFAULT 0,
+        currency varchar(10) DEFAULT 'BDT',
+        reason text NOT NULL,
+        link_id varchar(100) DEFAULT '',
+        link_type varchar(50) DEFAULT 'other',
+        timestamp datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql_wallet );
     dbDelta( $sql_stats );
+    dbDelta( $sql_ledger );
+
+    // Manual DB Patch to ensure columns user_level and total_earned exist on existing installs
+    $columns = $wpdb->get_col("DESC $table_wallet");
+    if ( ! empty( $columns ) ) {
+        if ( ! in_array( 'user_level', $columns ) ) {
+            $wpdb->query( "ALTER TABLE $table_wallet ADD COLUMN user_level bigint(20) DEFAULT 1 AFTER points" );
+        }
+        if ( ! in_array( 'total_earned', $columns ) ) {
+            $wpdb->query( "ALTER TABLE $table_wallet ADD COLUMN total_earned float DEFAULT 0 AFTER user_level" );
+        }
+    }
 }
 
 // প্লাগিন যখনই রান হবে এই সেটআপ চেক করবে

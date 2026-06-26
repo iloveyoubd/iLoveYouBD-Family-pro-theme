@@ -5,21 +5,27 @@ if (!defined('ABSPATH')) exit;
    SLIDER HOOK
 ========================= */
 add_action('ilybd_slider', function () {
-    get_template_part('template-parts/slider');
+    if (get_option('ily_enable_slider', 1)) {
+        get_template_part('template-parts/slider');
+    }
 });
 
 /* =========================
    FEATURED HOOK
 ========================= */
 add_action('ilybd_featured', function () {
-    get_template_part('template-parts/featured');
+    if (get_option('ily_enable_featured_posts', 1)) {
+        get_template_part('template-parts/featured');
+    }
 });
 
 /* =========================
    POPULAR HOOK
 ========================= */
 add_action('ilybd_popular', function () {
-    get_template_part('template-parts/popular');
+    if (get_option('ily_enable_popular_posts', 1)) {
+        get_template_part('template-parts/popular');
+    }
 });
 
 /* =========================
@@ -33,7 +39,9 @@ add_action('ilybd_latest', function () {
    CATEGORY HOOK
 ========================= */
 add_action('ilybd_category', function () {
-    get_template_part('template-parts/category');
+    if (get_option('ily_enable_categories', 1)) {
+        get_template_part('template-parts/category');
+    }
 });
 
 /* =========================

@@ -26,6 +26,112 @@ class ILYBD_Monetization_Engine {
         
         // শর্টকোড তৈরি করা যাতে ইউজার তার রেফারেল লিঙ্ক দেখতে পারে
         add_shortcode( 'ilybd_referral_link', array( $this, 'generate_referral_link' ) );
+
+        // Handle user registration for referral bonus
+        add_action( 'user_register', array( $this, 'handle_referral_registration' ), 10, 1 );
+
+        // Add referral field to default WordPress registration form
+        add_action( 'register_form', array( $this, 'add_referral_field' ) );
+        add_filter( 'registration_errors', array( $this, 'validate_referral_field' ), 10, 3 );
+    }
+
+    /**
+     * Add Referral ID input field to the standard registration form
+     */
+    public function add_referral_field() {
+        $ref_val = isset( $_GET['ref'] ) ? intval( $_GET['ref'] ) : '';
+        if ( empty( $ref_val ) && isset( $_COOKIE['ilybd_referrer'] ) ) {
+            $ref_val = intval( $_COOKIE['ilybd_referrer'] );
+        }
+        ?>
+        <p>
+            <label for="ilybd_referrer_id"><?php _e( 'Referral ID / রেফারেল আইডি (ঐচ্ছিক)', 'ilybd-prime' ); ?><br />
+            <input type="number" name="ilybd_referrer_id" id="ilybd_referrer_id" class="input" value="<?php echo esc_attr( $ref_val ); ?>" style="background:#161b22; color:#fff; border:1px solid #30363d; border-radius:6px; padding:10px; width:100%; box-sizing:border-box;" />
+            </label>
+        </p>
+        <?php
+    }
+
+    /**
+     * Validate the provided Referral ID
+     */
+    public function validate_referral_field( $errors, $sanitized_user_login, $user_email ) {
+        if ( ! empty( $_POST['ilybd_referrer_id'] ) ) {
+            $referrer_id = intval( $_POST['ilybd_referrer_id'] );
+            $referrer = get_userdata( $referrer_id );
+            if ( ! $referrer ) {
+                $errors->add( 'invalid_referrer_id', __( '<strong>ERROR</strong>: প্রবেশ করানো রেফারেল আইডিটি সঠিক নয় বা ইউজার পাওয়া যায়নি।', 'ilybd-prime' ) );
+            }
+        }
+        return $errors;
+    }
+
+    /**
+     * Handle referral bonus upon successful user registration
+     */
+    public function handle_referral_registration( $user_id ) {
+        $referrer_id = 0;
+        
+        if ( isset( $_COOKIE['ilybd_referrer'] ) ) {
+            $referrer_id = intval( $_COOKIE['ilybd_referrer'] );
+        } elseif ( ! empty( $_POST['ilybd_referrer_id'] ) ) {
+            $referrer_id = intval( $_POST['ilybd_referrer_id'] );
+        }
+
+        if ( $referrer_id > 0 ) {
+            // Validate referrer still exists
+            $referrer = get_userdata($referrer_id);
+            if( $referrer ) {
+                
+                // Get Admin Settings for Rewards
+                $ref_points_referrer = intval(get_option('ilybd_ref_points_referrer', 50));
+                $ref_cash_referrer = floatval(get_option('ilybd_ref_cash_referrer', 0.50));
+                
+                $ref_points_referee = intval(get_option('ilybd_ref_points_referee', 100));
+                $ref_cash_referee = floatval(get_option('ilybd_ref_cash_referee', 1.00));
+                
+                // Reward Referrer
+                if ( function_exists('ilybd_add_user_balance_or_points') ) {
+                    ilybd_add_user_balance_or_points(
+                        $referrer_id, 
+                        $ref_cash_referrer, 
+                        $ref_points_referrer, 
+                        sprintf("রেফারেল বোনাস (নতুন ইউজার ID %d কে যুক্ত করার জন্য)", $user_id),
+                        (string)$user_id,
+                        'referral'
+                    );
+                } else {
+                    $curr_points_referrer = (int)get_user_meta($referrer_id, 'ilybd_total_points', true);
+                    $curr_balance_referrer = (float)get_user_meta($referrer_id, 'user_balance', true);
+                    update_user_meta( $referrer_id, 'ilybd_total_points', $curr_points_referrer + $ref_points_referrer );
+                    update_user_meta( $referrer_id, 'user_balance', $curr_balance_referrer + $ref_cash_referrer );
+                }
+                
+                // Reward New User (Referee)
+                if ( function_exists('ilybd_add_user_balance_or_points') ) {
+                    ilybd_add_user_balance_or_points(
+                        $user_id, 
+                        $ref_cash_referee, 
+                        $ref_points_referee, 
+                        sprintf("রেফারেল জয়েনিং বোনাস (লিংক দাতা ID %d এর মাধ্যমে)", $referrer_id),
+                        (string)$referrer_id,
+                        'referral'
+                    );
+                } else {
+                    $curr_points_referee = (int)get_user_meta($user_id, 'ilybd_total_points', true);
+                    $curr_balance_referee = (float)get_user_meta($user_id, 'user_balance', true);
+                    update_user_meta( $user_id, 'ilybd_total_points', $curr_points_referee + $ref_points_referee );
+                    update_user_meta( $user_id, 'user_balance', $curr_balance_referee + $ref_cash_referee );
+                }
+
+                // Store relationship for record
+                update_user_meta( $user_id, 'ilybd_referred_by', $referrer_id );
+                
+                // Track total referrals for the referrer
+                $total_refs = (int)get_user_meta($referrer_id, 'ilybd_total_referrals_count', true);
+                update_user_meta($referrer_id, 'ilybd_total_referrals_count', $total_refs + 1);
+            }
+        }
     }
 
     /**

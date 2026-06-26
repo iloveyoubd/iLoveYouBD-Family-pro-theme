@@ -11,9 +11,10 @@ $author_id    = get_the_author_meta('ID');
 $comment_link = get_comments_link();
 $view_count   = get_post_meta(get_the_ID(), 'ilybd_post_views_count', true) ?: '0';
 $like_count   = get_post_meta(get_the_ID(), '_likes', true) ?: '0';
+$mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
 ?>
 
-<article class="pro-post-card">
+<article class="pro-post-card<?php echo ($mobile_post_layout === 'classic_compact_wapka') ? ' mobile-classic-compact' : ''; ?>">
 
     <div class="post-media">
         <a href="<?php echo $post_link; ?>" aria-label="<?php the_title(); ?>">
@@ -65,52 +66,25 @@ $like_count   = get_post_meta(get_the_ID(), '_likes', true) ?: '0';
                     <span class="author-name"><?php the_author(); ?></span>
                 </a>
 
-                <div class="stats-group">
-                    <a href="<?php echo $post_link; ?>" class="meta-link" title="Published Time">
-                        <i class="fa-regular fa-clock"></i> 
-                        <span><?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> ago</span>
-                    </a>
-                    
-                    <a href="<?php echo $comment_link; ?>" class="meta-link" title="Comments">
-                        <i class="fa-regular fa-comment"></i> 
-                        <span><?php echo get_comments_number(); ?></span>
-                    </a>
-                    
-                    <div class="meta-link no-click" title="Total Views">
-                        <i class="fa-regular fa-eye"></i> 
-                        <span><?php echo esc_html($view_count); ?></span>
-                    </div>
-                    
-                    <a href="<?php echo $post_link; ?>#ilybd-like-container" class="meta-link like-btn" title="Total Likes">
-                        <i class="fa-regular fa-heart"></i> 
-                        <span><?php echo esc_html($like_count); ?></span>
-                    </a>
-
-                    <!-- Share Button Trigger with interactive Dropdown Option -->
-                    <div class="meta-link share-wrapper" style="position: relative; display: inline-block;">
-                        <button class="meta-link share-btn-trigger" title="Share Post" aria-label="Share Post" style="background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #8b949e; transition: 0.3s;" onclick="togglePostCardShare(this, event)">
-                            <i class="fa-solid fa-share-nodes" style="color: <?php echo $neon; ?>;"></i> 
-                            <span>শেয়ার</span>
-                        </button>
-                        <div class="postcard-share-dropdown" style="display: none; position: absolute; bottom: 30px; right: 0; background: #1c2128; border: 1.5px solid <?php echo $neon; ?>; box-shadow: 0 5px 15px rgba(0,0,0,0.8), 0 0 10px <?php echo $neon; ?>44; border-radius: 8px; padding: 8px; z-index: 999; width: 156px;">
-                            <div style="font-size: 10px; color: #8b949e; text-transform: uppercase; font-weight: 800; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-align: center;">Share options</div>
-                            <div class="dropdown-share-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $post_link; ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #1877f2; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="Facebook" aria-label="Share on Facebook">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                                <a href="https://api.whatsapp.com/send?text=<?php echo urlencode(get_the_title()) . ' ' . $post_link; ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #25d366; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="WhatsApp" aria-label="Share on WhatsApp">
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
-                                <a href="https://t.me/share/url?url=<?php echo $post_link; ?>&text=<?php echo urlencode(get_the_title()); ?>" target="_blank" style="width: 28px; height: 28px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; text-decoration: none;" title="Telegram" aria-label="Share on Telegram">
-                                    <i class="fab fa-telegram-plane"></i>
-                                </a>
-                                <button onclick="copyPostCardLink('<?php echo esc_js(get_permalink()); ?>', this, event)" style="width: 28px; height: 28px; border-radius: 50%; background: <?php echo $neon; ?>; display: flex; align-items: center; justify-content: center; color: #000; font-size: 12px; border: none; cursor: pointer;" title="Copy Link" aria-label="Copy post link">
-                                    <i class="fa-solid fa-link"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="meta-link no-click" title="Total Views">
+                    <i class="fa-regular fa-eye" style="color: <?php echo $neon; ?>;"></i> 
+                    <span><?php echo esc_html($view_count); ?></span>
                 </div>
+
+                <a href="<?php echo $comment_link; ?>" class="meta-link" title="Comments">
+                    <i class="fa-regular fa-comment" style="color: <?php echo $neon; ?>;"></i> 
+                    <span><?php echo get_comments_number(); ?></span>
+                </a>
+                
+                <a href="<?php echo $post_link; ?>#ilybd-like-container" class="meta-link like-btn" title="Total Likes">
+                    <i class="fa-regular fa-heart" style="color: <?php echo $neon; ?>;"></i> 
+                    <span><?php echo esc_html($like_count); ?></span>
+                </a>
+
+                <a href="<?php echo $post_link; ?>" class="meta-link" title="Published Time">
+                    <i class="fa-regular fa-clock" style="color: <?php echo $neon; ?>;"></i> 
+                    <span><?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> ago</span>
+                </a>
 
             </div>
         </div>
@@ -175,8 +149,18 @@ $like_count   = get_post_meta(get_the_ID(), '_likes', true) ?: '0';
 .meta-wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE, Edge */
+}
+
+.meta-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .meta-link {
@@ -188,6 +172,8 @@ $like_count   = get_post_meta(get_the_ID(), '_likes', true) ?: '0';
     font-size: 11.5px;
     white-space: nowrap;
     transition: 0.3s;
+    padding: 8px 6px; /* Increased touch target area */
+    margin: -8px -2px; /* Adjusted to keep layout visually similar */
 }
 
 .meta-link:hover { color: <?php echo $neon; ?>; }
@@ -250,6 +236,188 @@ $like_count   = get_post_meta(get_the_ID(), '_likes', true) ?: '0';
     }
     .meta-wrapper::-webkit-scrollbar { display: none; }
 }
+
+/* ====================================================================
+   Wapka-Inspired Classic Compact Layout Custom overrides 2040 for Mobile 
+   ==================================================================== */
+@media screen and (max-width: 768px) {
+    .pro-post-card.mobile-classic-compact {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        padding: 12px !important;
+        margin-bottom: 14px !important;
+        background: #0d1321 !important;
+        background-image: none !important;
+        border: 1.5px solid rgba(0, 240, 255, 0.2) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+        gap: 14.5px !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact:hover {
+        transform: translateY(-2px) !important;
+        border-color: <?php echo $neon; ?> !important;
+        box-shadow: 0 8px 20px <?php echo $neon; ?>33, 0 0 10px <?php echo $neon; ?>15 !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .post-media {
+        width: 100px !important;
+        height: 100px !important;
+        flex-shrink: 0 !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        position: relative !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .post-media img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        transition: transform 0.5s ease !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact:hover .post-media img {
+        transform: scale(1.1) !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .cat-badge {
+        font-size: 8px !important;
+        top: 4px !important;
+        left: 4px !important;
+        padding: 2px 5px !important;
+        border-radius: 4px !important;
+        background: <?php echo $neon; ?> !important;
+        color: #000 !important;
+        font-weight: 800 !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .card-tts-trigger {
+        top: 4px !important;
+        right: 4px !important;
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 9px !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .post-info {
+        padding: 0 !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+        min-height: auto !important;
+        overflow: hidden !important;
+        text-align: left !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .post-title {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        margin: 0 !important;
+        line-height: 1.4 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-align: left !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .post-title a {
+        color: #ffffff !important;
+        text-decoration: none !important;
+        transition: color 0.2s !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .post-title a:hover {
+        color: <?php echo $neon; ?> !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .post-excerpt {
+        font-size: 11.5px !important;
+        color: #94a3b8 !important;
+        margin: 0 !important;
+        line-height: 1.45 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-align: left !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .rgb-divider {
+        display: none !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .meta-footer {
+        margin-top: 4px !important;
+        width: 100% !important;
+        border-top: 1px dashed rgba(255, 255, 255, 0.08) !important;
+        padding-top: 6px !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .meta-wrapper {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 6px 12px !important;
+        overflow-x: visible !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .meta-link {
+        font-size: 10px !important;
+        margin-right: 0 !important;
+        gap: 4px !important;
+        color: #94a3b8 !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        line-height: 1.2 !important;
+        padding: 8px 6px !important; /* Touch target fix */
+        margin: -8px -2px !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .meta-link i {
+        color: <?php echo $neon; ?> !important;
+        font-size: 11px !important;
+        width: 12px !important;
+        text-align: center !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .stats-group {
+        display: contents !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .round-avatar {
+        width: 16px !important;
+        height: 16px !important;
+        border: 1.5px solid <?php echo $neon; ?> !important;
+        border-radius: 50% !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .author-group {
+        height: 16px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4.5px !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .author-name {
+        margin-left: 0 !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        white-space: normal !important; /* Allow names to display fully */
+    }
+}
 </style>
 
 <script>
@@ -286,6 +454,69 @@ if (typeof togglePostCardShare === 'undefined') {
             btn.innerHTML = originalHTML;
             btn.style.background = '<?php echo $neon; ?>';
         }, 1200);
+    }
+
+    function sharePostDirectly(title, url, btn, event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // 1. Double protection copy link to clipboard first
+        var tempInput = document.createElement('input');
+        tempInput.style.position = 'fixed';
+        tempInput.style.opacity = '0';
+        tempInput.value = url;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        // 2. Play beautiful micro visual transition on the button
+        var textNode = btn.querySelector('.share-text');
+        var iconNode = btn.querySelector('i');
+        
+        var originalText = textNode ? textNode.innerText : 'শেয়ার';
+        var originalIconClass = iconNode ? iconNode.className : 'fa-solid fa-share-nodes';
+        
+        if (textNode) textNode.innerText = 'কপিড!';
+        if (iconNode) iconNode.className = 'fa-solid fa-check';
+        btn.style.color = '<?php echo $neon; ?>';
+
+        // 3. Trigger beautiful cyber notification bar
+        showCyberToast('লিংক কপি করা হয়েছে! (Post Link Cyberspace Copied)');
+
+        setTimeout(function() {
+            if (textNode) textNode.innerText = originalText;
+            if (iconNode) iconNode.className = originalIconClass;
+            btn.style.color = '#8b949e';
+        }, 1500);
+
+        // 4. Try native navigator share if supported (for mobile device native sheets overlay)
+        if (navigator.share) {
+            setTimeout(function() {
+                navigator.share({
+                    title: title,
+                    url: url
+                }).catch(function(e) { console.log('Native share canceled or block.'); });
+            }, 300);
+        }
+    }
+
+    function showCyberToast(msg) {
+        var toast = document.getElementById('cyber-share-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'cyber-share-toast';
+            toast.style.cssText = 'position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(20px); background:#0d1117; color:<?php echo $neon; ?>; border:1.5px solid <?php echo $neon; ?>; padding:12px 24px; border-radius:30px; font-weight:bold; font-size:12.5px; z-index:999999; box-shadow:0 0 20px <?php echo $neon; ?>44; display:flex; align-items:center; gap:8px; transition:all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity:0; pointer-events:none; font-family:system-ui; white-space:nowrap; text-transform:uppercase;';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = '<span style="color:<?php echo $neon; ?>;">⚡</span> ' + msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+        }, 3200);
     }
 
     document.addEventListener('click', function() {

@@ -1,5 +1,4 @@
 <?php get_header(); ?>
-<?php get_template_part('template-parts/single-profile-card'); ?>
 
 <div class="master-post-body" style="background: #0d1117; color: #c9d1d9; min-height: 100vh; padding-bottom: 50px;">
 
@@ -14,7 +13,7 @@ $title_main = get_the_title();
 $title_len = mb_strlen($title_main); 
 ?>
 
-<div class="hero-gradient" style="background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); padding: 60px 15px 30px;">
+<div class="hero-gradient" style="background: linear-gradient(135deg, #6e00ff 0%, #ff4b2b 100%); padding: 60px 15px 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-bottom: 2px solid rgba(255,255,255,0.1);">
     <div style="max-width:850px; margin:0 auto; text-align: center;">
         <span style="background:rgba(63, 185, 80, 0.1); color:#3fb950; font-size:12px; font-weight:bold; padding:5px 15px; border-radius:20px; border: 1px solid rgba(63, 185, 80, 0.3); text-transform: uppercase;">
             <?php
@@ -71,7 +70,10 @@ $title_len = mb_strlen($title_main);
     </div>
 </div>
 
-<div style="max-width:850px; margin:0 auto; padding:0 20px;">
+<div class="ilybd-single-grid-wrapper" style="box-sizing: border-box;">
+    
+    <!-- 1. Left Section: Main Post Contents -->
+    <div class="ilybd-single-left-content" style="box-sizing: border-box; min-width: 0;">
 
     <?php if (has_post_thumbnail()) : ?>
         <div class="single-post-thumb-wrapper" style="margin: 20px auto 35px; max-width: 680px; width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.45); border: 1.5px solid #30363d; box-sizing: border-box;">
@@ -216,9 +218,240 @@ $title_len = mb_strlen($title_main);
     }
     </style>
 
-    <article class="entry-content-main" style="font-size:18px; line-height:1.8; color: #e6edf3;">
+    <!-- ========================================== -->
+    <!-- 🔥 NEXT-LEVEL CYBER READING EXPERIENCE 🔥 -->
+    <!-- ========================================== -->
+    
+    <!-- 1. Reading Progress Bar -->
+    <div id="cyber-reading-progress" style="position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, #00f0ff, #00ff41); z-index: 999999; box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);"></div>
+    
+    <!-- 2. Dynamic Table of Contents (Auto Generated) -->
+    <div id="ilybd-dynamic-toc" style="background: rgba(13, 21, 39, 0.5); border: 1px solid rgba(0, 240, 255, 0.2); border-left: 4px solid #00f0ff; border-radius: 8px; padding: 20px; margin-bottom: 30px; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.3);">
+        <h3 style="margin-top: 0; color: #fff; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-list-ul" style="color: #00f0ff;"></i> কন্টেন্ট সূচিপত্র (Table of Contents)
+        </h3>
+        <ul id="ilybd-toc-list" style="margin: 0; padding-left: 20px; color: #8b949e; font-size: 14.5px; line-height: 1.8;"></ul>
+    </div>
+
+    <!-- 3. Post Content Area -->
+    <article class="entry-content-main cyber-post-body" style="font-size:18.5px; line-height:1.85; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
         <?php the_content(); ?>
     </article>
+
+    <!-- ========================================== -->
+    <!-- 🟢 GAMIFIED CYBER REACTIONS & ENGAGEMENT MODULE 🟢 -->
+    <!-- ========================================== -->
+    <div id="cyber-reactions-module" style="margin: 40px 0; padding: 25px; background: rgba(7, 11, 19, 0.6); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 12px; text-align: center; box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.02);">
+        <h4 style="color: #fff; font-size: 16px; font-family: monospace; text-transform: uppercase; margin-top: 0; margin-bottom: 20px; letter-spacing: 1px;">
+            <i class="fa-solid fa-bolt" style="color: <?php echo esc_attr($neon_color); ?>;"></i> আপনার প্রতিক্রিয়া জানান (Power Level: +5 XP)
+        </h4>
+        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <?php 
+            $reactions = [
+                'insightful' => ['icon' => 'fa-solid fa-lightbulb', 'color' => '#fbbf24', 'label' => 'Insightful'],
+                'mindblown' => ['icon' => 'fa-solid fa-brain', 'color' => '#a855f7', 'label' => 'Mind Blown'],
+                'helpful' => ['icon' => 'fa-solid fa-handshake-angle', 'color' => '#00ff41', 'label' => 'Helpful'],
+                'fire' => ['icon' => 'fa-solid fa-fire-flame-curved', 'color' => '#ef4444', 'label' => 'Lit/Fire']
+            ];
+            foreach($reactions as $key => $data): 
+                // Simulated random counts for demo
+                $count = rand(15, 250); 
+            ?>
+            <button onclick="cyberReact(this, '<?php echo $key; ?>')" class="cyber-reaction-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 18px; border-radius: 30px; color: #c9d1d9; font-weight: bold; font-size: 13.5px; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; gap: 8px;">
+                <i class="<?php echo $data['icon']; ?>" style="color: <?php echo $data['color']; ?>; font-size: 16px;"></i>
+                <span class="react-label"><?php echo $data['label']; ?></span>
+                <span class="react-count" style="background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-family: monospace; color: <?php echo $data['color']; ?>;"><?php echo $count; ?></span>
+            </button>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <script>
+    function cyberReact(btn, type) {
+        if(btn.classList.contains('reacted')) return;
+        
+        // Visual Feedback
+        btn.classList.add('reacted');
+        btn.style.background = 'rgba(0, 240, 255, 0.1)';
+        btn.style.borderColor = '<?php echo esc_js($neon_color); ?>';
+        btn.style.transform = 'scale(1.05)';
+        btn.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.2)';
+        
+        var countSpan = btn.querySelector('.react-count');
+        var currentCount = parseInt(countSpan.innerText);
+        countSpan.innerText = currentCount + 1;
+        countSpan.style.background = '<?php echo esc_js($neon_color); ?>';
+        countSpan.style.color = '#000';
+        
+        // Create floating +5 XP element
+        var xp = document.createElement('div');
+        xp.innerText = '+5 XP';
+        xp.style.position = 'absolute';
+        xp.style.color = '#00ff41';
+        xp.style.fontWeight = 'bold';
+        xp.style.fontFamily = 'monospace';
+        xp.style.pointerEvents = 'none';
+        xp.style.transition = 'all 1s ease-out';
+        xp.style.zIndex = '9999';
+        
+        var rect = btn.getBoundingClientRect();
+        xp.style.left = (rect.left + rect.width/2) + 'px';
+        xp.style.top = rect.top + 'px';
+        
+        document.body.appendChild(xp);
+        
+        setTimeout(() => {
+            xp.style.transform = 'translateY(-50px)';
+            xp.style.opacity = '0';
+        }, 50);
+        
+        setTimeout(() => { xp.remove(); }, 1000);
+    }
+    </script>
+
+
+    <!-- JS Core for Reading Features -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Reading Progress Bar ---
+        window.addEventListener('scroll', function() {
+            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (winScroll / height) * 100;
+            document.getElementById("cyber-reading-progress").style.width = scrolled + "%";
+        });
+
+        // --- Auto Generate Table of Contents ---
+        var articleContent = document.querySelector('.entry-content-main');
+        if (articleContent) {
+            var headings = articleContent.querySelectorAll('h2, h3');
+            if (headings.length > 2) { // Show only if enough sections
+                var tocContainer = document.getElementById('ilybd-dynamic-toc');
+                var tocList = document.getElementById('ilybd-toc-list');
+                
+                headings.forEach(function(heading, index) {
+                    var id = 'heading-' + index;
+                    heading.id = id; // Add ID to heading for anchoring
+                    
+                    // Style the actual headings beautifully
+                    heading.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+                    heading.style.paddingBottom = "10px";
+                    heading.style.marginTop = "40px";
+                    
+                    var li = document.createElement('li');
+                    li.style.marginBottom = "5px";
+                    if (heading.tagName.toLowerCase() === 'h3') {
+                        li.style.marginLeft = "15px";
+                        li.style.listStyleType = "circle";
+                    }
+                    
+                    var a = document.createElement('a');
+                    a.href = '#' + id;
+                    a.textContent = heading.textContent;
+                    a.style.color = '#58a6ff';
+                    a.style.textDecoration = 'none';
+                    a.style.transition = 'color 0.2s';
+                    a.onmouseover = function() { this.style.color = '#00f0ff'; };
+                    a.onmouseout = function() { this.style.color = '#58a6ff'; };
+                    
+                    li.appendChild(a);
+                    tocList.appendChild(li);
+                });
+                
+                tocContainer.style.display = 'block';
+                
+                // Smooth scrolling for TOC
+                tocList.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A') {
+                        e.preventDefault();
+                        var targetId = e.target.getAttribute('href').substring(1);
+                        var targetEl = document.getElementById(targetId);
+                        if (targetEl) {
+                            window.scrollTo({
+                                top: targetEl.offsetTop - 100, // Offset for sticky headers
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            }
+            
+            // --- Copy to Clipboard for Pre/Code Blocks (Developer UX) ---
+            var codeBlocks = articleContent.querySelectorAll('pre');
+            codeBlocks.forEach(function(pre, index) {
+                pre.style.position = 'relative';
+                pre.style.background = '#0d1117';
+                pre.style.border = '1px solid #30363d';
+                pre.style.borderRadius = '8px';
+                pre.style.padding = '20px';
+                pre.style.overflow = 'auto';
+                
+                var copyBtn = document.createElement('button');
+                copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+                copyBtn.style.position = 'absolute';
+                copyBtn.style.top = '10px';
+                copyBtn.style.right = '10px';
+                copyBtn.style.background = 'rgba(255,255,255,0.1)';
+                copyBtn.style.border = 'none';
+                copyBtn.style.color = '#c9d1d9';
+                copyBtn.style.padding = '5px 10px';
+                copyBtn.style.borderRadius = '4px';
+                copyBtn.style.fontSize = '11px';
+                copyBtn.style.cursor = 'pointer';
+                copyBtn.style.fontFamily = 'monospace';
+                copyBtn.style.transition = 'all 0.2s';
+                
+                copyBtn.onmouseover = function() { this.style.background = 'rgba(0,240,255,0.2)'; this.style.color = '#00f0ff'; };
+                copyBtn.onmouseout = function() { this.style.background = 'rgba(255,255,255,0.1)'; this.style.color = '#c9d1d9'; };
+                
+                copyBtn.onclick = function() {
+                    var codeText = pre.querySelector('code') ? pre.querySelector('code').innerText : pre.innerText;
+                    navigator.clipboard.writeText(codeText).then(function() {
+                        copyBtn.innerHTML = '<i class="fa-solid fa-check" style="color:#00ff41;"></i> Copied!';
+                        setTimeout(function() { copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy'; }, 2000);
+                    });
+                };
+                
+                pre.appendChild(copyBtn);
+            });
+            
+            // --- Process Standard Tables for responsive layout ---
+            var tables = articleContent.querySelectorAll('table');
+            tables.forEach(function(table) {
+                var wrapper = document.createElement('div');
+                wrapper.style.overflowX = 'auto';
+                wrapper.style.margin = '20px 0';
+                wrapper.style.border = '1px solid rgba(255,255,255,0.1)';
+                wrapper.style.borderRadius = '8px';
+                
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                table.style.textAlign = 'left';
+                table.style.fontSize = '15px';
+                
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+                
+                // Style table header
+                var ths = table.querySelectorAll('th');
+                ths.forEach(function(th) {
+                    th.style.background = 'rgba(0,240,255,0.08)';
+                    th.style.padding = '12px 15px';
+                    th.style.color = '#00f0ff';
+                    th.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+                });
+                
+                // Style table cells
+                var tds = table.querySelectorAll('td');
+                tds.forEach(function(td) {
+                    td.style.padding = '10px 15px';
+                    td.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                });
+            });
+        }
+    });
+    </script>
+
 
     <!-- TTS JS BRAIN ENGINE -->
     <script>
@@ -470,24 +703,7 @@ $title_len = mb_strlen($title_main);
             window.speechSynthesis.cancel();
         });
 
-        // Autoplay logic: trigger on user interaction anywhere on standard single posts
-        var hasAutoplayed = false;
-        function tryAutoplay() {
-            if (hasAutoplayed) return;
-            hasAutoplayed = true;
-            
-            document.removeEventListener('click', tryAutoplay);
-            document.removeEventListener('touchstart', tryAutoplay);
-            
-            toggleTtsPlayback();
-        }
-
-        setTimeout(function() {
-            if (!ttsState.isPlaying) {
-                document.addEventListener('click', tryAutoplay);
-                document.addEventListener('touchstart', tryAutoplay);
-            }
-        }, 1200);
+        // Autoplay logic disabled as requested - users must manually initiate playback
     });
     </script>
 
@@ -865,7 +1081,182 @@ $title_len = mb_strlen($title_main);
         <?php get_template_part('template-parts/single-down-profile-card'); ?>
     </div>
 
-</div>
+    <!-- 🛠️ AUTHOR DIRECT CONTEXT QUICK EDIT ACCESS (2040 SPECIAL ACTIONS) -->
+    <?php
+    if (is_user_logged_in() && (current_user_can('edit_post', $post_id) || get_current_user_id() == $author_id)) :
+        $edit_link = get_edit_post_link($post_id);
+        ?>
+        <div class="ilybd-frontend-author-actions" style="margin: 30px 0; background: rgba(0, 240, 255, 0.03); border: 1.5px dashed rgba(0, 240, 255, 0.3); border-radius: 12px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; box-shadow: 0 0 15px rgba(0,240,255,0.05);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px; animation: ttsGlow 2s infinite;">🛠️</span>
+                <div>
+                    <strong style="color: #00f0ff; font-size: 14.5px; display: block; font-family: monospace;">AUTHOR INTERACTION CELL</strong>
+                    <span style="color: #8b949e; font-size: 12px; display: block; margin-top: 2px;">আপনি এই পোস্টের ভেরিফায়েড লেখক। কোনো কোডিং বা তথ্যে ভুল থাকলে এডিট করতে পারেন।</span>
+                </div>
+            </div>
+            <a href="<?php echo esc_url($edit_link); ?>" style="background: linear-gradient(135deg, #00f0ff 0%, #00ff41 100%); color: #000; font-weight: 900; text-decoration: none !important; font-size: 13px; padding: 10px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(0,240,255,0.25); transition: 0.2s;" target="_blank">
+                <i class="fa-solid fa-pen-to-square"></i> সরাসরি এডিট করুন
+            </a>
+        </div>
+    <?php endif; ?>
+
+    <!-- 🔮 DYNAMIC RELATED TECH TOOLS RECOMMENDER (FROM 50+ PLATFORM TOOLS) -->
+    <?php
+    // Keyword Matching Engine for custom tool recommendations
+    $post_merged_text = strtolower($title_main . ' ' . wp_strip_all_tags(get_the_content()));
+    $matched_tools = array();
+
+    $tools_collection = array(
+        'nid_maker' => array(
+            'name' => 'স্মার্ট এনআইডি কার্ড জেনারেটর প্রো',
+            'desc' => 'নিজের তথ্য দিয়ে সম্পূর্ণ এইচডি বাংলাদেশের স্মার্ট এনআইডি কার্ড তৈরি করার টুলস।',
+            'icon' => '📱',
+            'link' => home_url('/nid-card-generator/'),
+            'tags' => array('nid', 'এনআইডি', 'ভোটার', 'স্মার্ট', 'কার্ড', 'card', 'id', 'জাতীয় পরিচয়পত্র')
+        ),
+        'nid_key' => array(
+            'name' => 'এনআইডি সিকিউরিটি কি জেনারেটর',
+            'desc' => 'স্মার্ট এনআইডি কার্ড ক্রিপ্টো সিকিউরিটি পোর্টালে সিকিউরিটি কি জেনারেট করার ল্যাব।',
+            'icon' => '🔑',
+            'link' => home_url('/tools/'),
+            'tags' => array('security', 'key', 'কি', 'পাসওয়ার্ড', 'লক', 'ক্রিপ্টো')
+        ),
+        'ai_maya' => array(
+            'name' => 'এআই মায়া ক্লাউড অ্যাসিস্ট্যান্ট',
+            'desc' => 'অনর্গল চমৎকার খাঁটি বাংলায় কথা বলতে ও যেকোনো কোডিং বাগ সলভ করতে সক্ষম এআই।',
+            'icon' => '✨',
+            'link' => home_url('/tools/'),
+            'tags' => array('ai', 'এআই', 'মায়া', 'chat', 'চ্যাট', 'gpt', 'gemini', 'রোবট', 'প্রম্পট')
+        ),
+        'qr_maker' => array(
+            'name' => 'নিওন কিউআর কোড মেকার ল্যাব',
+            'desc' => 'যেকোনো ওয়েবসাইট লিংক বা নাম্বার দিয়ে আকর্ষণীয় নিওন কালারড কিউআর কোড মেকার।',
+            'icon' => '🧬',
+            'link' => home_url('/tools/'),
+            'tags' => array('qr', 'কিউআর', 'কোড', 'code', 'লিংক', 'স্ক্যান')
+        ),
+        'seo_glow' => array(
+            'name' => 'সার্চ ইঞ্জিন মেটাডাটা ও সিএসএস গ্লো ফ্যাক্টরি',
+            'desc' => 'গুলল ফার্স্ট পেজে ইনডেক্সিং এর জন্য এসইও মেটাডাটা ও আকর্ষণীয় সিএসএস নিওন ফ্লো ল্যাব।',
+            'icon' => '🏭',
+            'link' => home_url('/tools/'),
+            'tags' => array('seo', 'css', 'গ্লো', 'ডিজাইন', 'মেটা', 'গুগল', 'সার্চ', 'ট্যাগ')
+        ),
+        'synth' => array(
+            'name' => 'নিয়েন মিউজিক সিন্থেসাইজার ২০৪০',
+            'desc' => 'ব্রাউজার উইন্ডোর ভেতর সরাসরি এআই সাউন্ড ওয়েব ফ্রিকোয়েন্সি প্লে করার ডিজিটাল ল্যাব।',
+            'icon' => '🎵',
+            'link' => home_url('/tools/'),
+            'tags' => array('মিউজিক', 'গান', 'অডিও', 'সাউন্ড', 'সিন্থ', 'synth', 'audio', 'music')
+        ),
+        'cyber_cat' => array(
+            'name' => 'সাইবার টকিং পেট ক্যাট গেম',
+            'desc' => 'ভবিষ্যতের রোবোটিক কিউট বিড়াল CYBER_CAT এর সাথে খেলা ও মিষ্টি আলাপ করার প্লেগ্রাউন্ড।',
+            'icon' => '🐈',
+            'link' => home_url('/tools/'),
+            'tags' => array('game', 'গেম', 'বিড়াল', 'ক্যাট', 'cat', 'pet', 'খেলুন')
+        ),
+        'forum' => array(
+            'name' => 'প্রশ্ন-উত্তর ফোরাম ও ক্যাশ গেটওয়ে',
+            'desc' => 'প্রযুক্তি নিয়ে যেকোনো প্রশ্ন করে ফোরামে সাবমিট করার এবং রিওয়ার্ড ইনকাম করার প্লাটফর্ম।',
+            'icon' => '💬',
+            'link' => home_url('/ask-question/'),
+            'tags' => array('প্রশ্ন', 'উত্তর', 'ফোরাম', 'ইনকাম', 'টাকা', 'বিকাশ', 'forum', 'ask')
+        ),
+        'downloader' => array(
+            'name' => 'সোশ্যাল ভিডিও ডাউনলোডার প্রো',
+            'desc' => 'ফ্রি সার্ভার ব্যবহার করে টিকток, ফেসবুক ও ইউটিউব থেকে ১-ক্লিকে এইচডি ভিডিও ডাউনলোড।',
+            'icon' => '📥',
+            'link' => home_url('/tools/'),
+            'tags' => array('ভিডিও', 'ডাউনলোড', 'ইউটিউব', 'ফেসবুক', 'টিকток', 'download', 'video', 'fb', 'yt')
+        )
+    );
+
+    // Dynamic Matching Check
+    foreach ($tools_collection as $key => $dt) {
+        foreach ($dt['tags'] as $tag) {
+            if (strpos($post_merged_text, strtolower($tag)) !== false) {
+                $matched_tools[$key] = $dt;
+                break;
+            }
+        }
+    }
+
+    // Default Fallbacks if list is too small (We want exactly 3 targeted recommendations)
+    if (count($matched_tools) < 3) {
+        $keys = array_keys($tools_collection);
+        shuffle($keys);
+        foreach ($keys as $k) {
+            if (!isset($matched_tools[$k])) {
+                $matched_tools[$k] = $tools_collection[$k];
+            }
+            if (count($matched_tools) >= 3) break;
+        }
+    }
+    
+    // Slice to exactly 3 recommendations
+    $recommended_tools = array_slice($matched_tools, 0, 3, true);
+    ?>
+
+    <div class="ilybd-related-tools-box" style="margin: 40px 0; background: rgba(13, 21, 39, 0.5); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 14px; padding: 25px; box-shadow: 0 8px 30px rgba(0,0,0,0.45);">
+        <h3 style="margin-top: 0; color: #fff; font-size: 17px; display: flex; align-items: center; gap: 8px; border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 12px; font-weight: 850;">
+            <i class="fa-solid fa-screwdriver-wrench" style="color: #00f0ff;"></i> এই পোস্ট সম্পর্কিত বিশেষ সাহায্যকারী এআই টুলস (Related Tools)
+        </h3>
+        <p style="color: #8b949e; font-size: 12.5px; margin-top: 5px; margin-bottom: 20px;">আমাদের মূল টুলস পোর্টাল এ থাকা ৫০+ আকর্ষণীয় অটো-মেকার রিলেটেড ৩টি প্রফেশনাল অনলাইন মেকার রিকমেন্ড করা হলো:</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 15px;">
+            <?php foreach ($recommended_tools as $tool) : ?>
+                <div style="background: rgba(22, 27, 34, 0.5); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 22px; margin-bottom: 8px;"><?php echo $tool['icon']; ?></div>
+                        <h4 style="color: #fff; font-size: 14px; font-weight: bold; margin: 0 0 6px 0;"><?php echo $tool['name']; ?></h4>
+                        <p style="color: #8b949e; font-size: 11.5px; line-height: 1.5; margin: 0 0 15px 0;"><?php echo $tool['desc']; ?></p>
+                    </div>
+                    <a href="<?php echo esc_url($tool['link']); ?>" style="background: rgba(0, 240, 255, 0.1); border: 1.5px solid #00f0ff; color: #00f0ff; text-align: center; display: block; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none !important; text-transform: uppercase; transition: 0.2s;" onmouseover="this.style.background='#00f0ff'; this.style.color='#000';" onmouseout="this.style.background='rgba(0, 240, 255, 0.1)'; this.style.color='#00f0ff';">টুলস ডাউনলোড বা ব্যবহার করুন</a>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <!-- ❓ COMMUNITY Q&A ENGAGEMENT SUGGESTER PLATFORM -->
+    <div class="ilybd-community-qa-suggester" style="margin: 30px 0 40px; background: rgba(13, 21, 39, 0.4); border: 1.5px solid rgba(0, 255, 65, 0.15); border-radius: 14px; padding: 25px; box-shadow: 0 8px 30px rgba(0,0,0,0.45); position: relative; overflow: hidden;">
+        <div style="position: absolute; bottom: -30px; right: -30px; width: 80px; height: 80px; background: rgba(0, 255, 65, 0.05); filter: blur(30px); border-radius: 50%;"></div>
+        
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <span style="background: rgba(0,255,65,0.08); color: #00ff41; border: 1px solid rgba(0,255,65,0.2); font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 20px; font-family: monospace; display: inline-block; margin-bottom: 8px;">COMMUNITY ENGAGEMENT</span>
+                <h3 style="margin: 0; color: #fff; font-size: 16.5px; display: flex; align-items: center; gap: 8px; font-weight: 850;">
+                    <i class="fa-solid fa-messages-question" style="color: #00ff41;"></i> এই পোস্ট নিয়ে আপনার কি কোনো প্রশ্ন বা দ্বিধা আছে?
+                </h3>
+                <p style="margin: 6px 0 0 0; color: #8b949e; font-size: 12.5px; line-height: 1.5;">আমাদের চমৎকার প্রশ্ন-উত্তর ফোরামে প্রশ্ন করে অভিজ্ঞদের সাহায্য নিন, অথবা অন্যদের প্রশ্নের উত্তর দিয়ে রিওয়ার্ড ইনকাম করুন!</p>
+            </div>
+            
+            <div style="display: flex; background: rgba(13,17,23,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 4px; gap: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
+                <input type="text" id="sidebar-quick-q-input" placeholder="আপনার প্রশ্নটি এখানে লিখুন এবং ফোরামে সাবমিট করুন..." style="flex: 1; background: transparent; border: none; outline: none; padding: 10px 15px; color: #fff; font-size: 13.5px;">
+                <button onclick="launchQuickForumQuestion()" style="background: linear-gradient(135deg, #00ff41 0%, #00f0ff 100%); color: #000; border: none; font-weight: 900; font-size: 12px; padding: 10px 22px; border-radius: 6px; cursor: pointer; transition: 0.2s; white-space: nowrap;">প্রশ্ন পোস্ট করুন 🚀</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    function launchQuickForumQuestion() {
+        var query = document.getElementById('sidebar-quick-q-input').value.trim();
+        if (query.length < 5) {
+            alert('অনুগ্রহ করে নূন্যতম ৫ অক্ষরের একটি স্পষ্ট প্রযুক্তিগত প্রশ্ন লিখুন!');
+            return;
+        }
+        var targetUrl = '<?php echo esc_js(home_url("/ask-question/")); ?>?q=' + encodeURIComponent(query);
+        window.location.href = targetUrl;
+    }
+    </script>
+
+    </div> <!-- Close ilybd-single-left-content -->
+
+    <!-- Right Section: Cyber Sidebar -->
+    <aside class="ilybd-single-right-sidebar" style="box-sizing: border-box;">
+        <?php include get_template_directory() . '/template-parts/single-sidebar.php'; ?>
+    </aside>
+
+</div> <!-- Close ilybd-single-grid-wrapper -->
 
 <?php 
 // কমেন্ট সেকশনের নিচে কল করুন
@@ -901,18 +1292,28 @@ get_template_part('single-search');
         border-collapse: collapse !important;
         margin-bottom: 24px !important;
         border: 1px solid #30363d !important;
+        background: #0d1117 !important;
+    }
+    .entry-content-main table thead,
+    .entry-content-main table tbody,
+    .entry-content-main table tr {
+        background: none !important;
+        background-color: transparent !important;
     }
     .entry-content-main table th,
     .entry-content-main table td {
         padding: 10px 15px !important;
         border: 1px solid #30363d !important;
-        background: rgba(22, 27, 34, 0.4) !important;
+        background: #161b22 !important;
+        background-color: #161b22 !important;
         color: #e6edf3 !important;
     }
     .entry-content-main table th {
-        background: rgba(0, 240, 255, 0.08) !important;
-        color: #fff !important;
+        background: #0d1117 !important;
+        background-color: #0d1117 !important;
+        color: #00f0ff !important;
         font-family: monospace;
+        font-weight: 700 !important;
     }
     .entry-content-main iframe, 
     .entry-content-main video, 
@@ -1015,6 +1416,33 @@ get_template_part('single-search');
     @media (max-width: 600px) {
         .puro-expert-shield { padding: 20px; }
         .hero-gradient { padding: 40px 15px 20px; }
+    }
+
+    /* Sidebar premium grid rules always active on Tablet & Desktop (>= 768px) */
+    @media (min-width: 768px) {
+        .ilybd-single-grid-wrapper {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) 300px !important;
+            gap: 25px !important;
+            max-width: 1300px !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+        }
+    }
+    @media (min-width: 1024px) {
+        .ilybd-single-grid-wrapper {
+            grid-template-columns: minmax(0, 1fr) 340px !important;
+            gap: 35px !important;
+        }
+    }
+    @media (max-width: 767px) {
+        .ilybd-single-grid-wrapper {
+            display: block !important;
+            padding: 0 15px !important;
+        }
+        .ilybd-single-right-sidebar {
+            margin-top: 45px !important;
+        }
     }
 </style>
 

@@ -1,7 +1,7 @@
 <?php
 /**
- * Template Part: Single Post Bottom Search (TrickBD Style)
- * Created for: CyberX Pro Theme
+ * Template Part: Single Post Bottom Search (Premium Compact Style)
+ * Created for: ILYBD Neon Pro Theme
  */
 ?>
 
@@ -22,11 +22,11 @@
 </div>
 
 <style>
-/* TrickBD Inspired Pro UI */
+/* Premium Compact Inspired Pro UI */
 .tbd-search-wrapper {
     display: flex;
     align-items: center;
-    background: #161b22; /* TrickBD dark tone */
+    background: #161b22; /* Premium dark tone */
     border: 1px solid #30363d;
     border-radius: 8px;
     padding: 6px 18px;
