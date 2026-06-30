@@ -114,25 +114,14 @@ $neon = get_option('ilybd_main_color', '#00ff41');
                                 </p>
                             </div>
 
-                            <!-- 4. Cyber TV Streaming Matrix -->
-                            <div class="bento-inner-node" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 20px;">
-                                <h4 style="color: #ec4899; font-size: 16px; margin: 0 0 10px 0;"><i class="fa-solid fa-tv"></i> Live TV Streaming Engine (লাইভ টেলিভিশন চ্যানেল)</h4>
-                                <p style="font-size: 13px; line-height: 1.6; color: #cbd5e0; margin: 0 0 10px 0;">
-                                    A native, gorgeous IPTV client designed to parse legitimate public-domain television channels of Bangladesh smoothly in-browser without popups or intrusive scripting.
-                                </p>
-                                <p style="font-size: 13px; line-height: 1.6; color: #ec4899; margin: 0; font-family: 'Hind Siliguri', sans-serif;">
-                                    কোনো বিরক্তিকর বিজ্ঞাপন বা রিডাইরেক্ট ছাড়াই ব্যবহারকারীরা সরাসরি ব্রাউজার থেকে বাংলাদেশের বৈধ ও উন্মুক্ত লাইভ টিভি চ্যানেলগুলো ফুল এইচডি স্ক্রিনে দেখার প্রিমিয়াম অভিজ্ঞতা উপভোগ করতে পারেন।
-                                </p>
-                            </div>
-
                             <!-- 5. Interactive Coding Tools Lab -->
                             <div class="bento-inner-node" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 20px;">
-                                <h4 style="color: #3b82f6; font-size: 16px; margin: 0 0 10px 0;"><i class="fa-solid fa-code"></i> Engineering Tools & Free-Net Lab (সাইবার টুলস ও কনফিগ)</h4>
+                                <h4 style="color: #3b82f6; font-size: 16px; margin: 0 0 10px 0;"><i class="fa-solid fa-code"></i> Engineering Tools Lab (সাইবার টুলস)</h4>
                                 <p style="font-size: 13px; line-height: 1.6; color: #cbd5e0; margin: 0 0 10px 0;">
-                                    Provides open-source utility converters, active internet connectivity tests, configuration encoders, and real-time network parameter diagnostics for local developers.
+                                    Provides open-source utility converters and real-time network parameter diagnostics for local developers.
                                 </p>
                                 <p style="font-size: 13px; line-height: 1.6; color: #3b82f6; margin: 0; font-family: 'Hind Siliguri', sans-serif;">
-                                    কডিং প্লেগ্রাউন্ড, প্রয়োজনীয় কনভার্টার, নেটওয়ার্ক স্পিড ডিটেক্টর এবং ফ্রি ইন্টারনেট কনফিগারেশন তৈর করার অনন্য অটোমেটিক জেনারেটর টুলসের এক বিশাল সক্রিয় ল্যাবরেটরি।
+                                    কডিং প্লেগ্রাউন্ড, প্রয়োজনীয় কনভার্টার এবং ডেভেলপার টুলসের এক বিশাল সক্রিয় ল্যাবরেটরি।
                                 </p>
                             </div>
 

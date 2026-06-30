@@ -9,10 +9,17 @@ $neon = get_option('ilybd_main_color', '#00ff41');
 ?>
 
 <div class="cyber-page-wrapper">
-    <div class="container-fluid" style="max-width: 1200px; margin: 0 auto; padding: 45px 20px 100px;">
+    <div class="container-fluid" style="max-width: 1200px; margin: 0 auto; padding: 10px 20px 100px;">
         
         <header class="cyber-section-header" style="text-align: center; margin-bottom: 45px;">
-            <h1 class="rgb-text-lighting" style="font-size: 2.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 10px 0; background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: rgb_flow 4s linear infinite;">Future Tools Lab</h1>
+            <h1 class="rgb-text-lighting" style="font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin: 0 0 10px 0; background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: rgb_flow 4s linear infinite;">Future Tools Lab</h1>
+            <script>
+                // Dynamic responsive title sizing for Tools Lab page
+                if (window.innerWidth >= 768) {
+                    var el = document.querySelector('.rgb-text-lighting');
+                    if(el) el.style.fontSize = '2.8rem';
+                }
+            </script>
             <p class="section-subtext" style="color: <?php echo esc_attr($neon); ?>; font-size: 11px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px; font-weight: 700;">ILYBD SYSTEM / DIGITAL INNOVATION LABORATORY / ২০৪০ সংস্করণ</p>
             <div class="sticky-rgb-line" style="height: 2px; width: 100%; background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000); background-size: 200% auto; animation: rgb_flow 4s linear infinite; box-shadow: 0 0 15px <?php echo esc_attr($neon); ?>dd;"></div>
         </header>
@@ -20,32 +27,6 @@ $neon = get_option('ilybd_main_color', '#00ff41');
         <!-- Dynamic Main Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
             
-            <!-- Tool 1: NID Card Generator -->
-            <div class="tool-deck-card" style="background: rgba(13, 21, 37, 0.75); border: 1.5px solid rgba(0, 255, 65, 0.15); border-radius: 16px; padding: 25px; transition: all 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.borderColor='<?php echo esc_attr($neon); ?>'; this.style.boxShadow='0 0 20px <?php echo esc_attr($neon); ?>33';" onmouseout="this.style.borderColor='rgba(0, 255, 65, 0.15)'; this.style.boxShadow='none';">
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="font-size: 20px;">📱</span>
-                        <span style="background: rgba(0, 255, 65, 0.1) !important; color: #00ff41; border: 1px solid rgba(0,255,65,0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; font-family: monospace;">ACTIVE V3.0</span>
-                    </div>
-                    <h3 style="color: #fff; font-size: 18px; font-weight: 850; margin: 0 0 10px 0; font-family: 'Hind Siliguri', sans-serif;">স্মার্ট এনআইডি কার্ড জেনারেটর প্রো</h3>
-                    <p style="color: #cbd5e0; font-size: 13px; line-height: 1.5; margin: 0 0 15px 0; font-family: 'Hind Siliguri', sans-serif;">নিজের ছবি ও এআই রেডি সিগনেচার আপলোড করে সম্পূর্ণ এইচডি ফরম্যাটে ভেরিফাইড বাংলাদেশের ডিজিটাল স্মার্ট আইডি তৈরি করার প্রফেশনাল পোর্টাল।</p>
-                </div>
-                <a href="<?php echo esc_url('https://iloveyoubd.com/nid-card-generator/'); ?>" class="util-action-btn" style="background: <?php echo esc_attr($neon); ?> !important; color: #000; display: block; text-align: center; font-weight: 850; font-size: 12px; text-transform: uppercase; padding: 12px; border-radius: 8px; text-decoration: none; transition: 0.3s; font-family: 'Hind Siliguri', sans-serif;" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='<?php echo esc_attr($neon); ?>'">এনআইডি মেকার ওপেন করুন ➔</a>
-            </div>
-
-            <!-- Tool 2: NID Security Key Generator (Interactive) -->
-            <div class="tool-deck-card" style="background: rgba(13, 21, 37, 0.75); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 25px; transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 20px rgba(0,240,255,0.2)';" onmouseout="this.style.borderColor='rgba(0, 240, 255, 0.15)'; this.style.boxShadow='none';">
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="font-size: 20px;">🔑</span>
-                        <span style="background: rgba(0, 240, 255, 0.1) !important; color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; font-family: monospace;">LIVE CORE</span>
-                    </div>
-                    <h3 style="color: #fff; font-size: 18px; font-weight: 850; margin: 0 0 10px 0; font-family: 'Hind Siliguri', sans-serif;">এনআইডি সিকিউরিটি কি জেনারেটর</h3>
-                    <p style="color: #cbd5e0; font-size: 13px; line-height: 1.5; margin: 0 0 15px 0; font-family: 'Hind Siliguri', sans-serif;">আপনার স্মার্ট এনআইডি কার্ড তৈরির প্রসেস লক খুলতে এবং নিরাপদ ভেরিফিকেশনের জন্য ইনস্ট্যান্ট অ্যাক্সেস কোড তৈরি করার এআই ক্রিপ্টো গেটওয়ে।</p>
-                </div>
-                <button onclick="openNidKeyModal();" class="util-action-btn" style="background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%) !important; color: #fff; display: block; width: 100%; border: none; text-align: center; font-weight: 850; font-size: 12px; text-transform: uppercase; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'Hind Siliguri', sans-serif;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">ইন্টারেক্টিভ কি জেনারেটর ⚡</button>
-            </div>
-
             <!-- Tool 3: AI Assistant (Interacts with Floating Chatbot) -->
             <div class="tool-deck-card" style="background: rgba(13, 21, 37, 0.75); border: 1.5px solid rgba(251, 191, 36, 0.15); border-radius: 16px; padding: 25px; transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.borderColor='#fbbf24'; this.style.boxShadow='0 0 20px rgba(251,191,36,0.2)';" onmouseout="this.style.borderColor='rgba(251, 191, 36, 0.15)'; this.style.boxShadow='none';">
                 <div>
@@ -124,19 +105,6 @@ $neon = get_option('ilybd_main_color', '#00ff41');
                 <a href="<?php echo esc_url(home_url('/ask-question')); ?>" class="util-action-btn" style="background: #8b5cf6 !important; color: #fff; display: block; text-align: center; font-weight: 850; font-size: 12px; text-transform: uppercase; padding: 12px; border-radius: 8px; text-decoration: none; transition: 0.3s; font-family: 'Hind Siliguri', sans-serif;" onmouseover="this.style.background='#fff'; this.style.color='#000';" onmouseout="this.style.background='#8b5cf6'; this.style.color='#fff';">ফোরামে প্রশ্ন করুন ➔</a>
             </div>
 
-            <!-- Tool 9: Social Video Downloader Pro -->
-            <div class="tool-deck-card" style="background: rgba(13, 21, 37, 0.75); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 25px; transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 20px rgba(0,240,255,0.2)';" onmouseout="this.style.borderColor='rgba(0, 240, 255, 0.15)'; this.style.boxShadow='none';">
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="font-size: 20px;">📥</span>
-                        <span style="background: rgba(0, 240, 255, 0.1) !important; color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; font-family: monospace;">SPEED FAST API</span>
-                    </div>
-                    <h3 style="color: #fff; font-size: 18px; font-weight: 850; margin: 0 0 10px 0; font-family: 'Hind Siliguri', sans-serif;">সোশ্যাল ভিডিও ডাউনলোডার প্রো</h3>
-                    <p style="color: #cbd5e0; font-size: 13px; line-height: 1.5; margin: 0 0 15px 0; font-family: 'Hind Siliguri', sans-serif;">ইউটিউব, ফেসবুক, টিকটক, ইনস্টাগ্রাম থেকে নো-লগ হাই-স্পিড সার্ভার ব্যবহার করে যেকোনো এইচডি সাইজের ভিডিও বা অডিও ট্র্যাক ডাউনলোড করার ডিজিটাল ল্যাব।</p>
-                </div>
-                <button onclick="openVideoDownloaderModal();" class="util-action-btn" style="background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%) !important; color: #fff; display: block; width: 100%; border: none; text-align: center; font-weight: 850; font-size: 12px; text-transform: uppercase; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'Hind Siliguri', sans-serif;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">ডাউনলোডার ওপেন করুন ⚡</button>
-            </div>
-
         </div>
 
     </div>
@@ -145,40 +113,6 @@ $neon = get_option('ilybd_main_color', '#00ff41');
 <!-- ====================================================
      INTERACTIVE LAB OVERLAY MODALS (HTML + CSS + JAVASCRIPT)
      ==================================================== -->
-
-<!-- 1. NID Security Key Generator Modal -->
-<div id="nidKeyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(4,7,12,0.9); z-index:1000000; align-items:center; justify-content:center; padding:15px; font-family:-apple-system, sans-serif;">
-    <div style="background:#090d16; border:2px solid #00f0ff; width:100%; max-width:550px; border-radius:16px; padding:25px; box-shadow:0 0 40px rgba(0, 240, 255, 0.3); position:relative; text-align:left;">
-        <button onclick="closeNidKeyModal();" style="position:absolute; top:12px; right:15px; background:none; border:none; color:#ff004c; font-size:24px; cursor:pointer;">&times;</button>
-        <h3 style="color:#00f0ff; margin-top:0; font-size:18px; font-weight:800; font-family:'Hind Siliguri', sans-serif;"><i class="fa-solid fa-key"></i> এনআইডি সিকিউরিটি কি জেনারেটর প্রো</h3>
-        <p style="color:#8b949e; font-size:12px; margin-bottom:18px; font-family:'Hind Siliguri', sans-serif;">আপনার এনআইডি কার্ড আনলক করতে ও সিকিউর আইডেন্টিটি রিলিজ করার ১০-ডিজিটের সোর্স পাসওয়ার্ড জেনারেট করুন।</p>
-        
-        <div style="margin-bottom:15px;">
-            <label style="color:#fff; display:block; font-size:11.5px; margin-bottom:6px; font-weight:700; font-family:'Hind Siliguri', sans-serif;">আপনার ১০ বা ১৭ ডিজিটের এনআইডি নং (NID Number)</label>
-            <input type="text" id="secNidNo" placeholder="যেমন: 330 418 9438" style="width:100%; padding:10px; background:#04070c; border:1px solid #30363d; border-radius:8px; color:#fff; outline:none;" onfocus="this.style.borderColor='#00f0ff'">
-        </div>
-        
-        <div style="margin-bottom:20px;">
-            <label style="color:#fff; display:block; font-size:11.5px; margin-bottom:6px; font-weight:700; font-family:'Hind Siliguri', sans-serif;">জন্ম তারিখ (DD/MM/YYYY)</label>
-            <input type="text" id="secBirthDate" placeholder="যেমন: 12/08/1998" style="width:100%; padding:10px; background:#04070c; border:1px solid #30363d; border-radius:8px; color:#fff; outline:none;" onfocus="this.style.borderColor='#00f0ff'">
-        </div>
-
-        <button onclick="generateNidCryptoKey();" id="genKeyBtn" style="width:100%; padding:11px; background:linear-gradient(135deg, #00f0ff 0%, #0072ff 100%); color:#fff; border:none; border-radius:8px; font-weight:800; cursor:pointer; transition:0.3s; font-family:'Hind Siliguri', sans-serif;">জেনারেল সিকিউরিটি কি ⚡</button>
-        
-        <!-- Terminal Logs -->
-        <div id="keyTerminalLog" style="display:none; margin-top:15px; background:#04070c; font-family:'JetBrains Mono', monospace; padding:12px; border-radius:8px; border:1.5px dashed rgba(0, 240, 255, 0.25); max-height:120px; overflow-y:auto; font-size:10.5px; line-height:1.4; color:#00f0ff; text-align:left;"></div>
-
-        <!-- Generated Key Output -->
-        <div id="keySetOutput" style="display:none; margin-top:15px; border-top:1px solid rgba(255,255,255,0.06); padding-top:15px; text-align:center;">
-            <span style="color:#00ff41; font-weight:800; font-size:12px; font-family:'Hind Siliguri', sans-serif;">🔒 আপনার ভেরিফাইড আনলক কি কোড:</span>
-            <div style="display:flex; gap:8px; margin-top:8px;">
-                <input type="text" id="finalKeyVal" readonly style="flex:1; background:#04070c; color:#00ff41; border:1.5px solid #00ff41; padding:10px; text-align:center; border-radius:6px; font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:900;" onclick="this.select();">
-                <button onclick="copyGeneratedKey();" style="background:#00ff41; color:#000; border:none; padding:10px 15px; border-radius:6px; font-weight:900; cursor:pointer;" id="copyBtnTxt">COPY</button>
-            </div>
-            <div id="keySuccessMsg" style="color:#00ff41; font-size:11px; margin-top:6px; font-weight:700; display:none; font-family:'Hind Siliguri', sans-serif;">পিন সফলভাবে কপি করা হয়েছে! আপনার এনআইডি মেকারে এটি ব্যবহার করুন।</div>
-        </div>
-    </div>
-</div>
 
 <!-- 2. QR Code Creator Modal -->
 <div id="qrModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(4,7,12,0.9); z-index:1000000; align-items:center; justify-content:center; padding:15px; font-family:-apple-system, sans-serif;">
@@ -267,182 +201,7 @@ $neon = get_option('ilybd_main_color', '#00ff41');
     </div>
 </div>
 
-<!-- 6. Multi-Source Social Video Downloader Modal -->
-<div id="videoDownloaderModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(4,7,12,0.9); z-index:1000000; align-items:center; justify-content:center; padding:15px; font-family:-apple-system, sans-serif;">
-    <div style="background:#090d16; border:2px solid #00f0ff; width:100%; max-width:550px; border-radius:16px; padding:25px; box-shadow:0 0 40px rgba(0, 240, 255, 0.3); position:relative; text-align:left;">
-        <button onclick="closeVideoDownloaderModal();" style="position:absolute; top:12px; right:15px; background:none; border:none; color:#ff004c; font-size:24px; cursor:pointer;">&times;</button>
-        <h3 style="color:#00f0ff; margin-top:0; font-size:18px; font-weight:800; font-family:'Hind Siliguri', sans-serif;"><i class="fa-solid fa-download"></i> সোশ্যাল ভিডিও ডাউনলোডার প্রো</h3>
-        <p style="color:#8b949e; font-size:12px; margin-bottom:18px; font-family:'Hind Siliguri', sans-serif;">ইউটিউব, ফেসবুক, টিকটক, ইনস্টাগ্রাম বা টুইটার লিঙ্ক দিয়ে হাই-স্পিড কুয়েরি ক্লাউডে ইনস্ট্যান্ট ভিডিও রেজোলিউশন এক্সট্র্যাক্ট করুন।</p>
-        
-        <div style="margin-bottom:15px;">
-            <label style="color:#fff; display:block; font-size:11.5px; margin-bottom:6px; font-weight:700; font-family:'Hind Siliguri', sans-serif;">ভিডিওর ইউআরএল লিঙ্ক দিন (Video URL Link)</label>
-            <input type="url" id="vidDownlinkUrl" placeholder="https://www.youtube.com/watch?v=... অথবা FB/TikTok লিঙ্ক" style="width:100%; padding:10px; background:#04070c; border:1px solid #30363d; border-radius:8px; color:#fff; outline:none;" onfocus="this.style.borderColor='#00f0ff'">
-        </div>
-
-        <button onclick="processSocialVideoUrl();" id="processVidBtn" style="width:100%; padding:11px; background:linear-gradient(135deg, #00f0ff 0%, #0072ff 100%); color:#fff; border:none; border-radius:8px; font-weight:800; cursor:pointer; transition:0.3s; font-family:'Hind Siliguri', sans-serif;">ভিডিও লিঙ্ক প্রসেস করুন ⚡</button>
-        
-        <!-- Terminal Logs -->
-        <div id="vidTerminalLog" style="display:none; margin-top:15px; background:#04070c; font-family:'JetBrains Mono', monospace; padding:12px; border-radius:8px; border:1.5px dashed rgba(0, 240, 255, 0.25); max-height:120px; overflow-y:auto; font-size:10.5px; line-height:1.4; color:#00f0ff; text-align:left;"></div>
-
-        <!-- Generated Downloader Links -->
-        <div id="vidLinksOutput" style="display:none; margin-top:15px; border-top:1px solid rgba(255,255,255,0.06); padding-top:15px;">
-            <p style="color:#00ff41; font-weight:800; font-size:12.5px; margin-bottom:10px; font-family:'Hind Siliguri', sans-serif;">🔒 এক্সট্র্যাক্ট করা ডাউনলোড নোডসমূহ:</p>
-            <div style="display:grid; grid-template-columns:1fr; gap:10px;">
-                <div style="background:#04070c; border:1px solid rgba(0, 240, 255, 0.2); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span style="color:#fff; font-size:12.5px; font-weight:bold; font-family:sans-serif;">Ultra-HD Downlink (1080p MP4)</span>
-                        <div style="color:#718096; font-size:10px; font-family:monospace;">SERVER NODE: BD-SPEED-CLOUD-1</div>
-                    </div>
-                    <a id="hdDownloadBtn" href="" target="_blank" rel="noopener noreferrer" style="background:#00f0ff; color:#000; font-weight:800; font-size:11px; padding:6px 12px; border-radius:4px; text-decoration:none; text-transform:uppercase;">Download 📥</a>
-                </div>
-                <div style="background:#04070c; border:1px solid rgba(0, 240, 255, 0.2); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span style="color:#fff; font-size:12.5px; font-weight:bold; font-family:sans-serif;">Standard Quality (720p MP4)</span>
-                        <div style="color:#718096; font-size:10px; font-family:monospace;">SERVER NODE: GLOBAL-MIRROR-CDN-3</div>
-                    </div>
-                    <a id="sdDownloadBtn" href="" target="_blank" rel="noopener noreferrer" style="background:#0072ff; color:#fff; font-weight:805; font-size:11px; padding:6px 12px; border-radius:4px; text-decoration:none; text-transform:uppercase;">Download 📥</a>
-                </div>
-                <div style="background:#04070c; border:1px solid rgba(0, 240, 255, 0.2); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span style="color:#fff; font-size:12.5px; font-weight:bold; font-family:sans-serif;">High-Quality MP3 Audio (320kbps)</span>
-                        <div style="color:#718096; font-size:10px; font-family:monospace;">SERVER NODE: FM-AUDIO-NODE</div>
-                    </div>
-                    <a id="mp3DownloadBtn" href="" target="_blank" rel="noopener noreferrer" style="background:#fbbf24; color:#000; font-weight:800; font-size:11px; padding:6px 12px; border-radius:4px; text-decoration:none; text-transform:uppercase;">Download 🎵</a>
-                </div>
-            </div>
-
-            <!-- Copy SEO Anchor tag -->
-            <div style="margin-top:15px; border-top:1px dashed rgba(255,255,255,0.06); padding-top:12px;">
-                <label style="color:#fff; display:block; font-size:11px; margin-bottom:5px; font-weight:700; font-family:'Hind Siliguri', sans-serif;">📋 ব্লগ ও ফোরাম লিংক (গুগল র‌্যাঙ্কিং এবং ইনডেক্স মেটা):</label>
-                <div style="display:flex; gap:6px;">
-                    <input type="text" id="seoYtAnchorTag" readonly style="flex:1; background:#04070c; color:#00ff41; border:1px solid rgba(0,255,65,0.3); padding:8px; border-radius:6px; font-size:10.5px; font-family:monospace;" onclick="this.select();">
-                    <button onclick="copySeoYtAnchor();" style="background:rgba(0,255,65,0.15); color:#00ff41; border:1px solid #00ff41; padding:0 12px; border-radius:6px; font-size:10.5px; font-weight:800; cursor:pointer;" id="ytCopyBtn">COPY</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-// Downloader Modal Functions
-function openVideoDownloaderModal() {
-    document.getElementById('videoDownloaderModal').style.display = 'flex';
-}
-function closeVideoDownloaderModal() {
-    document.getElementById('videoDownloaderModal').style.display = 'none';
-}
-function processSocialVideoUrl() {
-    const url = document.getElementById('vidDownlinkUrl').value.trim();
-    if (!url) {
-        alert("অনুগ্রহ করে একটি সঠিক ভিডিও লিঙ্ক দিন!");
-        return;
-    }
-
-    document.getElementById('vidTerminalLog').style.display = 'block';
-    document.getElementById('vidTerminalLog').innerHTML = '';
-    document.getElementById('vidLinksOutput').style.display = 'none';
-
-    const logs = [
-        "⚡ [GATEWAY] Initiating secure multi-source link decryption API...",
-        "🛰️ [PROXY] Routing network stream through Cloudflare premium tunnels...",
-        "⚙️ [ANALYSIS] Scanning media payloads & container frames...",
-        "📦 [MUX] Resolving de-multiplexed stream mappings (MP4 Ultra, Standard & MP3 Audio)...",
-        "🎯 [COMPILING] Verified safe by AdSense Shield. Generating safe direct downlinks..."
-    ];
-
-    let index = 0;
-    const interval = setInterval(() => {
-        if (index < logs.length) {
-            const d = document.createElement('div');
-            d.innerText = logs[index];
-            document.getElementById('vidTerminalLog').appendChild(d);
-            document.getElementById('vidTerminalLog').scrollTop = document.getElementById('vidTerminalLog').scrollHeight;
-            index++;
-        } else {
-            clearInterval(interval);
-            const encUrl = encodeURIComponent(url);
-            
-            // Map links beautifully
-            document.getElementById('hdDownloadBtn').href = `https://add.savefrom.net/html?url=${encUrl}`;
-            document.getElementById('sdDownloadBtn').href = `https://9xbuddy.info/process?url=${encUrl}`;
-            document.getElementById('mp3DownloadBtn').href = `https://add.savefrom.net/html?url=${encUrl}`;
-            
-            // Safe anchor template
-            const anchor = `<a href="https://add.savefrom.net/html?url=${encodeURI(url)}" target="_blank" rel="noopener noreferrer" style="color: #00f0ff; text-decoration: underline; font-weight: bold;">Download HD Safe Video Free</a>`;
-            document.getElementById('seoYtAnchorTag').value = anchor;
-
-            document.getElementById('vidLinksOutput').style.display = 'block';
-        }
-    }, 400);
-}
-function copySeoYtAnchor() {
-    const el = document.getElementById('seoYtAnchorTag');
-    el.select();
-    navigator.clipboard.writeText(el.value);
-    document.getElementById('ytCopyBtn').innerText = 'COPIED!';
-    setTimeout(() => {
-        document.getElementById('ytCopyBtn').innerText = 'COPY';
-    }, 2000);
-}
-// Key Generator Log Sequences
-function openNidKeyModal() {
-    document.getElementById('nidKeyModal').style.display = 'flex';
-}
-function closeNidKeyModal() {
-    document.getElementById('nidKeyModal').style.display = 'none';
-}
-
-function generateNidCryptoKey() {
-    const nid = document.getElementById('secNidNo').value.trim();
-    if (!nid) {
-        alert("অনুগ্রহ করে আপনার এনআইডি নং প্রদান করুন!");
-        return;
-    }
-    
-    document.getElementById('keyTerminalLog').style.display = 'block';
-    document.getElementById('keyTerminalLog').innerHTML = '';
-    document.getElementById('keySetOutput').style.display = 'none';
-    
-    const logs = [
-        "⚡ [PRIME-SEC] Initiating Cryptographic Handshake Gateway...",
-        "🔑 [VERIFY] Mapping target NID structure: " + nid,
-        "🛰️ [PROXY] Tunnelling through secure Cloudflare DNS resolvers (Bangladesh mirror)...",
-        "🛡️ [SECURITY] Verifying local AdSense safety & Zero-Malware policy...",
-        "💻 [COMPILING] Packing signature bytes on 2040 SHA-512 Block-Array...",
-        "💥 [SUCCESS] Verification security key injected and certified!"
-    ];
-    
-    let index = 0;
-    const interval = setInterval(() => {
-        if (index < logs.length) {
-            const p = document.createElement('div');
-            p.innerText = logs[index];
-            document.getElementById('keyTerminalLog').appendChild(p);
-            document.getElementById('keyTerminalLog').scrollTop = document.getElementById('keyTerminalLog').scrollHeight;
-            index++;
-        } else {
-            clearInterval(interval);
-            const year = new Date().getFullYear();
-            const cleanNid = nid.replace(/[^0-9]/g, "").slice(-4) || "7011";
-            const hexPart = Math.floor(100000 + Math.random() * 900000).toString(16).toUpperCase();
-            const finalKey = `ILYBD-NID-KEY-${year}-${cleanNid}-${hexPart}`;
-            
-            document.getElementById('finalKeyVal').value = finalKey;
-            document.getElementById('keySetOutput').style.display = 'block';
-        }
-    }, 450);
-}
-
-function copyGeneratedKey() {
-    const val = document.getElementById('finalKeyVal');
-    val.select();
-    navigator.clipboard.writeText(val.value);
-    document.getElementById('keySuccessMsg').style.display = 'block';
-    setTimeout(() => {
-        document.getElementById('keySuccessMsg').style.display = 'none';
-    }, 3000);
-}
-
 // QR Code functions
 function openQrModal() {
     document.getElementById('qrModal').style.display = 'flex';
@@ -546,6 +305,14 @@ function feedCyberCat() {
 </script>
 
 <style>
+.cyber-page-wrapper {
+    padding-top: 100px !important; /* Perfect offset below fixed cyber header on mobile */
+}
+@media screen and (min-width: 1024px) {
+    .cyber-page-wrapper {
+        padding-top: 110px !important; /* Elegant offset on desktop */
+    }
+}
 /* Theme utilities */
 .rgb-text-lighting {
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);

@@ -1478,6 +1478,124 @@ export default function AdminPanel({
                       <option value="fast">র‌্যাপিড ট্রেইল</option>
                     </select>
                   </div>
+
+                  {/* NEWS CENTER CONFIGURATION SECTION */}
+                  <div className="border-t border-cyan-950/80 pt-3 mt-3 space-y-2">
+                    <div className="flex justify-between items-center bg-[#090d16] p-2 border border-cyan-950 rounded">
+                      <span className="text-xs text-[#00f0ff] font-mono font-bold flex items-center gap-1">📰 এআই নিউজ সেকশন (News Center):</span>
+                      <input
+                        type="checkbox"
+                        checked={settings.enableNewsSection !== false}
+                        onChange={(e) => onUpdateSettings({ enableNewsSection: e.target.checked })}
+                        className="w-4 h-4 text-cyan-500 accent-cyan-400 border-none outline-none cursor-pointer"
+                      />
+                    </div>
+
+                    {settings.enableNewsSection !== false && (
+                      <div className="bg-[#050912] border border-cyan-950 rounded-lg p-3 space-y-3.5">
+                        <div className="flex justify-between items-center bg-[#090d16] p-1.5 border border-cyan-950/40 rounded">
+                          <span className="text-[11px] text-slate-300 font-mono">হোমপেজে নিউজ মডিউল প্রদর্শন:</span>
+                          <input
+                            type="checkbox"
+                            checked={settings.showNewsModule !== false}
+                            onChange={(e) => onUpdateSettings({ showNewsModule: e.target.checked })}
+                            className="w-3.5 h-3.5 text-cyan-500 accent-cyan-400 cursor-pointer"
+                          />
+                        </div>
+
+                        {settings.showNewsModule !== false && (
+                          <div className="space-y-2.5 pl-2 border-l border-cyan-950">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-400 font-mono">নিউজ ক্যাটাগরি ধরণ:</span>
+                              <select
+                                value={settings.newsDisplayType || "latest"}
+                                onChange={(e) => onUpdateSettings({ newsDisplayType: e.target.value as any })}
+                                className="bg-[#0b121e] text-cyan-400 font-mono text-[10px] border border-cyan-950 rounded px-1.5 py-0.5 outline-none cursor-pointer"
+                              >
+                                <option value="latest">Latest (সর্বশেষ)</option>
+                                <option value="trending">Trending (জনপ্রিয়)</option>
+                                <option value="breaking">Breaking (জরুরি)</option>
+                                <option value="manual">Manual Selection</option>
+                                <option value="mixed">Mixed (মিশ্র)</option>
+                              </select>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-400 font-mono">সর্বোচ্চ প্রদর্শন সংখ্যা:</span>
+                              <input
+                                type="number"
+                                min={1}
+                                max={50}
+                                value={settings.newsDisplayCount || 5}
+                                onChange={(e) => onUpdateSettings({ newsDisplayCount: parseInt(e.target.value) || 5 })}
+                                className="w-16 bg-[#0b121e] text-cyan-400 font-mono text-[10px] border border-cyan-950 rounded px-1.5 py-0.5 text-center focus:outline-none focus:border-cyan-500"
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-400 font-mono">থাম্বনেইল ইমেজ দেখাবেন:</span>
+                              <input
+                                type="checkbox"
+                                checked={settings.newsShowThumbnail !== false}
+                                onChange={(e) => onUpdateSettings({ newsShowThumbnail: e.target.checked })}
+                                className="w-3.5 h-3.5 text-cyan-500 accent-cyan-400 cursor-pointer"
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-400 font-mono">প্রকাশের সময় দেখাবেন:</span>
+                              <input
+                                type="checkbox"
+                                checked={settings.newsShowPublishTime !== false}
+                                onChange={(e) => onUpdateSettings({ newsShowPublishTime: e.target.checked })}
+                                className="w-3.5 h-3.5 text-cyan-500 accent-cyan-400 cursor-pointer"
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-400 font-mono">ক্যাটাগরি ট্যাগ দেখাবেন:</span>
+                              <input
+                                type="checkbox"
+                                checked={settings.newsShowCategory !== false}
+                                onChange={(e) => onUpdateSettings({ newsShowCategory: e.target.checked })}
+                                className="w-3.5 h-3.5 text-cyan-500 accent-cyan-400 cursor-pointer"
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-400 font-mono">সংবাদ সারসংক্ষেপ দেখাবেন:</span>
+                              <input
+                                type="checkbox"
+                                checked={settings.newsShowSummary !== false}
+                                onChange={(e) => onUpdateSettings({ newsShowSummary: e.target.checked })}
+                                className="w-3.5 h-3.5 text-cyan-500 accent-cyan-400 cursor-pointer"
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-400 font-mono">বিস্তারিত বাটন দেখাবেন:</span>
+                              <input
+                                type="checkbox"
+                                checked={settings.newsShowReadMore !== false}
+                                onChange={(e) => onUpdateSettings({ newsShowReadMore: e.target.checked })}
+                                className="w-3.5 h-3.5 text-cyan-500 accent-cyan-400 cursor-pointer"
+                              />
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[9px] text-slate-400 font-mono uppercase tracking-wider">বাটন টেক্সট (Button Text):</span>
+                              <input
+                                type="text"
+                                value={settings.newsButtonText || "নিউজ সেন্টার (News Center)"}
+                                onChange={(e) => onUpdateSettings({ newsButtonText: e.target.value })}
+                                className="w-full bg-[#0b121e] text-cyan-400 font-mono text-[10px] border border-cyan-950 rounded px-2 py-1 focus:outline-none focus:border-cyan-500"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

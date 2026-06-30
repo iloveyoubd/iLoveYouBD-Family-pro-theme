@@ -258,57 +258,6 @@ function ilybd_render_tool_sql_injection_detector() {
     <?php
 }
 
-// 6. Port Scanner Simulator
-function ilybd_render_tool_port_scanner_simulator() {
-    ?>
-    <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif;">
-        <label class="bento-label" style="color:#00f0ff;">ENTER TARGET DOMAIN/IP TO SIMULATE SCANNER</label>
-        <input type="text" id="port-raw-in" class="cyan-glow-input" placeholder="e.g. 192.168.1.1 or google.com" style="margin-bottom:15px;">
-
-        <button onclick="simulatePortScan()" class="cyber-action-btn" style="width:100%; margin-bottom:20px; background:linear-gradient(45deg, #00f0ff, #ff007c); color:#000;">LAUNCH NETWORK SOCKET AUDIT ➔</button>
-
-        <div id="port-output-con" style="display:none; background:#000; padding:15px; border:1px solid rgba(0,255,255,0.2); border-radius:10px; font-family:monospace; font-size:12px; color:#00ff41; height:180px; overflow-y:auto; line-height:1.5;">
-            <div id="port-console"></div>
-        </div>
-    </div>
-    <script>
-        function simulatePortScan() {
-            var target = document.getElementById('port-raw-in').value.trim();
-            if(!target) { alert('টার্গেট দিন!'); return; }
-            
-            var con = document.getElementById('port-output-con');
-            con.style.display = 'block';
-            var box = document.getElementById('port-console');
-            box.innerHTML = '';
-            
-            var logs = [
-                "🔗 Initiating cyber connection handshake with " + target + "...",
-                "⏱️ Estimating route latencies and router bounds...",
-                "🛡️ Scanning socket 80 (HTTP) -> OPEN",
-                "🛡️ Scanning socket 443 (HTTPS) -> OPEN",
-                "🛡️ Scanning socket 21 (FTP) -> TIMEOUT (SECURED)",
-                "🛡️ Scanning socket 22 (SSH) -> FIREWALL RESTRICTED",
-                "🛡️ Scanning socket 3306 (MySQL) -> BLOCKED",
-                "🎉 Simulations completed. Audit records successfully completed offline!"
-            ];
-            
-            var delay = 0;
-            logs.forEach(function(log, idx) {
-                setTimeout(function() {
-                    var p = document.createElement('p');
-                    p.style.margin = '3px 0';
-                    p.textContent = log;
-                    box.appendChild(p);
-                    con.scrollTop = con.scrollHeight;
-                }, delay);
-                delay += 400;
-            });
-            if(typeof incrementToolUsage === 'function') incrementToolUsage('port-scanner-simulator');
-        }
-    </script>
-    <?php
-}
-
 // 7. User Agent Parser
 function ilybd_render_tool_user_agent_parser() {
     ?>

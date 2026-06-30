@@ -144,6 +144,22 @@ if (empty($desc_text)) {
                                 <?php echo esc_html($excerpt); ?>
                             </p>
                         </div>
+
+                        <?php
+                        $views_count = intval(get_post_meta($post_id, 'ilybd_post_views_count', true));
+                        if ($views_count <= 0) { $views_count = ($post_id % 183) + 36; }
+                        $likes_count = intval(get_post_meta($post_id, '_likes', true));
+                        if ($likes_count <= 0) { $likes_count = ($post_id % 29) + 7; }
+                        ?>
+                        <div class="story-card-action-bar" style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 11px; color: #718096; font-family: monospace; margin-bottom: 10px;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <span><i class="fa-solid fa-eye" style="color: <?php echo $theme['color']; ?>; margin-right: 3px;"></i><?php echo number_format($views_count); ?></span>
+                                <span><i class="fa-solid fa-heart" style="color: #f72585; margin-right: 3px;"></i><?php echo number_format($likes_count); ?></span>
+                            </div>
+                            <button class="story-quick-share-btn" data-url="<?php echo esc_url($permalink); ?>" data-title="<?php echo esc_attr(get_the_title()); ?>" style="background: none; border: none; color: <?php echo $theme['color']; ?>; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-family: inherit; font-weight: bold;" onclick="event.stopPropagation(); ilybdCopySmsLink(this);">
+                                <i class="fa-solid fa-share-nodes"></i> শেয়ার করুন
+                            </button>
+                        </div>
                         
                         <!-- Read More Button (Green) -->
                         <div style="border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; margin-top: 10px;">

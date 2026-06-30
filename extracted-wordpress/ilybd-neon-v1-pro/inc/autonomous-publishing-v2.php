@@ -280,6 +280,7 @@ class ILYBD_AI_Publishing_Engine_V2 {
         $refresh_prompt = "You are an expert tech editor update refresh system. You are updating a post: \"" . $new_title . "\". 
         Add a 'সর্বশেষ আপডেট " . date('F Y') . "' brief expert summary section, update tech stats or versions to the latest " . $current_year . " values, and include a newly added FAQs block. 
         Write inside styled HTML. Ensure bilingual elegant Bengali with technical English words. 
+        STRICT MANDATE: Stay absolutely focused on the original topic. Do NOT write about unrelated topics or add hallucinated filler.
         Here is the original content overview to improve: \"" . esc_attr(mb_substr(wp_strip_all_tags($post->post_content), 0, 500)) . "\".";
 
         $addition = ily_call_gemini_api_direct($api_keys, $refresh_prompt, 800, false);
@@ -312,7 +313,7 @@ class ILYBD_AI_Publishing_Engine_V2 {
      */
     public function setup_author_profiles($user_id, $category_name) {
         $expertise_areas = [
-            'Cyber Security' => 'Ethical Hacking & Systems Security Specialist',
+            'Cyber Security' => 'Cyber Security & Systems Auditing Specialist',
             'Mobile Tips' => 'Android Firmware Engineer & Optimization Coach',
             'Tutorials' => 'Senior Technology Architect & Technical Writer',
             'Online Earning' => 'Digital Economy Consultant & Affiliate Manager',
@@ -568,26 +569,8 @@ class ILYBD_AI_Publishing_Engine_V2 {
             </div>';
         }
 
-        // Feedback Poll Block - 30% Randomization to prevent layout footprint
+        // Feedback Poll Block - Removed to prevent redundant or broken layout footers as requested
         $poll_html = '';
-        if (wp_rand(1, 100) <= 30) {
-            $poll_html = '
-            <div class="ilybd-interactive-poll-box" style="background:#090d16; border:1px solid rgba(0,240,255,0.2); border-radius:10px; padding:20px; margin:30px 0; text-align:left;">
-                <strong style="color:#00f0ff; font-family:monospace; font-size:11px; display:block; text-transform:uppercase; margin-bottom:5px;">📊 ILYBD COMMUNITY FEEDBACK POLL</strong>
-                <p style="color:#fff; font-size:14px; font-weight:bold; margin:0 0 15px 0;">আপনার মতে এই গাইডটি আপনার জন্য কতটুকু কার্যকর হয়েছে?</p>
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <button type="button" class="ilybd-poll-opt-btn" onclick="let s=jQuery(this); if(!s.hasClass(\'active\')){s.parent().find(\'button\').css(\'opacity\',0.5);s.addClass(\'active\').css({\'opacity\':1,\'background\':\'#00f0ff\',\'color\':\'#000\'}); s.find(\'.p-pct\').text(\'৭৮%\');}" style="background:#11192e; border:1px solid rgba(0,240,255,0.15); color:#fff; padding:8px 15px; font-size:12px; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; font-weight:bold;">
-                        <span>১০০% কার্যকর ও চমৎকার গাইড!</span>
-                        <span class="p-pct"></span>
-                    </button>
-                    <button type="button" class="ilybd-poll-opt-btn" onclick="let s=jQuery(this); if(!s.hasClass(\'active\')){s.parent().find(\'button\').css(\'opacity\',0.5);s.addClass(\'active\').css({\'opacity\':1,\'background\':\'#00f0ff\',\'color\':\'#000\'}); s.find(\'.p-pct\').text(\'১৬%\');}" style="background:#11192e; border:1px solid rgba(0,240,255,0.15); color:#fff; padding:8px 15px; font-size:12px; border-radius:4px; cursor:pointer; display:flex; justify-content:space-between; font-weight:bold;">
-                        <span>হ্যাঁ, তবে কিছু সেটিংস বুঝতে সমস্যা হচ্ছে।</span>
-                        <span class="p-pct"></span>
-                    </button>
-                </div>
-                <p style="color:#64748b; font-size:10px; font-family:monospace; margin:10px 0 0 0; text-align:right;">* সংগৃহীত তথ্য শুধুমাত্র আমাদের কন্টেন্ট আরও উন্নত করতে ব্যবহৃত হবে।</p>
-            </div>';
-        }
 
         // Key Takeaways Block - 50% Randomization
         $takeaways_html = '';
@@ -918,7 +901,7 @@ class ILYBD_AI_Publishing_Engine_V2 {
      * Adjusts system guidelines and layouts based on search intent to avoid pattern fatigue.
      */
     public function get_intent_customized_system_instruction($topic, $intent, $display_name) {
-        $base = "You are " . $display_name . ", a leading technology writer. Write in clean Bengali with accurate technical English words.";
+        $base = "You are " . $display_name . ", a leading technology writer. Write in clean Bengali with accurate technical English words. Crucially, include an extensive section of FAQs and Troubleshooting Q&A in BOTH Bengali and English. You must address common global search queries, problems, and issues related to major platforms (like Google, Facebook, Apple, Microsoft, WordPress, etc.) to ensure high SEO ranking for real-world user queries in both languages. STRICT MANDATE: You MUST stay 100% focused on the exact requested topic and intent. Do NOT hallucinate, write about unrelated categories, or insert irrelevant information. Every paragraph must directly serve the user's intent.";
         
         switch ($intent) {
             case 'transactional':

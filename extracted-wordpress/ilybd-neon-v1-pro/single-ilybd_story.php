@@ -73,31 +73,13 @@ $tag_taxonomy = 'story_tag';
                     <?php the_title(); ?>
                 </h1>
 
-                <!-- Optional Featured Image with Premium Category Fallback -->
-                <div style="margin: 25px auto 35px; width: 100%; border-radius: 12px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.06); position: relative; height: 380px;">
+                <!-- Dynamic Featured Image with Title Baked In (Google SEO & Image Indexer Optimized) -->
+                <div style="margin: 25px auto 35px; width: 100%; border-radius: 12px; overflow: hidden; border: 1.5px solid rgba(157, 78, 221, 0.25); position: relative; height: clamp(280px, 45vh, 400px); box-shadow: 0 8px 32px rgba(0,0,0,0.45);">
                     <?php if (has_post_thumbnail()) : ?>
                         <?php the_post_thumbnail('large', ['style' => 'width:100%; height:100%; object-fit:cover; display:block;']); ?>
-                    <?php else : 
-                        // Beautiful category fallback images (cyberpunk styled, premium, royalty-free)
-                        $cover_images = [
-                            'romantic-love'       => 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1200&q=80',
-                            'romantic-stories'    => 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1200&q=80',
-                            'cyber-thriller'      => 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
-                            'cyber-thrillers'     => 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
-                            'sci-fi'              => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
-                            'horror-mystery'      => 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=1200&q=80',
-                            'ghost-mysteries'     => 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=1200&q=80',
-                            'inspirational-story' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
-                            'moral-legends'       => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
-                        ];
-                        $fallback_url = isset($cover_images[$cat_slug]) ? $cover_images[$cat_slug] : 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80';
-                        ?>
-                        <img src="<?php echo esc_url($fallback_url); ?>" style="width:100%; height:100%; object-fit:cover; display:block;" alt="<?php the_title_attribute(); ?>" />
+                    <?php else : ?>
+                        <img src="<?php echo esc_url(get_template_directory_uri() . '/inc/dynamic-image-generator-story.php?post_id=' . get_the_ID()); ?>" style="width:100%; height:100%; object-fit:cover; display:block;" alt="<?php the_title_attribute(); ?>" />
                     <?php endif; ?>
-                    <!-- Glassmorphic premium tag overlay -->
-                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(7,11,19,0.9) 0%, rgba(7,11,19,0) 100%); padding: 30px 20px 15px; pointer-events: none;">
-                        <span style="background: rgba(157, 78, 221, 0.85); color: #fff; font-size: 11px; font-weight: bold; font-family: 'JetBrains Mono', monospace; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 0 10px rgba(157, 78, 221, 0.5);">PREMIUM ORIGINAL LITERATURE</span>
-                    </div>
                 </div>
 
                 <!-- Story Text Content Body (Majestic Readable Typography) -->

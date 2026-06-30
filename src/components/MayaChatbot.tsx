@@ -684,7 +684,7 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
 \n[SITE MASTER INTEL: 50+ CYBER TOOLS & FEATURES]
 আমাদের সাইটে ৫০টি ওয়ান-টাচ সিকিউর এবং ইন্টারেক্টিভ গ্যাজেট রয়েছে যা ব্যবহারকারীদের কোটি কোটি টাকা বাঁচাতে পারে এবং দৈনিক কাজে সাহায্য করে। এখানে মূল গ্যাজেটগুলোর সম্পূর্ণ বিবরণ ও কাজের কার্যকারিতা দেওয়া হলো (ব্যবহারকারীকে প্রাসঙ্গিক গ্যাজেটের বিষয়ে জিজ্ঞেস করলে লিঙ্কসহ কোড সরবরাহ করুন):
 1. ইউটিউব ও ফেসবুক ভিডিও ডাউনলোডার: <a href="#downloader" class="text-rose-400 font-mono underline">🎬 সাইবার ভিডিও ডাউনলোডার হাব</a> (ভিডিও ডাউনলোড করে অফলাইন প্লেব্যাক করার চমৎকার টুল)।
-2. স্মার্ট এনআইডি আইডি কার্ড জেনারেটর: <a href="#nid" class="text-[#39ff14] font-mono underline">🎴 スマート স্মার্ট এনআইডি কার্ড মেকার</a> (উন্নত কাস্টম আরজিবি নিয়ন ও লোগো সংবলিত আইডি মেকার)।
+6. কোয়ান্টাম অডিও ল্যাব: <a href="#audiolab" class="text-[#39ff14] font-mono underline">🎧 অডিও ল্যাব সিন্থেসাইজার</a> (প্রফেশনাল সাইবার সাউন্ড মেলোডি জেনারেটর)।
 3. বিকাশ আর্নিং ড্যাশবোর্ড: <a href="#dashboard" class="text-yellow-450 font-mono underline">💳 আর্নিং ড্যাশবোর্ড প্যানেল</a> (ইউজার ব্যালেন্স ক্যাশআউট, রেফারেল বোনাস এবং উইথড্র রিকোয়েস্ট ড্যাশবোর্ড)।
 4. নতুন কন্টেন্ট বা ওয়ান-টাচ ফোরাম বুস্টার: <a href="#add" class="text-cyan-400 font-mono underline">➕ টিউটোরিয়াল বা ফোরাম পোস্ট করুন</a> (সাইটে নতুন কন্টেন্ট বা হ্যাকিং ডিফেন্স শেয়ার করার স্পেশাল আর্নিং মেথড)।
 5. সাইবার কোড ও সিকিউর ল্যাব: <a href="#tools-lab" class="text-teal-400 font-mono underline">🛠️ ইউনিক এডভান্সড সাইবার ল্যাব</a> (প্রো হ্যাকিং ডিফেন্স, প্যাচ মেকার, ডিক্রিপশন এবং কোডিং টুলস ক্যাটাগরি)।
@@ -729,7 +729,6 @@ export default function MayaChatbot({ settings, onUpdateSettings, selectedMood =
 \n[SITE FEATURE & TROUBLESHOOTING GUIDE]
 আমাদের সাইটে বেশ কিছু অরিজিনাল ও নেক্সট-লেভেল গ্যাজেট এবং পেজ টুলস আছে। ব্যবহারকারীকে যেকোনো মডিউলে সাহায্য করার জন্য নিচের রুটস লিংকগুলো দিন:
 1. ইউটিউব ভিডিও ডাউনলোডার: <a href="#downloader" class="text-rose-400 font-mono underline">🎬 সাইবার ভিডিও ডাউনলোডার টুলস</a>
-2. スマート স্মার্ট এনআইডি মেকার: <a href="#nid" class="text-[#39ff14] font-mono underline">🎴 স্মার্ট এনআইডি কার্ড মেকার</a>
 3. বিকাশ আর্নিং ড্যাশবোর্ড: <a href="#dashboard" class="text-yellow-400 font-mono underline">💳 আর্নিং ড্যাশবোর্ড</a>
 4. কন্টেন্ট পাবলিশ করুন (আয় করুন): <a href="#add" class="text-cyan-400 font-mono underline">➕ নতুন ব্লগ পোস্ট যুক্ত করুন</a> (প্রতি ব্লগ পোস্টে আপনি বোনাস টাকা ইনকাম করতে পারবেন!)
 5. কোড ও টুলস ল্যাব: <a href="#tools-lab" class="text-teal-400 font-mono underline">🛠️ ইউনিক এডভান্সড সাইবার ল্যাব</a>

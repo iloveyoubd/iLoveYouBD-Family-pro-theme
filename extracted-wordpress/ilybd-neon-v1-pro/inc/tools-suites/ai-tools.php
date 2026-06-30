@@ -538,3 +538,385 @@ function ilybd_render_tool_ai_prompt_generator() {
     </script>
     <?php
 }
+
+// 11. AI Maya Cloud Assistant
+function ilybd_render_tool_ai_maya_cloud_assistant() {
+    $neon_color = '#fbbf24';
+    $ajax_url = admin_url('admin-ajax.php');
+    ?>
+    <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif; background: #070b13; border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 16px; overflow: hidden; box-shadow: 0 0 30px rgba(251, 191, 36, 0.05);">
+        <!-- Chat Console Header -->
+        <div style="background: rgba(251, 191, 36, 0.05); padding: 15px 20px; border-bottom: 1px solid rgba(251, 191, 36, 0.15); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">🤖</span>
+                <div>
+                    <h4 style="color: #fff; font-size: 14px; font-weight: 800; margin: 0; text-transform: uppercase; tracking-wider: 1px;">MAYA QUANTUM v2.5</h4>
+                    <span style="color: #fbbf24; font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                        <span style="display: inline-block; width: 6px; height: 6px; background: #00ff41; border-radius: 50%; box-shadow: 0 0 8px #00ff41; animation: pulse 1.5s infinite;"></span>
+                        SECURE SYNCED // ONLINE
+                    </span>
+                </div>
+            </div>
+            <!-- Audio Indicator & Controls -->
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button onclick="toggleMayaSound()" id="maya-sound-btn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fbbf24; padding: 6px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.3s;" onmouseover="this.style.background='rgba(251,191,36,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                    🔊 SOUND ON
+                </button>
+                <button onclick="clearMayaChat()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 6px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: 0.3s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
+                    🧹 RESET
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Area Panel -->
+        <div id="maya-inline-chat-box" style="height: 380px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #04070c; scroll-behavior: smooth;">
+            <!-- Maya initial welcome card -->
+            <div class="maya-msg-wrapper" style="align-self: flex-start; max-width: 85%; display: flex; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: rgba(251, 191, 36, 0.15); border: 1px solid #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; color: #fbbf24; font-weight: bold;">M</div>
+                <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 16px 16px 16px; padding: 14px 16px; color: #cbd5e0; font-size: 13.5px; line-height: 1.6;" class="bangla-font-siliguri">
+                    আসসালামু আলাইকুম! আমি <strong>মায়া</strong>, iloveyoubd.com-এর অফিসিয়াল কৃত্রিম বুদ্ধিমত্তা সম্পন্ন অ্যাসিস্ট্যান্ট। 💖 <br><br>
+                    আমি আপনাকে যেকোনো <strong>কোডিং সমস্যা সমাধান, এসইও গাইডলাইন, কন্টেন্ট রাইটিং, আইটি ট্রাবলশুটিং বা চমৎকার বাংলা আলোচনায়</strong> সাহায্য করতে পারি। নিচে কিছু সাজেস্টেড প্রম্পট দেওয়া হলো, অথবা সরাসরি আপনার মনের প্রশ্ন লিখে সেন্ড করুন!
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick suggestion pills container -->
+        <div style="padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border-top: 1px solid rgba(255, 255, 255, 0.04); display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+            <span style="color: #9ca3af; font-size: 11px; font-weight: bold; font-family: 'Hind Siliguri', sans-serif;">পরামর্শ:</span>
+            <div onclick="selectSuggestedPrompt('বিকাশ অ্যাপ ক্লোন কোড')" class="maya-preset-chip">📱 বিকাশ অ্যাপ ক্লোন</div>
+            <div onclick="selectSuggestedPrompt('কিভাবে এসইও শিখে ফ্রিল্যান্সিং শুরু করব?')" class="maya-preset-chip">🚀 এসইও গাইড</div>
+            <div onclick="selectSuggestedPrompt('একটি সুন্দর এইচটিএমএল (HTML) নিওন পেজ বানিয়ে দাও')" class="maya-preset-chip">💻 নিওন সাইট মেকার</div>
+            <div onclick="selectSuggestedPrompt('পাইথন দিয়ে ইমেইল ভ্যালিডিটি চেক করার স্ক্রিপ্ট')" class="maya-preset-chip">🐍 পাইথন স্ক্রিপ্ট</div>
+            <div onclick="selectSuggestedPrompt('একটি আকর্ষণীয় ফেসবুক পোস্ট লিখে দাও')" class="maya-preset-chip">✍️ পোস্ট রাইটার</div>
+        </div>
+
+        <!-- Keyboard input & Send actions console -->
+        <div style="background: rgba(15, 23, 42, 0.8); padding: 15px; border-top: 1px solid rgba(251, 191, 36, 0.15); display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="maya-inline-user-input" class="cyan-glow-input" placeholder="মায়াকে যেকোনো প্রশ্ন করুন (যেমন: Meta tag, Java code, SEO)..." style="flex: 1; border-color: rgba(251, 191, 36, 0.25); background: #070b13; margin-bottom: 0;" onkeypress="if(event.key==='Enter') sendMayaInlineMessage()">
+            <button onclick="sendMayaInlineMessage()" id="maya-inline-send-btn" class="cyber-action-btn" style="background: #fbbf24; color: #000; font-weight: 850; padding: 12px 24px; min-width: 100px; height: 100%;">
+                SEND ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- Styles & Audio files -->
+    <audio id="maya-tick-sound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto" volume="0.2"></audio>
+    <audio id="maya-reply-sound" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto" volume="0.3"></audio>
+
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; filter: brightness(1.2); }
+        }
+        .maya-preset-chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: #cbd5e0;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: 'Hind Siliguri', sans-serif;
+            transition: 0.2s;
+        }
+        .maya-preset-chip:hover {
+            border-color: #fbbf24;
+            color: #fff;
+            background: rgba(251, 191, 36, 0.08);
+        }
+        .copy-code-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fbbf24;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: sans-serif;
+            transition: 0.2s;
+        }
+        .copy-code-btn:hover {
+            background: #fbbf24;
+            color: #000;
+        }
+    </style>
+
+    <script>
+        var mayaSoundEnabled = true;
+
+        function toggleMayaSound() {
+            mayaSoundEnabled = !mayaSoundEnabled;
+            var btn = document.getElementById('maya-sound-btn');
+            if (btn) {
+                if (mayaSoundEnabled) {
+                    btn.innerHTML = '🔊 SOUND ON';
+                    btn.style.color = '#fbbf24';
+                    playAudioSafely('maya-tick-sound');
+                } else {
+                    btn.innerHTML = '🔇 SOUND MUTED';
+                    btn.style.color = '#9ca3af';
+                }
+            }
+        }
+
+        function playAudioSafely(id) {
+            if (!mayaSoundEnabled) return;
+            var audio = document.getElementById(id);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(function(e){});
+            }
+        }
+
+        function clearMayaChat() {
+            var box = document.getElementById('maya-inline-chat-box');
+            box.innerHTML = `
+                <div class="maya-msg-wrapper" style="align-self: flex-start; max-width: 85%; display: flex; gap: 10px;">
+                    <div style="width: 32px; height: 32px; background: rgba(251, 191, 36, 0.15); border: 1px solid #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; color: #fbbf24; font-weight: bold;">M</div>
+                    <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 16px 16px 16px; padding: 14px 16px; color: #cbd5e0; font-size: 13.5px; line-height: 1.6;" class="bangla-font-siliguri">
+                        কনসোল মেমোরি রিসেট করা হয়েছে। মায়া পুনরায় আপনার প্রশ্নের উত্তর দেওয়ার জন্য প্রস্তুত! ✨
+                    </div>
+                </div>
+            `;
+            playAudioSafely('maya-tick-sound');
+        }
+
+        function selectSuggestedPrompt(txt) {
+            var inp = document.getElementById('maya-inline-user-input');
+            if (inp) {
+                inp.value = txt;
+                inp.focus();
+                playAudioSafely('maya-tick-sound');
+            }
+        }
+
+        function parseMayaMarkdown(text) {
+            if (!text) return '';
+            
+            // Format HTML tags escaping to prevent injection
+            let escaped = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            // Format Code Blocks ```lang ... ```
+            escaped = escaped.replace(/```(?:[a-zA-Z0-9]+)?\n([\s\S]*?)```/g, function(match, code) {
+                return '<div style="position:relative; margin: 15px 0;"><pre style="background:#070b13; padding:15px; border-radius:8px; border:1px solid rgba(251,191,36,0.2); font-family:\'JetBrains Mono\', monospace; font-size:12px; color:#fbbf24; overflow-x:auto; line-height:1.5;"><button class="copy-code-btn" onclick="copyCodePayload(this)">COPY CODE</button><code>' + code.trim() + '</code></pre></div>';
+            });
+
+            // Inline codes `code`
+            escaped = escaped.replace(/`([^`]+)`/g, '<code style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.25); color:#fbbf24; padding:2px 6px; border-radius:4px; font-family:\'JetBrains Mono\', monospace; font-size:12px;">$1</code>');
+
+            // Bold **text**
+            escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // Bullet lists
+            escaped = escaped.replace(/^\s*-\s+([^\n]+)/gm, '<li style="margin-left:15px; list-style-type:square; color:#cbd5e0;">$1</li>');
+            escaped = escaped.replace(/^\s*\*\s+([^\n]+)/gm, '<li style="margin-left:15px; list-style-type:circle; color:#cbd5e0;">$1</li>');
+
+            // Double line breaks
+            escaped = escaped.replace(/\n\n/g, '<br><br>');
+            // Single line breaks
+            escaped = escaped.replace(/\n/g, '<br>');
+
+            return escaped;
+        }
+
+        function copyCodePayload(btn) {
+            var code = btn.nextElementSibling.innerText;
+            navigator.clipboard.writeText(code);
+            var prevText = btn.innerHTML;
+            btn.innerHTML = '📋 COPIED!';
+            btn.style.background = '#00ff41';
+            btn.style.color = '#000';
+            btn.style.borderColor = '#00ff41';
+            setTimeout(function() {
+                btn.innerHTML = prevText;
+                btn.style.background = 'rgba(255, 255, 255, 0.1)';
+                btn.style.color = '#fbbf24';
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            }, 1500);
+        }
+
+        function sendMayaInlineMessage() {
+            var inp = document.getElementById('maya-inline-user-input');
+            var val = inp.value.trim();
+            if (!val) return;
+
+            inp.value = '';
+            playAudioSafely('maya-tick-sound');
+
+            var box = document.getElementById('maya-inline-chat-box');
+
+            // 1. Append User Message
+            var userMsg = document.createElement('div');
+            userMsg.style.alignSelf = 'flex-end';
+            userMsg.style.maxWidth = '80%';
+            userMsg.style.background = 'linear-gradient(135deg, #1e293b, #0f172a)';
+            userMsg.style.border = '1px solid rgba(251, 191, 36, 0.1)';
+            userMsg.style.borderRadius = '16px 16px 0 16px';
+            userMsg.style.padding = '12px 16px';
+            userMsg.style.color = '#fff';
+            userMsg.style.fontSize = '13.5px';
+            userMsg.style.lineHeight = '1.6';
+            userMsg.className = 'bangla-font-siliguri';
+            userMsg.textContent = val;
+            box.appendChild(userMsg);
+
+            // Scroll Box
+            box.scrollTop = box.scrollHeight;
+
+            // 2. Append Typing Indicator
+            var typingIndicator = document.createElement('div');
+            typingIndicator.className = 'maya-msg-wrapper typing-container';
+            typingIndicator.style.alignSelf = 'flex-start';
+            typingIndicator.style.maxWidth = '85%';
+            typingIndicator.style.display = 'flex';
+            typingIndicator.style.gap = '10px';
+            typingIndicator.innerHTML = `
+                <div style="width: 32px; height: 32px; background: rgba(251, 191, 36, 0.15); border: 1px solid #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; color: #fbbf24; font-weight: bold;">M</div>
+                <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 16px 16px 16px; padding: 14px 16px; color: #9ca3af; font-size: 13.5px; font-family: 'JetBrains Mono', monospace;" class="bangla-font-siliguri">
+                    ⚡ Connecting Maya Quantum Network... <span style="display:inline-block; width:15px; overflow:hidden; vertical-align:bottom; animation: loading-dots 1.5s infinite;">...</span>
+                </div>
+            `;
+            box.appendChild(typingIndicator);
+            box.scrollTop = box.scrollHeight;
+
+            // Trigger Usage Stats Count
+            if (typeof incrementToolUsage === 'function') {
+                incrementToolUsage('ai-maya-cloud-assistant');
+            }
+
+            // Fire AJAX request to WP
+            jQuery.ajax({
+                url: '<?php echo esc_url($ajax_url); ?>',
+                type: 'POST',
+                data: {
+                    action: 'cyber_bot_request',
+                    user_query: val,
+                    model: 'gemini-3.5-flash',
+                    temperature: 0.7
+                },
+                success: function(response) {
+                    // Remove Typing Indicator
+                    if (typingIndicator.parentNode) {
+                        typingIndicator.parentNode.removeChild(typingIndicator);
+                    }
+
+                    var replyText = (response && response.success) ? response.data : "দুঃখিত, সংযোগ স্থাপন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।";
+                    
+                    // Create Response element
+                    var replyMsg = document.createElement('div');
+                    replyMsg.style.alignSelf = 'flex-start';
+                    replyMsg.style.maxWidth = '85%';
+                    replyMsg.style.display = 'flex';
+                    replyMsg.style.gap = '10px';
+
+                    var avatar = document.createElement('div');
+                    avatar.style.width = '32px';
+                    avatar.style.height = '32px';
+                    avatar.style.background = 'rgba(251, 191, 36, 0.15)';
+                    avatar.style.border = '1px solid #fbbf24';
+                    avatar.style.borderRadius = '50%';
+                    avatar.style.display = 'flex';
+                    avatar.style.alignItems = 'center';
+                    avatar.style.justifyContent = 'center';
+                    avatar.style.fontSize = '14px';
+                    avatar.style.flexShrink = '0';
+                    avatar.style.color = '#fbbf24';
+                    avatar.style.fontWeight = 'bold';
+                    avatar.textContent = 'M';
+                    replyMsg.appendChild(avatar);
+
+                    var body = document.createElement('div');
+                    body.style.background = 'rgba(30, 41, 59, 0.4)';
+                    body.style.border = '1px solid rgba(255, 255, 255, 0.05)';
+                    body.style.borderRadius = '0 16px 16px 16px';
+                    body.style.padding = '14px 16px';
+                    body.style.color = '#cbd5e0';
+                    body.style.fontSize = '13.5px';
+                    body.style.lineHeight = '1.6';
+                    body.className = 'bangla-font-siliguri';
+                    
+                    replyMsg.appendChild(body);
+                    box.appendChild(replyMsg);
+
+                    // Typing effect
+                    playAudioSafely('maya-reply-sound');
+                    
+                    var htmlFormatted = parseMayaMarkdown(replyText);
+                    body.innerHTML = htmlFormatted;
+                    
+                    box.scrollTop = box.scrollHeight;
+                },
+                error: function() {
+                    if (typingIndicator.parentNode) {
+                        typingIndicator.parentNode.removeChild(typingIndicator);
+                    }
+                    alert('সার্ভার সংযোগ ব্যাহত হয়েছে। দয়া করে ইন্টারনেট কানেকশন চেক করুন।');
+                }
+            });
+        }
+    </script>
+
+    <style>
+        @keyframes loading-dots {
+            0% { width: 0; }
+            100% { width: 15px; }
+        }
+    </style>
+    <?php
+}
+
+function ilybd_render_tool_ai_maya_assistant() {
+    ilybd_render_tool_ai_maya_cloud_assistant();
+}
+
+// 12. Cyber Talking Pet Cat Game
+function ilybd_render_tool_cyber_cat_game() {
+    ?>
+    <style>
+    @keyframes bounce_cat {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-8px) scale(1.05); }
+    }
+    </style>
+    <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif; text-align:center;">
+        <div style="font-size:64px; margin:20px 0; animation: bounce_cat 1.5s infinite; display: inline-block;" id="catVisual">🐈</div>
+        
+        <div id="catBubble" style="background:#04070c; border:1px solid #ec4899; padding:15px; border-radius:12px; color:#fff; font-size:14px; margin:20px auto; max-width:400px; min-height:55px; display:flex; align-items:center; justify-content:center;" class="bangla-font-siliguri">মিয়াও! আমি আপনার সাইবার ক্যাট। আমাকে আদর করুন বা খাওয়ান।</div>
+        
+        <div style="display:flex; gap:12px; max-width:400px; margin:0 auto 20px;">
+            <button onclick="petCyberCat();" style="flex:1; padding:12px; background:#ec4899; color:#fff; border:none; border-radius:8px; font-weight:800; cursor:pointer;" class="bangla-font-siliguri">আদর করুন 👋</button>
+            <button onclick="feedCyberCat();" style="flex:1; padding:12px; background:#00f0ff; color:#000; border:none; border-radius:8px; font-weight:800; cursor:pointer;" class="bangla-font-siliguri">খাদ্য দিন 🐟</button>
+        </div>
+    </div>
+    <script>
+    function petCyberCat() {
+        const bubble = document.getElementById('catBubble');
+        bubble.innerText = 'পুরররর! আপনার উষ্ণ স্পর্শে আমার ন্যানো চিপসেট হ্যাপি হয়েছে! 💖';
+        document.getElementById('catVisual').innerText = '😻';
+        setTimeout(() => {
+            document.getElementById('catVisual').innerText = '🐈';
+        }, 1200);
+        if (typeof incrementToolUsage === 'function') {
+            incrementToolUsage('cyber-cat-game');
+        }
+    }
+    function feedCyberCat() {
+        const bubble = document.getElementById('catBubble');
+        bubble.innerText = 'ক্রাঞ্চ ক্রাঞ্চ! এআই ফিশ ক্র্যাকার অনেক সুস্বাদু ছিল! চার্জ ১০০%! 🔋⚡';
+        document.getElementById('catVisual').innerText = '😸';
+        setTimeout(() => {
+            document.getElementById('catVisual').innerText = '🐈';
+        }, 1200);
+        if (typeof incrementToolUsage === 'function') {
+            incrementToolUsage('cyber-cat-game');
+        }
+    }
+    </script>
+    <?php
+}

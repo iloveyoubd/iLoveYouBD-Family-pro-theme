@@ -64,11 +64,11 @@
                     <div class="qna-content" style="flex: 1; font-size: 16px; line-height: 1.8; color: #e6edf3; text-align: left; font-family: system-ui, sans-serif;">
                         <?php the_content(); ?>
 
-                        <!-- Tags List -->
+                        <!-- Tags List (Kept in HTML DOM for Google Crawl Indexing, Hidden from Visual View) -->
                         <?php 
                         $tags = get_the_tags();
                         if (!empty($tags)) : ?>
-                            <div class="qna-tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 15px;">
+                            <div class="qna-tags-container" style="display: none !important; flex-wrap: wrap; gap: 8px; margin-top: 25px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 15px;">
                                 <?php foreach ($tags as $tag) : ?>
                                     <a href="<?php echo esc_url(get_tag_link($tag->term_id)); ?>" style="background: rgba(0, 240, 255, 0.05); color: #00f0ff; border: 1.1px solid rgba(0, 240, 255, 0.2); border-radius: 6px; padding: 4px 10px; font-size: 11px; text-decoration: none; font-family: monospace; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.15)'; this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 8px rgba(0,240,255,0.3)';" onmouseout="this.style.background='rgba(0,240,255,0.05)'; this.style.borderColor='rgba(0,240,255,0.2)'; this.style.boxShadow='none';">
                                         # <?php echo esc_html($tag->name); ?>
@@ -99,6 +99,100 @@
                 
                 <?php comments_template(); ?>
             </section>
+
+            <!-- RECOMMENDED QUESTIONS HUB (সংশ্লিষ্ট প্রশ্নোত্তর) -->
+            <?php
+            $current_categories = wp_get_post_categories($post_id);
+            $recommended_args = array(
+                'post_type'      => 'ilybd_question',
+                'posts_per_page' => 4,
+                'post__not_in'   => array($post_id),
+                'post_status'    => 'publish',
+                'orderby'        => 'rand',
+            );
+            if (!empty($current_categories)) {
+                $recommended_args['category__in'] = $current_categories;
+            }
+            $recommended_query = new WP_Query($recommended_args);
+            if ($recommended_query->have_posts()) :
+            ?>
+            <section class="qna-recommended-section" style="background: #0d1527; border: 1.5px solid rgba(0, 255, 65, 0.15); border-radius: 16px; padding: 22px; margin-top: 30px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); margin-bottom: 30px;">
+                <h3 style="color: #fff; font-size: 17px; font-weight: 700; margin-top: 0; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                    <span style="color: #00ff41;"><i class="fa-solid fa-lightbulb"></i></span>
+                    সংশ্লিষ্ট ও রিকমেন্ডেড প্রশ্নসমূহ (Related Discussions)
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <?php while ($recommended_query->have_posts()) : $recommended_query->the_post(); 
+                        $rec_id = get_the_ID();
+                        $rec_votes = get_post_meta($rec_id, 'qa_votes', true) ?: 0;
+                        $rec_answers = get_comments_number($rec_id);
+                        $rec_views = get_post_meta($rec_id, 'qa_views_count', true) ?: 0;
+                        ?>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 12px; background: rgba(7, 11, 19, 0.4); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(0,255,65,0.2)'; this.style.background='rgba(7,11,19,0.7)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.03)'; this.style.background='rgba(7, 11, 19, 0.4)';">
+                            <div style="flex: 1; text-align: left;">
+                                <h4 style="margin: 0 0 6px 0; font-size: 14.5px; font-weight: 600;">
+                                    <a href="<?php the_permalink(); ?>" style="color: #e2e8f0; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='#00ff41';" onmouseout="this.style.color='#e2e8f0';">
+                                        <?php the_title(); ?>
+                                    </a>
+                                </h4>
+                                <div style="font-size: 11px; color: #64748b; font-family: monospace;">
+                                    Asked by: <?php the_author(); ?> - <?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> আগে
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; font-size: 11px; font-family: monospace;">
+                                <span style="background: rgba(0,255,65,0.06); color: #00ff41; padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(0,255,65,0.1);"><i class="fa-solid fa-fire"></i> <?php echo $rec_votes; ?></span>
+                                <span style="background: rgba(0,229,255,0.06); color: #00e5ff; padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(0,229,255,0.1);"><i class="fa-solid fa-comment-dots"></i> <?php echo $rec_answers; ?></span>
+                            </div>
+                        </div>
+                    <?php endwhile; wp_reset_postdata(); ?>
+                </div>
+            </section>
+            <?php endif; ?>
+
+            <!-- QUICK ASK QUESTION FOOTER PROMPT -->
+            <div class="qna-footer-ask-promo" style="background: linear-gradient(135deg, #0d1527 0%, #070b13 100%); border: 1.5px dashed rgba(0, 255, 65, 0.3); border-radius: 16px; padding: 25px; text-align: center; margin-top: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); margin-bottom: 30px;">
+                <h4 style="color:#fff; font-size: 17px; margin-top:0; margin-bottom:8px; font-weight: 700;">আপনার কি কোনো বিশেষ টেকনিক্যাল সমস্যা রয়েছে?</h4>
+                <p style="color:#8b949e; font-size:13px; margin:0 0 18px 0; line-height: 1.5;">আমাদের ফোরামে প্রশ্ন করে অভিজ্ঞ মডারেটর এবং আইবিডি এআই এসিস্ট্যান্টের কাছ থেকে কয়েক মিনিটের মধ্যে নিখুঁত সমাধান পান।</p>
+                
+                <button id="toggle-single-ask-btn" onclick="toggleSingleAskForm()" style="background: #00ff41; border: none; color: #000; padding: 10px 24px; border-radius: 30px; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0,255,65,0.25);">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <span>প্রশ্ন করুন / Ask a Question</span>
+                </button>
+
+                <div id="single-ask-form-wrapper" style="display: none; opacity: 0; transition: all 0.4s ease; transform: translateY(-10px); margin-top: 20px; text-align: left;">
+                    <div style="background: #0d1117; border: 1.5px solid #00ff41; border-radius: 16px; padding: 2px; box-shadow: 0 0 25px rgba(0, 255, 65, 0.12);">
+                        <?php echo do_shortcode('[ilybd_ask_question_form]'); ?>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            function toggleSingleAskForm() {
+                const wrapper = document.getElementById('single-ask-form-wrapper');
+                const btn = document.getElementById('toggle-single-ask-btn');
+                if (!wrapper) return;
+
+                if (wrapper.style.display === 'none' || wrapper.style.display === '') {
+                    wrapper.style.display = 'block';
+                    // Force reflow
+                    wrapper.offsetHeight;
+                    wrapper.style.opacity = '1';
+                    wrapper.style.transform = 'translateY(0)';
+                    btn.innerHTML = '<i class="fa-solid fa-xmark"></i> <span>ফরম বন্ধ করুন / Close</span>';
+                    btn.style.background = '#ff3e3e';
+                    btn.style.color = '#fff';
+                } else {
+                    wrapper.style.opacity = '0';
+                    wrapper.style.transform = 'translateY(-10px)';
+                    btn.innerHTML = '<i class="fa-solid fa-circle-question"></i> <span>প্রশ্ন করুন / Ask a Question</span>';
+                    btn.style.background = '#00ff41';
+                    btn.style.color = '#000';
+                    setTimeout(() => {
+                        wrapper.style.display = 'none';
+                    }, 400);
+                }
+            }
+            </script>
 
         <?php endwhile; endif; ?>
 

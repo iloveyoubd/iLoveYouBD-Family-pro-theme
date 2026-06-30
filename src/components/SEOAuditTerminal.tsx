@@ -38,8 +38,6 @@ interface QAQuestion {
 }
 
 const DEFAULT_SEO_RULES: SEOKeywordRule[] = [
-  { id: "1", keyword: "এনআইডি", url: "/nid-maker/" },
-  { id: "2", keyword: "NID", url: "/nid-maker/" },
   { id: "3", keyword: "কোড", url: "/tools-lab/" },
   { id: "4", keyword: "ডাউনলোডার", url: "/video-downloader/" },
   { id: "5", keyword: "অডিও", url: "/audio-lab/" },

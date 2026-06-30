@@ -4,14 +4,13 @@ import {
   Terminal, ShieldCheck, HelpCircle, User, LogIn, Plus, 
   Wallet, Bell, Home, Layout, Cpu, RefreshCw, LogOut, CheckCircle, Search, Clock, Award, Tv,
   Music, Video, Wrench, Sparkles, QrCode, Gamepad2, Mic, MicOff, ThumbsUp, Eye,
-  Gift, Copy, Share2, TrendingUp, MessageSquare
+  Gift, Copy, Share2, TrendingUp, MessageSquare, Volume2, Square
 } from "lucide-react";
 
 import type { Post, Question, NotificationItem, UserStats, AdminSettings, LedgerEntry, StoryItem } from "./types";
 import RGBBorder from "./components/RGBBorder";
 import PostContainer from "./components/PostContainer";
 import CommunityQA from "./components/CommunityQA";
-import NIDMaker from "./components/NIDMaker";
 import AdminPanel from "./components/AdminPanel";
 import AICrew from "./components/AICrew";
 import LiveTV from "./components/LiveTV";
@@ -22,6 +21,7 @@ import UnifiedTools from "./components/UnifiedTools";
 import ToolsLabHub from "./components/ToolsLabHub";
 import CyberMessenger from "./components/CyberMessenger";
 import LegalCenter from "./components/LegalCenter";
+import NewsCenter from "./components/NewsCenter";
 
 // Helper keys for localStorage
 const LOCAL_POSTS_KEY = "iloveyoubd_posts_db";
@@ -37,25 +37,33 @@ const INITIAL_POSTS: Post[] = [
     id: "post-1",
     title: "গুগল এআই ক্রলার বুস্ট করার ট্রিকস এবং দ্রুত ইনডেক্সিং গাইড ২০৪০",
     excerpt: "গুগল সার্চ ইঞ্জিনের সাথে বন্ধুত্ব করতে চাইলে ক্রলার ইমেট্রি ঠিক করা অপরিহার্য। ২০৪০ ভিশন অনুযায়ী সার্চ ইঞ্জিন ইনডেক্স ফ্রেন্ডলি করার গোপন গাইড।",
-    content: "গুগল সার্চ ইঞ্জিনে আপনার কন্টেন্ট এক মিনিটের মধ্যে ইনডেক্স করতে সাইটম্যাপে রিঅ্যাক্টিভ আরএসএস যুক্ত করুন...",
+    content: `গুগল সার্চ ইঞ্জিনে আপনার কন্টেন্ট দ্রুত ইনডেক্স করার জন্য বেশ কিছু অত্যাধুনিক এসইও (SEO) কৌশল প্রয়োগ করা অপরিহার্য। বর্তমান সময়ে, গুগল ক্রলার বা গুগলবট (Googlebot) অত্যন্ত স্মার্ট এবং এটি মূলত কনটেন্টের কোয়ালিটি, লোডিং স্পিড এবং ইউজার এক্সপেরিয়েন্সের ওপর ভিত্তি করে ইনডেক্সিং করে।
+
+প্রথমত, আপনার ওয়েবসাইটের কোর ওয়েব ভাইটালস (Core Web Vitals) অপ্টিমাইজ করতে হবে। এর মধ্যে রয়েছে LCP (Largest Contentful Paint), FID (First Input Delay), এবং CLS (Cumulative Layout Shift)। আপনার ওয়েবসাইটের সার্ভার রেসপন্স টাইম কমানোর জন্য ভালো মানের হোস্টিং ব্যবহার করুন এবং ইমেজগুলোকে WebP বা AVIF ফরম্যাটে রূপান্তর করুন।
+
+দ্বিতীয়ত, XML সাইটম্যাপ (Sitemap) আপডেট রাখুন এবং নিয়মিত Google Search Console-এ সাবমিট করুন। যখনই নতুন কোনো আর্টিকেল পাবলিশ করবেন, চেষ্টা করবেন সেটি যেন দ্রুত সাইটম্যাপে যুক্ত হয়। পাশাপাশি, ইন্টারনাল লিংকিং (Internal Linking) এর দিকে নজর দিন। আপনার ওয়েবসাইটের পুরনো এবং হাই-অথরিটি পেজগুলো থেকে নতুন পেজে লিংক প্রদান করলে ক্রলার খুব সহজেই নতুন পেজটি খুঁজে পায়।
+
+তৃতীয়ত, মানসম্মত এবং ইন-ডেপথ কনটেন্ট (In-depth Content) তৈরি করুন। গুগল সবসময় সেই কনটেন্টগুলোকে প্রাধান্য দেয় যা ব্যবহারকারীর প্রশ্নের সঠিক এবং বিস্তারিত উত্তর প্রদান করে। "Thin Content" বা অল্প শব্দের কনটেন্ট এড়িয়ে চলুন। প্রতিটি আর্টিকেলে প্রাসঙ্গিক হেডিং (H1, H2, H3) ব্যবহার করুন এবং প্যারাগ্রাফগুলোকে ছোট রাখুন যাতে পড়তে সুবিধা হয়। 
+
+সর্বোপরি, স্কিমা মার্কআপ (Schema Markup) ব্যবহার করতে ভুলবেন না। এটি সার্চ ইঞ্জিনকে আপনার কনটেন্টের ধরন বুঝতে সাহায্য করে, যার ফলে সার্চ রেজাল্টে রিচ স্নিপেট (Rich Snippets) হিসেবে আপনার ওয়েবসাইট প্রদর্শিত হতে পারে। এই নিয়মগুলো সঠিকভাবে মেনে চললে আপনার ওয়েবসাইটের ইনডেক্সিং স্পিড বহুগুণ বেড়ে যাবে।`,
     thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=600&auto=format&fit=crop",
     category: "SEO Guide",
-    tags: ["google", "indexing", "seo", "cyber"],
-    readTime: "৪ মিনিট",
+    tags: ["google", "indexing", "seo", "optimization"],
+    readTime: "৫ মিনিট",
     author: {
       name: "এআই অ্যাডমিন অ্যাসিস্ট্যান্ট",
       avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=admin",
       isAI: true,
       rank: "CHIEF OPERATIVE"
     },
-    likes: 12,
-    views: 134,
+    likes: 145,
+    views: 1204,
     comments: [
       {
         id: "c-1",
         authorName: "সাইবার টিম বিডি",
         authorAvatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=team",
-        text: "অসাধারণ হ্যাক ট্রিকস ভাই! অনেক হেল্প হলো গুগল অ্যাডসেন্স এপ্রুভালে।",
+        text: "অসাধারণ এসইও গাইড! অনেক হেল্প হলো গুগল অ্যাডসেন্স এপ্রুভালে।",
         timestamp: "১ ঘণ্টা আগে"
       }
     ],
@@ -64,41 +72,61 @@ const INITIAL_POSTS: Post[] = [
   },
   {
     id: "post-2",
-    title: "একাউন্ট হ্যাকিং এবং ২০৪০ সালের উন্নত ফিশিং প্রতিরোধ ব্যবস্থা",
-    excerpt: "ডার্ক হান্টারদের কবল থেকে সোশ্যাল একাউন্ট এবং ক্রিপ্টো ওয়ালেট কীভাবে শতভাগ নিরাপদ রাখবেন? বাস্তবমুখী সিকিউরিটি টুলস গাইড।",
-    content: "ফিশিং লিংক শনাক্ত করতে ডোমেইনের লাইভ ডিএনএস মেটা ভেরিফিকেশন স্ক্যান করা উচিত...",
+    title: "উন্নত সাইবার নিরাপত্তা: ফিশিং প্রতিরোধ এবং ডাটা সুরক্ষার কমপ্লিট গাইড",
+    excerpt: "ডার্ক ওয়েবের হুমকি থেকে সোশ্যাল একাউন্ট এবং ডিজিটাল অ্যাসেট কীভাবে শতভাগ নিরাপদ রাখবেন? বাস্তবমুখী সিকিউরিটি টুলস এবং সুরক্ষার গাইড।",
+    content: `বর্তমান ডিজিটাল যুগে সাইবার নিরাপত্তা (Cyber Security) বা তথ্য সুরক্ষা একটি অত্যন্ত গুরুত্বপূর্ণ বিষয় হয়ে দাঁড়িয়েছে। প্রতিদিন নতুন নতুন ফিশিং (Phishing) আক্রমণ এবং ডাটা ব্রিচের (Data Breach) খবর পাওয়া যাচ্ছে। নিজের ব্যক্তিগত তথ্য এবং ডিজিটাল অ্যাসেট সুরক্ষিত রাখার জন্য কিছু বেসিক কিন্তু অত্যন্ত কার্যকরী পদক্ষেপ গ্রহণ করা জরুরি।
+
+ফিশিং আক্রমণ থেকে বাঁচার প্রধান উপায় হলো সতর্কতা। ফিশিং মূলত এমন একটি পদ্ধতি যেখানে হ্যাকাররা বিশ্বস্ত কোনো প্রতিষ্ঠান বা ব্যক্তির ছদ্মবেশে ইমেইল বা মেসেজ পাঠায় এবং ব্যবহারকারীকে ক্ষতিকর লিংকে ক্লিক করতে বা সংবেদনশীল তথ্য (যেমন- পাসওয়ার্ড, ক্রেডিট কার্ড নাম্বার) প্রদান করতে প্ররোচিত করে। এই ধরনের আক্রমণ থেকে রক্ষা পেতে কখনোই অচেনা বা সন্দেহজনক ইমেইলের লিংকে ক্লিক করবেন না। লিংকে ক্লিক করার আগে ডোমেইন নেমটি (Domain Name) ভালোভাবে চেক করে নিন। অনেক সময় আসল ওয়েবসাইটের নামের সাথে একটি বা দুটি অক্ষরের পরিবর্তন করে ফিশিং সাইট তৈরি করা হয় (যেমন- facebook.com এর জায়গায় facebo0k.com)।
+
+দ্বিতীয়ত, সব সময় টু-ফ্যাক্টর অথেনটিকেশন (Two-Factor Authentication - 2FA) ব্যবহার করুন। এটি আপনার অ্যাকাউন্টের জন্য একটি অতিরিক্ত সুরক্ষা স্তর যুক্ত করে। যদি কোনো কারণে আপনার পাসওয়ার্ড অন্য কারো হাতে চলেও যায়, তবুও 2FA কোড ছাড়া সে আপনার অ্যাকাউন্টে প্রবেশ করতে পারবে না। 2FA এর জন্য SMS এর পরিবর্তে Google Authenticator বা Authy এর মতো অ্যাপ ব্যবহার করা বেশি নিরাপদ।
+
+পাসওয়ার্ড ম্যানেজমেন্টও অত্যন্ত জরুরি। প্রতিটি অ্যাকাউন্টের জন্য আলাদা এবং শক্তিশালী পাসওয়ার্ড ব্যবহার করুন। একটি শক্তিশালী পাসওয়ার্ডে ক্যাপিটাল লেটার, স্মল লেটার, নাম্বার এবং স্পেশাল ক্যারেক্টার থাকা উচিত। এতগুলো পাসওয়ার্ড মনে রাখা কষ্টকর হতে পারে, তাই একটি বিশ্বস্ত পাসওয়ার্ড ম্যানেজার (Password Manager) যেমন- Bitwarden বা 1Password ব্যবহার করতে পারেন।
+
+এছাড়াও, আপনার ডিভাইস এবং সফটওয়্যারগুলো সব সময় আপ-টু-ডেট রাখুন। সফটওয়্যার আপডেটগুলোতে সাধারণত নতুন আবিষ্কৃত সিকিউরিটি দুর্বলতাগুলোর (Vulnerabilities) প্যাচ (Patch) থাকে। অ্যান্টিভাইরাস বা অ্যান্টি-ম্যালওয়্যার প্রোগ্রাম ব্যবহার করা এবং নিয়মিত স্ক্যান করাও আপনাকে বিভিন্ন ক্ষতিকর সফটওয়্যার থেকে সুরক্ষিত রাখবে। সাইবার জগতে নিরাপদ থাকার মূল চাবিকাঠি হলো সচেতনতা।`,
     thumbnail: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?q=80&w=600&auto=format&fit=crop",
-    category: "Hacking",
-    tags: ["hacking", "phishing", "cyber-shield"],
-    readTime: "৫ মিনিট",
+    category: "Cyber Security",
+    tags: ["security", "phishing", "cyber-shield", "safety"],
+    readTime: "৭ মিনিট",
     author: {
       name: "সাইবার রনি",
       avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=ronny",
       isAI: false,
-      rank: "ELITE WHATEHAT"
+      rank: "SECURITY RESEARCHER"
     },
-    likes: 8,
-    views: 95,
+    likes: 89,
+    views: 950,
     comments: [],
     timestamp: "৪ ঘণ্টা আগে"
   },
   {
     id: "post-3",
-    title: "কন্টেন্ট লিখে প্রতিদিন ৩০০ টাকা পর্যন্ত উপার্জনের সঠিক টেকনিক",
-    excerpt: "আমাদের সাইটের লাইভ মনিটাইজেশন সিস্টেম অনুযায়ী পোস্ট ভিউ এবং লাইক বাড়িয়ে কীভাবে সরাসরি বিকাশ/নগদে নিবেন, তার ট্রিকস।",
-    content: "iloveyoubd.com এ মানসম্মত পোস্ট লিখলে প্রতি লাইক এবং ভিউয়ের মেম্বার ফিডব্যাক থেকে আপনার ব্যালেন্স সরাসরি যুক্ত হয়...",
+    title: "ওয়েব পারফরম্যান্স অপ্টিমাইজেশন: ওয়েবসাইট ফাস্ট করার ১০টি প্রো টিপস",
+    excerpt: "একটি স্লো ওয়েবসাইট শুধুমাত্র ইউজার এক্সপেরিয়েন্সই নষ্ট করে না, বরং এসইও রেংকিংও কমিয়ে দেয়। জানুন ওয়েবসাইট দ্রুত করার উপায়।",
+    content: `ইন্টারনেটের এই দ্রুতগতির যুগে কেউ ধীর গতির ওয়েবসাইট পছন্দ করে না। গুগলসহ অন্যান্য সার্চ ইঞ্জিনগুলোও দ্রুত লোড হওয়া ওয়েবসাইটগুলোকে রেংকিংয়ে অগ্রাধিকার দেয়। তাই আপনার ওয়েবসাইটের স্পিড অপ্টিমাইজ করা অত্যন্ত জরুরি। এখানে ওয়েবসাইট ফাস্ট করার কিছু কার্যকরী টিপস আলোচনা করা হলো:
+
+১. ইমেজ অপ্টিমাইজেশন (Image Optimization): ওয়েবসাইটের পেজ সাইজ বড় হওয়ার প্রধান কারণ হলো ভারী ইমেজ। ছবিগুলো আপলোড করার আগে অবশ্যই কম্প্রেস (Compress) করে নিন। TinyPNG বা Squoosh এর মতো টুল ব্যবহার করতে পারেন। এছাড়া Next-gen ফরম্যাট যেমন WebP বা AVIF ব্যবহার করুন, যা কোয়ালিটি ঠিক রেখে সাইজ অনেক কমিয়ে দেয়।
+
+২. ব্রাউজার ক্যাশিং (Browser Caching): ব্রাউজার ক্যাশিং চালু থাকলে একজন ইউজার যখন প্রথমবার আপনার সাইটে ভিজিট করে, তখন কিছু স্ট্যাটিক ফাইল (যেমন- CSS, JavaScript, Logo) তার ব্রাউজারে সেভ হয়ে যায়। ফলে পরবর্তীতে সে যখন আবার সাইটে আসে, তখন ওই ফাইলগুলো সার্ভার থেকে লোড না হয়ে সরাসরি ব্রাউজার থেকে লোড হয়। এতে ওয়েবসাইটের লোডিং স্পিড বহুগুণ বেড়ে যায়।
+
+৩. মিনিফিকেশন (Minification): আপনার ওয়েবসাইটের HTML, CSS এবং JavaScript ফাইলগুলো থেকে অপ্রয়োজনীয় স্পেস, কমা, এবং কমেন্ট রিমুভ করার প্রক্রিয়াকে মিনিফিকেশন বলা হয়। এটি ফাইলের সাইজ ছোট করে এবং ব্রাউজারকে দ্রুত কোড রিড করতে সাহায্য করে।
+
+৪. কন্টেন্ট ডেলিভারি নেটওয়ার্ক (CDN): একটি CDN হলো বিশ্বব্যাপী ছড়িয়ে থাকা সার্ভারের একটি নেটওয়ার্ক। যখন কেউ আপনার ওয়েবসাইটে ভিজিট করে, তখন CDN তার সবচেয়ে কাছের সার্ভার থেকে ওয়েবসাইটের স্ট্যাটিক ফাইলগুলো ডেলিভার করে। Cloudflare একটি জনপ্রিয় এবং ফ্রি CDN সার্ভিস যা আপনি সহজেই ব্যবহার করতে পারেন।
+
+৫. অকেজো প্লাগিন রিমুভ করা: আপনি যদি ওয়ার্ডপ্রেস ব্যবহার করেন, তবে অপ্রয়োজনীয় বা অকেজো প্লাগিনগুলো ডিঅ্যাক্টিভ করে ডিলিট করে দিন। অতিরিক্ত প্লাগিন ওয়েবসাইটের সার্ভারে বাড়তি চাপ সৃষ্টি করে এবং স্পিড কমিয়ে দেয়।
+
+এই বেসিক বিষয়গুলো নিশ্চিত করলে আপনার ওয়েবসাইটের স্পিড উল্লেখযোগ্যভাবে বৃদ্ধি পাবে, যা ইউজার এক্সপেরিয়েন্স এবং এসইও উভয় ক্ষেত্রেই ইতিবাচক প্রভাব ফেলবে।`,
     thumbnail: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=600&auto=format&fit=crop",
-    category: "Online Earning",
-    tags: ["earning", "monetize", "bkash", "trickbd"],
-    readTime: "৩ মিনিট",
+    category: "Web Performance",
+    tags: ["performance", "speed", "optimization", "web"],
+    readTime: "৬ মিনিট",
     author: {
       name: "রানা মির্জা",
       avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=rana",
       isAI: false,
-      rank: "SENIOR CONTRIBUTOR"
+      rank: "PERFORMANCE ENGINEER"
     },
-    likes: 24,
-    views: 412,
+    likes: 245,
+    views: 4120,
     comments: [],
     timestamp: "৬ ঘণ্টা আগে"
   }
@@ -231,7 +259,17 @@ const DEFAULT_SETTINGS: AdminSettings = {
   referralBonusTaka: 10,
   referralXpReward: 50,
   refereeBonusTaka: 10,
-  refereeXpReward: 100
+  refereeXpReward: 100,
+  enableNewsSection: true,
+  showNewsModule: true,
+  newsDisplayType: "latest",
+  newsDisplayCount: 5,
+  newsShowThumbnail: true,
+  newsShowPublishTime: true,
+  newsShowCategory: true,
+  newsShowSummary: true,
+  newsShowReadMore: true,
+  newsButtonText: "নিউজ সেন্টার (News Center)"
 };
 
 const INITIAL_NOTIFS: NotificationItem[] = [
@@ -530,7 +568,7 @@ const PLAY_STORE_APPS_LIST = [
 export default function App() {
   // Navigation active tab
   const [activeTab, setActiveTab] = useState<
-    "home" | "add" | "profile" | "dashboard" | "ai" | "qa" | "nid" | "admin" | "tools" | "downloader" | "audiolab" | "tools-lab" | "messages" | "privacy" | "terms" | "disclaimer" | "about" | "contact-us" | "tv"
+    "home" | "add" | "profile" | "dashboard" | "ai" | "qa" | "admin" | "tools" | "downloader" | "audiolab" | "tools-lab" | "messages" | "privacy" | "terms" | "disclaimer" | "about" | "contact-us" | "tv" | "news"
   >("home");
   const [selectedContactName, setSelectedContactName] = useState<string | undefined>(undefined);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -544,6 +582,7 @@ export default function App() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [postFontSize, setPostFontSize] = useState<"text-xs" | "text-sm" | "text-base" | "text-lg">("text-[#00f0ff]");
   const [activeFontSizeClass, setActiveFontSizeClass] = useState<"text-xs" | "text-sm" | "text-base" | "text-lg">("text-sm");
+  const [isSpeakingPost, setIsSpeakingPost] = useState(false);
 
   // Selected question highlight state in Q&A Forum
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
@@ -1563,17 +1602,6 @@ export default function App() {
               <Wrench className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />  টুলস ল্যাব 🧪
             </button>
             <button
-              id="menu-tab-nid"
-              onClick={() => setActiveTab("nid")}
-              className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
-                activeTab === "nid"
-                  ? `bg-[#0c1624] border ${styleProfile.borderAccent} text-slate-100 shadow-[0_0_8px_rgba(0,240,255,0.15)]`
-                  : "text-slate-400 hover:text-slate-100"
-              }`}
-            >
-              <Layout className="w-3.5 h-3.5 text-emerald-400" /> এনআইডি মেকার
-            </button>
-            <button
               id="menu-tab-downloader"
               onClick={() => setActiveTab("downloader")}
               className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
@@ -1584,6 +1612,19 @@ export default function App() {
             >
               <Video className="w-3.5 h-3.5 text-purple-400 animate-pulse" /> ভিডিও ডাউনলোডার 📥
             </button>
+            {adminSettings.enableNewsSection !== false && (
+              <button
+                id="menu-tab-news"
+                onClick={() => setActiveTab("news")}
+                className={`flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+                  activeTab === "news"
+                    ? `bg-[#0c1624] border ${styleProfile.borderAccent} text-slate-100 shadow-[0_0_8px_rgba(0,240,255,0.15)]`
+                    : "text-emerald-400 hover:text-white"
+                }`}
+              >
+                📰 এআই নিউজ সেন্টার
+              </button>
+            )}
             <button
               id="menu-tab-tools"
               onClick={() => setActiveTab("tools")}
@@ -2099,7 +2140,6 @@ export default function App() {
                                       { l: "হ্যাকিং ডিফেন্স গাইড", k: "হ্যাকিং" },
                                       { l: "বিকাশ মানি আর্নিং", k: "আর্নিং" },
                                       { l: "ফ্রি ভিডিও ডাউনলোডার", k: "ডাউনলোডার" },
-                                      { l: "স্মার্ট এনআইডি মেকার", k: "এনআইডি" },
                                       { l: "মায়া চ্যাট সহায়ক ও এআই", k: "মায়া" },
                                       { l: "এসইও র‍্যাংকিং অডিট", k: "এসইও" }
                                     ].map((tagObj, idx) => (
@@ -2146,9 +2186,6 @@ export default function App() {
                                     
                                     if (qLow.includes("video") || qLow.includes("downloader") || qLow.includes("ইউটিউব") || qLow.includes("ভিডিও") || qLow.includes("ডাউনলোড")) {
                                       tList.push({ id: "t-1", name: "ইউটিউব ও ফেসবুক ভিডিও ডাউনলোডার", desc: "হাই-স্পিড ভিডিও ও রিলেটেড মাল্টিমিডিয়া সরাসরি ডাউনলোড করার সুপার হাব!", tab: "downloader", emoji: "🎬" });
-                                    }
-                                    if (qLow.includes("nid") || qLow.includes("এনআইডি") || qLow.includes("কার্ড") || qLow.includes("স্মার্ট")) {
-                                      tList.push({ id: "t-2", name: "স্মার্ট এনআইডি কার্ড জেনারেটর প্রফেশনাল", desc: "এক ক্লিকে চমৎকার আরজিবি স্মার্ট আইডি ও লোগো মেকার সিস্টেম!", tab: "nid", emoji: "🎴" });
                                     }
                                     if (qLow.includes("audio") || qLow.includes("অডিও") || qLow.includes("গান") || qLow.includes("মেলোডি") || qLow.includes("সিন্থ")) {
                                       tList.push({ id: "t-3", name: "কোয়ান্টাম অডিও ল্যাব সিন্থেসাইজার", desc: "প্রফেশনাল সাইবার সাউন্ড মেলোডি এবং ব্যাকগ্রাউন্ড রিদম জেনারেটর।", tab: "audiolab", emoji: "🎧" });
@@ -2295,7 +2332,6 @@ export default function App() {
                                     let tMatches = 0;
                                     const qLow = postSearchQuery.toLowerCase();
                                     if (qLow.includes("video") || qLow.includes("downloader") || qLow.includes("ইউটিউব") || qLow.includes("ভিডিও") || qLow.includes("ডাউনলোড")) tMatches++;
-                                    if (qLow.includes("nid") || qLow.includes("এনআইডি") || qLow.includes("কার্ড") || qLow.includes("স্মার্ট")) tMatches++;
                                     if (qLow.includes("audio") || qLow.includes("অডিও") || qLow.includes("গান") || qLow.includes("মেলোডি") || qLow.includes("সিন্থ")) tMatches++;
                                     if (qLow.includes("ai") || qLow.includes("জেমিনি") || qLow.includes("মায়া") || qLow.includes("চ্যাট")) tMatches++;
 
@@ -2377,7 +2413,31 @@ export default function App() {
 
                               {/* Reader Control Buttons */}
                               <div className="flex items-center gap-2 font-mono text-[10px] font-bold text-slate-400 uppercase">
-                                <span>টেক্সট ফন্ট সাইজ:</span>
+                                <button
+                                  onClick={() => {
+                                    if (isSpeakingPost) {
+                                      window.speechSynthesis.cancel();
+                                      setIsSpeakingPost(false);
+                                    } else {
+                                      const utterance = new SpeechSynthesisUtterance(`${post.title}. ${post.content}`);
+                                      utterance.lang = "bn-BD";
+                                      utterance.onend = () => setIsSpeakingPost(false);
+                                      window.speechSynthesis.speak(utterance);
+                                      setIsSpeakingPost(true);
+                                    }
+                                  }}
+                                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                                    isSpeakingPost
+                                      ? "bg-cyan-950 border-cyan-400 text-[#00f0ff] animate-pulse"
+                                      : "bg-slate-950 border-cyan-950 hover:bg-cyan-950/40 text-slate-300"
+                                  }`}
+                                  title={isSpeakingPost ? "থামুন" : "শুনুন (Text-to-Speech)"}
+                                >
+                                  {isSpeakingPost ? <Square className="w-3.5 h-3.5" fill="currentColor" /> : <Volume2 className="w-3.5 h-3.5" />}
+                                  {isSpeakingPost ? "শুনছেন..." : "শুনুন"}
+                                </button>
+                                
+                                <span className="ml-2">টেক্সট ফন্ট সাইজ:</span>
                                 <div className="flex bg-slate-950 border border-cyan-950 rounded-lg p-0.5">
                                   {(["text-xs", "text-sm", "text-base", "text-lg"] as const).map((sz) => (
                                     <button
@@ -2683,6 +2743,127 @@ export default function App() {
                             </div>
                           </div>
 
+                          {/* NEWS MODULE HOMEPAGE PREVIEW (GOOGLE POLICY COMPLIANT) */}
+                          {adminSettings.enableNewsSection !== false && adminSettings.showNewsModule !== false && (
+                            <div className="mb-8 bg-[#0d1527]/55 border border-cyan-500/20 rounded-2xl p-5 relative overflow-hidden">
+                              <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 filter blur-xl rounded-full"></div>
+                              
+                              <div className="flex justify-between items-center border-b border-cyan-950 pb-3 mb-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-white font-mono uppercase tracking-wider flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-[#00f0ff] rounded-full animate-pulse" />
+                                    📰 এআই নিউজ বুলেটিন (AI News Portal)
+                                  </span>
+                                  <span className="text-[9px] font-mono bg-cyan-950 text-cyan-400 px-1.5 py-0.2 rounded border border-cyan-500/15">
+                                    {adminSettings.newsDisplayType?.toUpperCase() || "LATEST"}
+                                  </span>
+                                </div>
+                                <button 
+                                  onClick={() => setActiveTab("news")}
+                                  className="text-[10px] font-bold font-mono text-cyan-400 hover:text-white transition-all cursor-pointer"
+                                >
+                                  VIEW ALL ➡
+                                </button>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {(() => {
+                                  const savedNews = localStorage.getItem("ilybd_news_posts_db");
+                                  let rawList = savedNews ? JSON.parse(savedNews) : [];
+                                  if (rawList.length === 0) {
+                                    // Fallback to initial set if localDB is empty
+                                    rawList = [
+                                      {
+                                        id: "news-1",
+                                        title: "বাংলাদেশ সাইবার ক্রাইসিস রেসপন্স টিম দ্বারা ২0৪০ সালের নতুন গ্লোবাল ফায়ারওয়াল অ্যাক্টিভেশন",
+                                        summary: "বাংলাদেশ সরকারের সাইবার টিম আন্তর্জাতিক থ্রেট ইন্টেলিজেন্সের সাথে মিলে পরবর্তী প্রজন্মের কোয়ান্টাম ফায়ারওয়াল নেটওয়ার্ক সক্রিয় করেছে যা ১০০% দেশীয় এআই নোড দ্বারা চালিত।",
+                                        image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80",
+                                        category: "Cyber Security",
+                                        publishTime: "2026-06-29T08:30:00",
+                                        readTime: 3,
+                                        isBreaking: true,
+                                        isTrending: true,
+                                        isEditorsPick: true
+                                      },
+                                      {
+                                        id: "news-2",
+                                        title: "সুপারকম্পিউটিং যুগে বাংলাদেশ: এআই-রিসার্চ হাবে নতুন সুপারক্লাস্টার উদ্বোধন",
+                                        summary: "ঢাকার পূর্বাচল টেক-সিটিতে দেশের বৃহত্তম সুপারকম্পিউটিং রিসার্চ হাবের উদ্বোধন করা হয়েছে। আইবিডি এআই রিসার্চ ফাউন্ডেশন এই ক্লাস্টার স্থাপন করেছে।",
+                                        image: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=600&q=80",
+                                        category: "AI",
+                                        publishTime: "2026-06-28T14:20:00",
+                                        readTime: 4,
+                                        isEditorsPick: true
+                                      }
+                                    ];
+                                  }
+                                  let filtered = [...rawList];
+                                  if (adminSettings.newsDisplayType === "trending") {
+                                    filtered = filtered.filter((n: any) => n.isTrending);
+                                  } else if (adminSettings.newsDisplayType === "breaking") {
+                                    filtered = filtered.filter((n: any) => n.isBreaking);
+                                  } else if (adminSettings.newsDisplayType === "manual") {
+                                    filtered = filtered.filter((n: any) => n.isEditorsPick);
+                                  }
+                                  
+                                  const displayLimit = adminSettings.newsDisplayCount || 3;
+                                  const finalShow = filtered.slice(0, displayLimit);
+                                  
+                                  if (finalShow.length === 0) {
+                                    return <p className="text-[10px] text-slate-500 font-mono col-span-full">No matching news items found on this filter.</p>;
+                                  }
+
+                                  return finalShow.map((n: any) => (
+                                    <div 
+                                      key={n.id}
+                                      onClick={() => { setActiveTab("news"); }}
+                                      className="group bg-[#070b13]/60 border border-slate-900 hover:border-cyan-500/30 rounded-xl p-3.5 transition-all cursor-pointer flex flex-col justify-between"
+                                    >
+                                      <div>
+                                        {adminSettings.newsShowThumbnail !== false && n.image && (
+                                          <div className="aspect-[16/10] w-full rounded-lg overflow-hidden bg-slate-950 border border-slate-800/60 mb-2.5">
+                                            <img src={n.image} alt={n.title} className="w-full h-full object-fit-cover group-hover:scale-103 transition-transform duration-300" referrerPolicy="no-referrer" />
+                                          </div>
+                                        )}
+
+                                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                                          {adminSettings.newsShowCategory !== false && (
+                                            <span className="text-[8px] font-mono font-bold text-[#00f0ff] uppercase bg-cyan-950/40 border border-cyan-500/15 px-1.5 py-0.2 rounded">
+                                              {n.category}
+                                            </span>
+                                          )}
+                                          {adminSettings.newsShowPublishTime !== false && (
+                                            <span className="text-[8px] font-mono text-slate-500">
+                                              {new Date(n.publishTime).toLocaleDateString()}
+                                            </span>
+                                          )}
+                                        </div>
+
+                                        <h4 className="text-[11px] font-bold text-slate-100 group-hover:text-cyan-400 transition-colors leading-snug line-clamp-2 mb-1.5">
+                                          {n.title}
+                                        </h4>
+
+                                        {adminSettings.newsShowSummary !== false && (
+                                          <p className="text-[10px] text-slate-400 leading-normal line-clamp-2">
+                                            {n.summary}
+                                          </p>
+                                        )}
+                                      </div>
+
+                                      {adminSettings.newsShowReadMore !== false && (
+                                        <div className="mt-3 pt-2 border-t border-slate-900 text-right">
+                                          <span className="text-[9px] font-mono text-cyan-400 font-bold">
+                                            {adminSettings.newsButtonText || "নিউজ সেন্টার (News Center)"} ➡
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ));
+                                })()}
+                              </div>
+                            </div>
+                          )}
+
                           {/* Dynamic Content Columns Grid */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {displayedPosts.length === 0 ? (
@@ -2948,18 +3129,6 @@ export default function App() {
             </motion.div>
           )}
 
-          {/* Tab 6: Smart NID Maker */}
-          {activeTab === "nid" && (
-            <motion.div
-              key="nid"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-            >
-              <NIDMaker />
-            </motion.div>
-          )}
-
           {/* Tab: AIO Secure Video Downloader */}
           {activeTab === "downloader" && (
             <motion.div
@@ -2969,6 +3138,32 @@ export default function App() {
               exit={{ opacity: 0, y: -15 }}
             >
               <VideoDownloader />
+            </motion.div>
+          )}
+
+          {/* Tab: Independent AI News Center */}
+          {activeTab === "news" && (
+            <motion.div
+              key="news"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+            >
+              <NewsCenter 
+                onBackToHome={() => setActiveTab("home")}
+                homepageNewsConfig={{
+                  enabled: adminSettings.enableNewsSection !== false,
+                  showModule: adminSettings.showNewsModule !== false,
+                  displayType: adminSettings.newsDisplayType || "latest",
+                  displayCount: adminSettings.newsDisplayCount || 5,
+                  showThumbnail: adminSettings.newsShowThumbnail !== false,
+                  showPublishTime: adminSettings.newsShowPublishTime !== false,
+                  showCategory: adminSettings.newsShowCategory !== false,
+                  showSummary: adminSettings.newsShowSummary !== false,
+                  showReadMore: adminSettings.newsShowReadMore !== false,
+                  buttonText: adminSettings.newsButtonText || "নিউজ সেন্টার (News Center)"
+                }}
+              />
             </motion.div>
           )}
 
@@ -4507,6 +4702,15 @@ export default function App() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Floating Scroll to Top Button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-6 right-6 w-12 h-12 bg-cyan-950 border border-cyan-400 text-cyan-400 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:scale-110 hover:bg-cyan-900 transition-all z-[999] cursor-pointer group"
+        title="উপরে যান (Scroll to Top)"
+      >
+        <span className="text-xl group-hover:-translate-y-1 transition-transform">↑</span>
+      </button>
 
     </div>
   );

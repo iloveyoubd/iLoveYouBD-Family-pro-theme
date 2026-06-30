@@ -41,12 +41,16 @@ function ily_register_custom_cron_schedules($schedules) {
    1. GLOBAL SEO METADATA & CONFIG
    ========================================================================= */
 function ilybd_get_custom_seo_data() {
-    global $post;
+    global $post, $wp;
+    
+    // Dynamically resolve self-canonical request path (excluding query parameters to avoid duplicate content)
+    $current_slug = $wp->request ? trailingslashit($wp->request) : '';
+    $current_canonical = home_url('/' . $current_slug);
     
     $seo = [
         'title'       => get_bloginfo('name') . ' - ২০৪০ উন্নত প্রযুক্তি ও প্রোগ্রামিং সলিউশন হাব',
         'desc'        => 'iloveyoubd.com হল বাংলাদেশের সবচেয়ে নির্ভরযোগ্য টেকনোলজি ব্লগ, এআই ডেভেলপমেন্ট, সফটওয়্যার এবং ওয়েব ইউটিলিটি টিউটোরিয়াল পোর্টাল। আমাদের সাইটে সাইবার নিরাপত্তা, ওয়েব ডেভেলপমেন্ট ও ক্যারিয়ার গাইডলাইন ফ্রিতে শেয়ার করা হয়।',
-        'url'         => home_url('/'),
+        'url'         => $current_canonical,
         'img'         => get_template_directory_uri() . '/assets/img/og-default.png',
         'author'      => 'Admin Core',
         'date'        => current_time('c'),
@@ -102,7 +106,13 @@ function ilybd_get_custom_seo_data() {
         $seo['type']     = 'article';
         
         // Thumbnail checks
-        if (has_post_thumbnail($post->ID)) {
+        if ($post->post_type === 'ilybd_story') {
+            $seo['img'] = get_template_directory_uri() . '/inc/dynamic-image-generator-story.php?post_id=' . $post->ID;
+        } elseif ($post->post_type === 'ilybd_sms') {
+            $seo['img'] = get_template_directory_uri() . '/inc/dynamic-image-generator-sms.php?post_id=' . $post->ID;
+        } elseif ($post->post_type === 'ilybd_phone_review') {
+            $seo['img'] = get_template_directory_uri() . '/inc/dynamic-image-generator-gadget.php?post_id=' . $post->ID;
+        } elseif (has_post_thumbnail($post->ID)) {
             $seo['img']  = get_the_post_thumbnail_url($post->ID, 'full');
         }
         
@@ -116,6 +126,11 @@ function ilybd_get_custom_seo_data() {
         $seo['title']    = single_cat_title('', false) . ' - ক্যাটাগরি আর্কাইভ';
         $seo['desc']     = strip_tags(category_description());
         $seo['url']      = get_category_link(get_queried_object_id());
+    } elseif (is_post_type_archive('ilybd_question')) {
+        $seo['title']    = '💬 ফোরাম সেন্টার ও প্রশ্নোত্তর হাব - ' . get_bloginfo('name') . ' (Q&A Center)';
+        $seo['desc']     = 'আপনার যেকোনো জটিল কারিগরি বা প্রযুক্তিগত সমস্যার প্রশ্ন করুন এবং আমাদের অভিজ্ঞ মডারেটর ও এআই সিস্টেম থেকে দ্রুত সঠিক সমাধান পান। ' . get_bloginfo('name') . ' ফোরাম সেন্টার।';
+        $seo['url']      = get_post_type_archive_link('ilybd_question');
+        $seo['keywords'] = 'bangla forum, programming help bangladesh, technology questions, software errors, coding answers bangla, html helper, cyber security solution manikganj';
     }
 
     // Default sharing thumbnail fallback
@@ -164,6 +179,33 @@ add_action('wp_head', function() {
     }
 }, 2);
 
+/**
+ * Automatically hook and route standard featured images (thumbnails)
+ * through our Next-Gen Dynamic Banner Generator for maximum visual SEO and user click-throughs.
+ */
+add_filter('post_thumbnail_html', function($html, $post_id, $post_thumbnail_id, $size, $attr) {
+    if (is_admin()) {
+        return $html;
+    }
+    $post_type = get_post_type($post_id);
+    $dynamic_url = '';
+    if ($post_type === 'ilybd_story') {
+        $dynamic_url = get_template_directory_uri() . '/inc/dynamic-image-generator-story.php?post_id=' . $post_id;
+    } elseif ($post_type === 'ilybd_sms') {
+        $dynamic_url = get_template_directory_uri() . '/inc/dynamic-image-generator-sms.php?post_id=' . $post_id;
+    } elseif ($post_type === 'ilybd_phone_review') {
+        $dynamic_url = get_template_directory_uri() . '/inc/dynamic-image-generator-gadget.php?post_id=' . $post_id;
+    }
+    
+    if ($dynamic_url !== '') {
+        // Surgical regex replace src, srcset, and sizes to route through our dynamic JPEG generator
+        $html = preg_replace('/src="([^"]*)"/i', 'src="' . esc_url($dynamic_url) . '"', $html);
+        $html = preg_replace('/srcset="([^"]*)"/i', '', $html);
+        $html = preg_replace('/sizes="([^"]*)"/i', '', $html);
+    }
+    return $html;
+}, 10, 5);
+
 /* =========================================================================
    3. PROFESSIONAL JSON-LD SCHEMA GENERATION (STRUCTURED DATA)
    ========================================================================= */
@@ -207,10 +249,18 @@ add_action('wp_head', function() {
 
     // 3.2 Single Post/Article Rich Metadata Schema
     if (is_single()) {
-        $author_id = get_the_author_meta('ID');
-        $author_name = get_the_author();
-        $author_desc = get_the_author_meta('description') ?: 'Cyber Engineering Expert and Technical Contributor.';
+        $post = get_post();
+        $author_id = $post ? intval($post->post_author) : 1;
+        if (!$author_id) {
+            $author_id = 1;
+        }
+        $author_user = get_userdata($author_id);
+        $author_name = $author_user ? $author_user->display_name : 'iLoveYouBD Contributor';
+        $author_desc = get_the_author_meta('description', $author_id) ?: 'Cyber Engineering Expert and Technical Contributor.';
         $author_url = get_author_posts_url($author_id);
+        if (!$author_url) {
+            $author_url = home_url('/author/' . ($author_user ? $author_user->user_nicename : 'admin'));
+        }
         
         // Dynamic Social SameAs for Author
         $author_socials = [];
@@ -221,30 +271,115 @@ add_action('wp_head', function() {
         if ($tw) { $author_socials[] = esc_url($tw); }
         if ($li) { $author_socials[] = esc_url($li); }
 
-        $graphs[] = [
-            "@type" => "TechArticle",
-            "@id" => $seo['url'] . '#article',
-            "isPartOf" => [
-                "@id" => $seo['url']
-            ],
-            "headline" => $seo['title'],
-            "description" => $seo['desc'],
-            "image" => $seo['img'],
-            "datePublished" => $seo['date'],
-            "dateModified" => $seo['modified'],
-            "author" => [
-                "@type" => "Person",
-                "name" => $author_name,
-                "url" => $author_url,
-                "description" => $author_desc,
-                "sameAs" => $author_socials,
-                "jobTitle" => "Technology Analyst"
-            ],
-            "publisher" => [
-                "@id" => home_url('/#organization')
-            ],
-            "inLanguage" => "bn-BD"
-        ];
+        $post_type = get_post_type();
+        if ($post_type === 'ilybd_question') {
+            $question_votes = intval(get_post_meta(get_the_ID(), 'qa_votes', true) ?: 0);
+            
+            // Get all answers (comments)
+            $comments = get_comments([
+                'post_id' => get_the_ID(),
+                'status'  => 'approve',
+                'order'   => 'ASC'
+            ]);
+            
+            $suggested_answers = [];
+            $accepted_answer = null;
+            $max_votes = -1;
+            $built_answers = [];
+            
+            foreach ($comments as $comment) {
+                $c_votes = intval(get_comment_meta($comment->comment_ID, 'votes_count', true) ?: 0);
+                
+                $c_author_name = $comment->comment_author ?: 'Anonymous Guest';
+                $c_author_url = '';
+                if (!empty($comment->user_id) && intval($comment->user_id) > 0) {
+                    $c_author_url = get_author_posts_url(intval($comment->user_id));
+                }
+                if (!$c_author_url) {
+                    $c_author_url = home_url('/author/' . sanitize_title($c_author_name));
+                }
+
+                $ans_data = [
+                    "@type" => "Answer",
+                    "text" => wp_strip_all_tags($comment->comment_content),
+                    "dateCreated" => date('c', strtotime($comment->comment_date)),
+                    "upvoteCount" => $c_votes,
+                    "url" => get_comment_link($comment->comment_ID),
+                    "author" => [
+                        "@type" => "Person",
+                        "name" => $c_author_name,
+                        "url" => $c_author_url
+                    ]
+                ];
+                
+                $built_answers[] = $ans_data;
+                
+                if ($c_votes > $max_votes) {
+                    $max_votes = $c_votes;
+                    $accepted_answer = $ans_data;
+                }
+            }
+            
+            // Separate into suggested answers
+            foreach ($built_answers as $ans_data) {
+                if (!$accepted_answer || $ans_data['url'] !== $accepted_answer['url']) {
+                    $suggested_answers[] = $ans_data;
+                }
+            }
+            
+            $qa_graph = [
+                "@context" => "https://schema.org",
+                "@type" => "QAPage",
+                "@id" => $seo['url'] . '#qapage',
+                "mainEntity" => [
+                    "@type" => "Question",
+                    "name" => $seo['title'],
+                    "text" => wp_strip_all_tags(get_post()->post_content),
+                    "answerCount" => count($comments),
+                    "upvoteCount" => $question_votes,
+                    "dateCreated" => $seo['date'],
+                    "author" => [
+                        "@type" => "Person",
+                        "name" => $author_name,
+                        "url" => $author_url
+                    ]
+                ]
+            ];
+            
+            if ($accepted_answer) {
+                $qa_graph['mainEntity']['acceptedAnswer'] = $accepted_answer;
+            }
+            if (!empty($suggested_answers)) {
+                $qa_graph['mainEntity']['suggestedAnswer'] = $suggested_answers;
+            }
+            
+            $graphs[] = $qa_graph;
+        } else {
+            $graphs[] = [
+                "@type" => "TechArticle",
+                "@id" => $seo['url'] . '#article',
+                "isPartOf" => [
+                    "@id" => $seo['url']
+                ],
+                "headline" => $seo['title'],
+                "description" => $seo['desc'],
+                "image" => $seo['img'],
+                "datePublished" => $seo['date'],
+                "dateModified" => $seo['modified'],
+                "author" => [
+                    "@type" => "Person",
+                    "name" => $author_name,
+                    "url" => $author_url,
+                    "description" => $author_desc,
+                    "sameAs" => $author_socials,
+                    "jobTitle" => "Technology Analyst"
+                ],
+                "publisher" => [
+                    "@id" => home_url('/#organization')
+                ],
+                "inLanguage" => "bn-BD"
+            ];
+        }
 
         // BreadcrumbList Schema Navigation Path for Single Posts
         $categories = get_the_category();
@@ -357,6 +492,75 @@ add_action('wp_head', function() {
         ];
     }
 
+    // BreadcrumbList and CollectionPage Schema for Q&A Archive Forums
+    if (is_post_type_archive('ilybd_question')) {
+        $graphs[] = [
+            "@type" => "BreadcrumbList",
+            "@id" => get_post_type_archive_link('ilybd_question') . '#breadcrumbs',
+            "itemListElement" => [
+                [
+                    "@type" => "ListItem",
+                    "position" => 1,
+                    "name" => "Home",
+                    "item" => home_url('/')
+                ],
+                [
+                    "@type" => "ListItem",
+                    "position" => 2,
+                    "name" => "Q&A Center",
+                    "item" => get_post_type_archive_link('ilybd_question')
+                ]
+            ]
+        ];
+
+        $questions_list = [];
+        global $posts;
+        if (!empty($posts)) {
+            foreach ($posts as $q_post) {
+                if ($q_post->post_type === 'ilybd_question') {
+                    $questions_list[] = [
+                        "@type" => "DiscussionForumPosting",
+                        "headline" => get_the_title($q_post->ID),
+                        "url" => get_permalink($q_post->ID),
+                        "datePublished" => get_the_date('c', $q_post->ID),
+                        "author" => [
+                            "@type" => "Person",
+                            "name" => get_the_author_meta('display_name', $q_post->post_author) ?: 'Admin Core',
+                            "url" => get_author_posts_url($q_post->post_author ?: 1)
+                        ],
+                        "interactionStatistic" => [
+                            [
+                                "@type" => "InteractionCounter",
+                                "interactionType" => "https://schema.org/CommentAction",
+                                "userInteractionCount" => intval(get_comments_number($q_post->ID))
+                            ]
+                        ]
+                    ];
+                }
+            }
+        }
+
+        if (!empty($questions_list)) {
+            $graphs[] = [
+                "@type" => "CollectionPage",
+                "@id" => get_post_type_archive_link('ilybd_question') . '#collection',
+                "name" => "💬 ফোরাম সেন্টার ও প্রশ্নোত্তর হাব - " . get_bloginfo('name'),
+                "description" => "আপনার যেকোনো জটিল কারিগরি বা প্রযুক্তিগত সমস্যার প্রশ্ন করুন এবং আমাদের অভিজ্ঞ মডারেটর ও এআই সিস্টেম থেকে দ্রুত সঠিক সমাধান পান।",
+                "mainEntity" => [
+                    "@type" => "ItemList",
+                    "numberOfItems" => count($questions_list),
+                    "itemListElement" => array_map(function($index, $item) {
+                        return [
+                            "@type" => "ListItem",
+                            "position" => $index + 1,
+                            "item" => $item
+                        ];
+                    }, array_keys($questions_list), $questions_list)
+                ]
+            ];
+        }
+    }
+
     $schema_wrapper = [
         "@context" => "https://schema.org",
         "@graph"   => $graphs
@@ -381,10 +585,7 @@ function ilybd_seo_internal_link_injector($content) {
     if (!is_array($link_registry) || empty($link_registry)) {
         // Secure key phrase to target maps fallback
         $link_registry = [
-            'এনআইডি'        => home_url('/nid-maker/'),
-            'NID'          => home_url('/nid-maker/'),
             'কোড'          => home_url('/tools-lab/'),
-            'ডাউনলোডার'     => home_url('/video-downloader/'),
             'অডিও'         => home_url('/audio-lab/'),
             'এআই'          => home_url('/maya-ai/'),
             'এডসেন্স'       => home_url('/category/seo-guide/'),
@@ -513,15 +714,16 @@ add_action('init', function() {
         // Master Index Router
         if ($type === 'sitemap.xml' || $type === 'sitemap_index.xml') {
             echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-            $sub_sitemaps = ['posts', 'pages', 'categories', 'tags', 'apps', 'questions', 'users', 'sms', 'stories', 'reviews', 'custom'];
+            $sub_sitemaps = ['posts', 'pages', 'categories', 'tags', 'news', 'apps', 'questions', 'users', 'sms', 'stories', 'reviews', 'custom'];
             foreach ($sub_sitemaps as $sub) {
                 // Determine last modified dynamically for crawler freshness indicators
                 $latest_mod = current_time('c');
-                if ($sub === 'posts' || $sub === 'sms' || $sub === 'stories' || $sub === 'reviews') {
+                if ($sub === 'posts' || $sub === 'sms' || $sub === 'stories' || $sub === 'reviews' || $sub === 'news') {
                     $pt = 'post';
                     if ($sub === 'sms') $pt = 'ilybd_sms';
                     if ($sub === 'stories') $pt = 'ilybd_story';
                     if ($sub === 'reviews') $pt = 'ilybd_phone_review';
+                    if ($sub === 'news') $pt = 'ilybd_news';
 
                     $latest_post = get_posts([
                         'post_type' => $pt,
@@ -759,6 +961,32 @@ add_action('init', function() {
                 echo '  </url>' . "\n";
             }
         }
+        elseif ($type === 'sitemap-news.xml') {
+            $news_posts = get_posts([
+                'post_type'      => 'ilybd_news',
+                'posts_per_page' => 1000,
+                'post_status'    => 'publish',
+                'orderby'        => 'modified',
+                'order'          => 'DESC'
+            ]);
+            foreach ($news_posts as $p) {
+                $permalink = get_permalink($p->ID);
+                $modified_date = get_the_modified_date('c', $p->ID);
+                echo '  <url>' . "\n";
+                echo '    <loc>' . esc_url($permalink) . '</loc>' . "\n";
+                echo '    <lastmod>' . esc_html($modified_date) . '</lastmod>' . "\n";
+                echo '    <changefreq>daily</changefreq>' . "\n";
+                echo '    <priority>0.95</priority>' . "\n";
+                if (has_post_thumbnail($p->ID)) {
+                    $img_url = get_the_post_thumbnail_url($p->ID, 'full');
+                    echo '    <image:image>' . "\n";
+                    echo '      <image:loc>' . esc_url($img_url) . '</image:loc>' . "\n";
+                    echo '      <image:title>' . esc_html(get_the_title($p->ID)) . '</image:title>' . "\n";
+                    echo '    </image:image>' . "\n";
+                }
+                echo '  </url>' . "\n";
+            }
+        }
         elseif ($type === 'sitemap-custom.xml') {
             // Homepage Link
             echo '  <url>' . "\n";
@@ -796,8 +1024,6 @@ add_action('init', function() {
             
             // Custom tool applets
             $custom_tools = [
-                'nid-maker'            => 'Monthly NID Verification Tool',
-                'video-downloader'     => 'Hacker Link Video Downloader Hub',
                 'audio-lab'            => 'Sonic Audio Lab Synthesizer',
                 'tools-lab'            => 'Advisement Proxy Configuring Portal',
                 'maya-ai'              => 'Executive Intelligence Maya Chatbot',
@@ -824,7 +1050,7 @@ add_action('init', function() {
                 echo '    <loc>' . esc_url(home_url('/' . $path . '/')) . '</loc>' . "\n";
                 echo '    <changefreq>weekly</changefreq>' . "\n";
                 // Policies have 0.7 priority, main apps/tv/tools have 0.9 priority
-                $prio = in_array($path, ['nid-maker', 'video-downloader', 'audio-lab', 'tools-lab', 'maya-ai', 'tv']) ? '0.9' : '0.7';
+                $prio = in_array($path, ['audio-lab', 'tools-lab', 'maya-ai', 'tv']) ? '0.9' : '0.7';
                 echo '    <priority>' . $prio . '</priority>' . "\n";
                 echo '  </url>' . "\n";
             }
@@ -955,10 +1181,7 @@ add_action('admin_init', function() {
             $links = get_option('ily_seo_internal_links');
             if (!is_array($links)) {
                 $links = [
-                    'এনআইডি'        => home_url('/nid-maker/'),
-                    'NID'          => home_url('/nid-maker/'),
                     'কোড'          => home_url('/tools-lab/'),
-                    'ডাউনলোডার'     => home_url('/video-downloader/'),
                     'অডিও'         => home_url('/audio-lab/'),
                     'এআই'          => home_url('/maya-ai/'),
                     'এডসেন্স'       => home_url('/category/seo-guide/'),
@@ -1393,32 +1616,40 @@ function ily_generate_autonomous_post($custom_topic = '', $category_id = 0, $age
 
         // Structured Niche categories for absolute, comprehensive technological coverage and diverse user queries
         $niche_categories = [
-            "Cyber Security & Ethical Hacking Defender (Tips on social media hacking protection, anti-malware, secure device habits, two-factor optimization)",
+            "Cyber Security & Ethical Systems Defense (Tips on social media account protection, anti-malware, secure device habits, two-factor optimization)",
             "Linux, Termux & Advanced Terminal Utilities (Guides on commands, automation, shell scripting, hosting server administration basics)",
             "Legal & High-Paying Online Earning (Freelancing guides, Google Adsense optimization, affiliate marketing, remote work tutorials, Fiverr, Upwork)",
-            "Mobile Hidden Settings & Device Productivity (Hidden Android settings, developer mode tips, iOS configurations, battery/CPU speed restoration hacks)",
+            "Mobile Hidden Settings & Device Productivity (Hidden Android settings, developer mode tips, iOS configurations, battery/CPU speed restoration solutions)",
             "Google SEO & Advanced Blogging Methods (High rankings, indexing, premium schema graphs, search console insights, keyword strategies)",
-            "AI & Prompt Engineering Productivity Workflows (Hacks on using ChatGPT, Midjourney, automating daily business with AI agents)",
-            "Router, Wi-Fi Networks & Broadband Hacks (Improving bandwidth speed, router security configurations, DNS/IP setting improvements, safety optimization)",
+            "AI & Prompt Engineering Productivity Workflows (Tips on using ChatGPT, DeepSeek, Midjourney, automating daily business with AI agents, prompt engineering secrets)",
+            "Router, Wi-Fi Networks & Broadband Optimizations (Improving bandwidth speed, router security configurations, DNS/IP setting improvements, safety optimization)",
             "Programming & Premium Code Customizations (Easy WordPress php templates, javascript snippets, backend API guides for beginners)",
             "Premium Windows & Mac Power-User Shortcuts (Restoring sluggish laptops, advanced system registries, desktop custom software shortcuts)",
-            "Google Trending Search Queries & Viral Tech Issue (High search volume Bengali tech questions, viral smartphone issues, trending app configurations in Bangladesh)"
+            "Google Trending Search Queries & Viral Tech Issue (High search volume Bengali tech questions, viral smartphone issues, trending app configurations in Bangladesh)",
+            "Smart E-Learning & Education Technology (Guides on learning digital skills online, utilizing AI and tech portals for BCS, Bank Job, and competitive exam preparation, top e-learning platforms for students in Bangladesh, academic productivity apps, learning coding or English/IELTS as a student)",
+            "Top 10 Curated Best & Viral Lists (High CTR listicles: Top 10 most useful free AI tools in 2026, Top 10 viral study and productivity websites, Top 10 highest-paying freelance niches that will dominate, Top 10 government or utility portals in Bangladesh that make citizen life easier, Top 10 student essential apps)",
+            "Digital Citizen Services & Government Portals in Bangladesh (Easy step-by-step guides for NID card online correction, online birth certificate registration, checking passport status online, online utility bill payment tutorials, land tax online submission, e-mutation checks)",
+            "Viral Social Media Growth & Content Creation (Aesthetic guide to viral YouTube shorts & Facebook reels, high-quality video editing using CapCut/Premiere, legal monetization tricks, setting up Facebook pages and YouTube channels for fast AdSense approval, building personal brand online)",
+            "Tech Career & Professional Skill Development (Freelancing interviews, soft skills for remote workers, building a killer portfolio, getting clients directly on LinkedIn, working for international agencies, online payment systems like Payoneer/Wise)",
+            "Social Media Account Security, Policy & Disabled Recovery Guides (Extremely intensive, hand-holding, step-by-step walkthroughs on recovering disabled or locked Facebook accounts, restricted profiles/pages, submitting appeals, submitting identity verification, setting up dual keys, and step-by-step links click-by-click)"
         ];
 
         shuffle($niche_categories);
         $assigned_niche_1 = $niche_categories[0];
         $assigned_niche_2 = $niche_categories[1];
 
-        $trending_prompt = "You are a professional Senior Technological Content Strategist for the premium portal iloveyoubd.com (an elite tech and online earning hub in Bangladesh).\n\n" .
+        $trending_prompt = "You are a professional Senior Technological Content Strategist for the premium portal iloveyoubd.com (an elite tech, education, and online earning hub in Bangladesh).\n\n" .
             "We must write ONE highly valuable, trending, click-worthy, and completely professional guide.\n\n" .
             "LIST OF PREVIOUS ARTICLES WRITTEN (You must ABSOLUTELY AVOID these or similar themes to guarantee 100% variety across our articles): [" . $already_written_context . "]\n\n" .
-            "CHOSEN TARGET NICHES: Primary target is \"" . $assigned_niche_1 . "\" and alternate target is \"" . $assigned_niche_2 . "\".\n\n" .
+            "CHOSEN TARGET NICHES:\n" .
+            "- Primary target: \"" . $assigned_niche_1 . "\"\n" .
+            "- Alternate target: \"" . $assigned_niche_2 . "\"\n\n" .
             "INSTRUCTIONS:\n" .
             "1. Choose one of the core niches or synergize them.\n" .
-            "2. Identify a highly sought-after Googled keyword or trending challenge search query in Bangladesh (e.g., related to network safety, premium tricks, legal earning, specific settings, router configuration).\n" .
+            "2. Identify a highly sought-after Googled keyword, trending challenge, or a high-value 'Top 10' or 'Best' list (e.g. related to smart learning, online preparation, top websites in Bangladesh, router speed, citizen services, online earnings, social growth).\n" .
             "3. Generate ONE extremely clickable, professional, high-CTR article topic/headline.\n" .
-            "4. Ensure it has immense value, sounds human, and is 100% safe for Google AdSense policies (no malware, no cracked downloads, no phishing - focus strictly on legal cybersecurity defense, official apps, and actual settings).\n" .
-            "5. The headline can be bilingual (English + Bengali) e.g. 'Termux Guide: লিনাক্স টার্মিনাল ব্যবহারের পূর্ণাঙ্গ গাইডলাইন' or 'bKash Merchant Return: ভুল নাম্বারে টাকা গেলে ফেরত পাওয়ার উপায়'.\n\n" .
+            "4. Ensure it has immense value, sounds human, and is 100% safe for Google AdSense policies (no malware, no cracked downloads, no hacking - focus strictly on legal cybersecurity defense, education, official apps, and actual settings).\n" .
+            "5. The headline can be bilingual (English + Bengali) e.g. 'Smart Study Guide: বিসিএস ও চাকরির প্রস্তুতির সেরা ৫টি মোবাইল অ্যাপস' or 'Top 10 AI Tools: ২০২৬ সালের সেরা ১০টি ফ্রি এআই টুলস যা আপনার জীবন বদলে দেবে' or 'NID Card Online: নতুন জাতীয় পরিচয়পত্র ডাউনলোড ও সংশোধনের সহজ নিয়ম'.\n\n" .
             "Respond with ONLY the topic headline, no wrapping quotes, no introduction, single line under 15 words.";
 
         $generated_topic = ily_call_gemini_api_direct($api_keys, $trending_prompt, 300);
@@ -1426,11 +1657,14 @@ function ily_generate_autonomous_post($custom_topic = '', $category_id = 0, $age
             $topic = trim($generated_topic, " \t\n\r\0\x0B\"'*#·-");
         } else {
             $fallback_topics = [
+                "Smart Study Guide: বিসিএস ও সরকারি চাকরির প্রস্তুতির সেরা ৫টি ফ্রি অনলাইন পোর্টাল",
+                "Top 10 AI Tools: ২০২৬ সালের সেরা ১০টি কাজের এআই টুলস যা সবার জানা উচিত",
+                "NID Card Online: নতুন জাতীয় পরিচয়পত্র অনলাইন থেকে ডাউনলোড ও সংশোধনের সহজ নিয়ম",
                 "Linux Terminal Guide: লিনাক্স টার্মিনাল শেখার সহজ এবং পূর্ণাঙ্গ হ্যাকস",
-                "IP Address Protection: আইপি এড্রেস হাইড এবং ব্রাউজিং নিরাপদ রাখার সঠিক উপায়",
                 "Fiverr Freelancing 2026: ফাইভারে কাজ পাওয়ার গোপন টেকনিক ও প্রফেশনাল গাইড",
                 "Advanced Router Settings: ইন্টারনেটের স্পিড ২ গুণ করার নিখুঁত রাউটার কনফিগারেশন",
-                "Windows Registry Hacks: উইন্ডোজ পিসি সুপার ফাস্ট করার সেরা ৩টি রেজিস্ট্রি সেটিংস"
+                "Windows Registry Hacks: উইন্ডোজ পিসি সুপার ফাস্ট করার সেরা ৩টি রেজিস্ট্রি সেটিংস",
+                "Top 10 Viral Websites: ছাত্র-ছাত্রীদের পড়াশোনা ও স্কিল ডেভেলপমেন্টের সেরা ১০টি ওয়েবসাইট"
             ];
             $topic = $fallback_topics[array_rand($fallback_topics)];
         }
@@ -1574,9 +1808,39 @@ function ily_generate_autonomous_post($custom_topic = '', $category_id = 0, $age
         $system_instructions .= " " . ILYBD_AI_Publishing_Engine_V2::get_instance()->get_intent_customized_system_instruction($topic, $intent, $display_name);
     }
 
-    // 6. Content length setting (strictly enforced at 1500 to 2000 words!)
-    $max_tokens = 4000;
-    $length_instruction = "The post body MUST be an extremely intensive, deep, and complete guide containing of exactly 1500 to 2000 words. Under no circumstances may you write less than 500 words or brief summaries. You must expand each paragraph with detailed background theory, direct actions, real-life examples, settings navigation, and complete checklists to achieve top high-quality expert content.";
+    $cyber_next_gen_directives = "\n\n" .
+        "CRITICAL MANDATES (NEXT-GEN UPDATE):\n" .
+        "1. EXTENSIVE WORD COUNT & DEPTH: To maximize Search Engine Rankings and Google AdSense premium compliance, the article MUST be an extremely thorough, exhaustive, and detailed guide. Write every sentence with absolute clarity, avoiding filler words, but expanding deeply into technical concepts, real-life examples, security protocols, and background science.\n" .
+        "2. LASER-FOCUSED TOPIC RELEVANCY (NO HALLUCINATIONS): You are STRICTLY FORBIDDEN from writing about unrelated categories, topics, or inserting irrelevant content just to increase word count. Every single paragraph, heading, and sentence MUST be 100% relevant to the main topic and title. Do not hallucinate or mix in other subjects. This is critical for SEO and AdSense approval.\n" .
+        "3. HANDS-ON STEP-BY-STEP NAVIGATOR: You must write step-by-step instructions like a patient, elite technical master (একদম হাতে কলমে ধরে বোঝানো). For every tutorial or process, specify exactly what link to visit, what text to enter, what button to look for, and what action to execute. Explain the exact user flow click-by-click.\n" .
+        "4. MOCK UI & SCREENSHOT WALKTHROUGHS (ইমেজে এডিটিং ও নির্দেশক): Since we need high CTR and ultimate user understanding, you MUST integrate simulated HTML/CSS mock screenshot components inside the body! Instead of generic text, format your steps with custom styled mock boxes that represent actual screens. For example, use the following responsive HTML structure when explaining crucial steps:\n" .
+        "   <div class='mock-screenshot-ui' style='border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 12px; background: #070b13; padding: 18px; margin: 25px 0; box-shadow: 0 8px 32px rgba(0,0,0,0.4);'>\n" .
+        "       <div class='mock-header' style='display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid rgba(0, 240, 255, 0.15); margin-bottom: 15px;'>\n" .
+        "           <span style='width: 10px; height: 10px; border-radius: 50%; background: #ff5f56;'></span>\n" .
+        "           <span style='width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e;'></span>\n" .
+        "           <span style='width: 10px; height: 10px; border-radius: 50%; background: #27c93f;'></span>\n" .
+        "           <span style='color: #64748b; font-size: 11px; margin-left: 12px; font-family: monospace; letter-spacing: 0.5px;'>[URL: https://www.facebook.com/help/contact/...]</span>\n" .
+        "       </div>\n" .
+        "       <div class='mock-body' style='font-size: 13.5px; color: #e2e8f0; line-height: 1.6;'>\n" .
+        "           <div style='background: rgba(0, 240, 255, 0.05); border-left: 4px solid #00f0ff; padding: 12px; border-radius: 6px; margin-bottom: 15px;'>\n" .
+        "               <strong style='color: #00f0ff; font-size: 14.5px;'>👉 ধাপ [X]: [ধাপের শিরোনাম]</strong>\n" .
+        "               <p style='margin: 8px 0 0 0;'>[এখানে বিস্তারিত বর্ণনা করুন যে কোথায় ক্লিক করতে হবে, কোন ফর্মে কী তথ্য লিখতে হবে]</p>\n" .
+        "           </div>\n" .
+        "           <div class='mock-interactive-area' style='border: 1px dashed rgba(0, 240, 255, 0.3); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);'>\n" .
+        "               <span style='font-family: monospace; color: #84cc16; font-weight: bold;'>[ACTION: Choose File / Submit Appeal]</span>\n" .
+        "               <span style='color: #00f0ff; font-weight: bold; animation: bounce 1.5s infinite; font-size: 14px;'>👈 [CLICK HERE / এখানে ক্লিক করুন]</span>\n" .
+        "           </div>\n" .
+        "       </div>\n" .
+        "   </div>\n" .
+        "   Customize this markup for the specific tutorial steps, changing the titles, mock URLs, actions, and texts to match the actual post topic dynamically! Use this to show a complete visual breakdown of how to solve the problem.\n" .
+        "4. HIGH-CONTRAST BENGALI & ENGLISH BALANCE: Write in flawless, native Bengali that connects with the reader emotionally, while keeping essential technical terms (like '2-Factor Authentication', 'Identity Verification', 'Appeal Form', 'Disabled Account') in clear English to aid professional understanding.\n" .
+        "5. ADSENSE COMPLIANCE: Do not promote any hacking, cracking, or unauthorized bypass tools. Focus 100% on legal recovery methods, official appeal channels, security lockdowns, and ethical practices.";
+
+    $system_instructions .= $cyber_next_gen_directives;
+
+    // 6. Content length setting (strictly enforced at 3000 to 4500 words!)
+    $max_tokens = 6000;
+    $length_instruction = "The post body MUST be an extremely intensive, deep, and complete guide containing of exactly 3000 to 4500 words. Under no circumstances may you write less than 1500 words or brief summaries. You must expand each paragraph with detailed background theory, direct actions, real-life examples, settings navigation, and complete checklists to achieve top high-quality expert content.";
 
     // 7. Internal Linking Registry Fetch Scoped by Category Cluster (Topical Authority Map)
     $recent_posts = get_posts([
@@ -1613,7 +1877,7 @@ function ily_generate_autonomous_post($custom_topic = '', $category_id = 0, $age
 
     // 8. Main request content prompt
     // 8. Main request content prompt - CHUNK 1 (Part 1)
-    $length_instruction_1 = "The content piece must be Part 1 of an extremely intensive, deep, and complete guide. Under no circumstances may you write less than 800 words. You must write approximately 1000 to 1500 words in beautiful, professional Bangla, expanding each paragraph with background details, settings, and direct actions. Maintain a perfect human-like flow. Ensure it includes 1-2 inline images of format [INLINE_IMAGE: <description in english>]. Avoid standard AI clichés like 'বর্তমান প্রযুক্তিভিত্তিক বিশ্বে'.";
+    $length_instruction_1 = "The content piece must be Part 1 of an extremely intensive, deep, and complete guide. Under no circumstances may you write less than 1200 words. You must write approximately 1200 to 1800 words in beautiful, professional Bangla, expanding each paragraph with background details, settings, and direct actions. Maintain a perfect human-like flow. Ensure it includes 1-2 inline images of format [INLINE_IMAGE: <description in english>]. Avoid standard AI clichés like 'বর্তমান প্রযুক্তিভিত্তিক বিশ্বে'. Ensure you use the specified simulated HTML/CSS mock screenshot components inside your tutorial steps to visually show step directions with pointing icons.";
     
     $prompt_content_part1 = "Please write PART 1 of a comprehensive, beautifully styled post about \"" . $topic . "\".\n" . $length_instruction_1 . "\n" .
                       "Title Strategy: Create a click-worthy, professional high-CTR title. Apply variation randomly:\n" .
@@ -1660,14 +1924,14 @@ function ily_generate_autonomous_post($custom_topic = '', $category_id = 0, $age
     $parsed_part1 = preg_replace('/^PART1:\s*/i', '', $parsed_part1);
 
     // CHUNK 2 (Part 2 and continuation)
-    $length_instruction_2 = "Review the provided PART 1 of the article and write PART 2 (seamless continuation and elaboration) of about 1000 to 1500 words in stylish, authority-driven human Bangla. This Part 2 must expand deeply on the central settings, configurations, steps, and technical core parameters. Avoid any cliché transitions; keep the text flow smooth, engaging, and highly informative. Ensure it includes 1 additional inline image of format [INLINE_IMAGE: <description in english>] and matches the styling rules perfectly.";
+    $length_instruction_2 = "Review the provided PART 1 of the article and write PART 2 (seamless continuation and elaboration) of about 1200 to 1800 words in stylish, authority-driven human Bangla. This Part 2 must expand deeply on the central settings, configurations, steps, and technical core parameters. Avoid any cliché transitions; keep the text flow smooth, engaging, and highly informative. Ensure it includes 1 additional inline image of format [INLINE_IMAGE: <description in english>]. You MUST include the custom styled mock HTML/CSS screenshot components to describe the steps click-by-click as defined in the CRITICAL MANDATES.";
 
     $prompt_content_part2 = "Title: " . $parsed_title . "\n" .
                       "Part 1 written:\n---\n" . $parsed_part1 . "\n---\n\n" .
                       $length_instruction_2 . "\n\n" .
                       "Strict Formatting Mandates for Part 2:\n" .
                       "1. Output your response in exactly this formatted structure:\n" .
-                      "PART2: <The beautifully styled H2-H3 chapters, lists, details, warnings - must be around 1000-1500 words. Include exactly 1 inline related image tag: [INLINE_IMAGE: ...] inside>\n" .
+                      "PART2: <The beautifully styled H2-H3 chapters, lists, details, warnings - must be around 1200-1800 words. Include exactly 1 inline related image tag: [INLINE_IMAGE: ...] inside>\n" .
                       "Do not write any introductory pleasantries or repeat Part 1. Start immediately with PART2:";
 
     $part2_reply = ily_call_gemini_api_direct($api_keys, $prompt_content_part2, $max_tokens_chunk, false, $system_instructions);
@@ -1683,7 +1947,7 @@ function ily_generate_autonomous_post($custom_topic = '', $category_id = 0, $age
     }
 
     // CHUNK 3 (Part 3, checklists, tables, FAQ & completion)
-    $length_instruction_3 = "Review the provided PART 1 and PART 2 and write PART 3 (the absolute grand conclusion, step-by-step diagnostic workflows, multi-step checklists, interactive comparison tables, other details, and a comprehensive FAQs section containing 4 to 5 highly relevant technical QA blocks) of about 1000 to 1500 words in stylish, human-like, grammatically pristine Bangla. Ensure it includes 1 additional inline image of format [INLINE_IMAGE: <description in english>] and matches the styling rules perfectly.";
+    $length_instruction_3 = "Review the provided PART 1 and PART 2 and write PART 3 (the absolute grand conclusion, step-by-step diagnostic workflows, multi-step checklists, interactive comparison tables, other details, and a comprehensive FAQs section containing 5 to 6 highly relevant technical QA blocks) of about 1200 to 1800 words in stylish, human-like, grammatically pristine Bangla. Ensure it includes 1 additional inline image of format [INLINE_IMAGE: <description in english>] and matches the styling rules perfectly. You MUST include custom styled mock HTML/CSS screenshot components to visually depict steps and direct the user click-by-click.";
 
     $prompt_content_part3 = "Title: " . $parsed_title . "\n" .
                       "Part 1 written:\n---\n" . $parsed_part1 . "\n---\n\n" .
@@ -1691,7 +1955,7 @@ function ily_generate_autonomous_post($custom_topic = '', $category_id = 0, $age
                       $length_instruction_3 . "\n\n" .
                       "Strict Formatting Mandates for Part 3:\n" .
                       "1. Output your response in exactly this formatted structure:\n" .
-                      "PART3: <The beautifully styled H2-H3 final segments, detailed comparison tables, checklists, FAQs and conclusion - must be around 1000-1500 words. Include exactly 1 inline related image tag: [INLINE_IMAGE: ...] inside>\n" .
+                      "PART3: <The beautifully styled H2-H3 final segments, detailed comparison tables, checklists, FAQs and conclusion - must be around 1200-1800 words. Include exactly 1 inline related image tag: [INLINE_IMAGE: ...] inside>\n" .
                       "Do not write any introductory pleasantries or repeat previous parts. Start immediately with PART3:";
 
     $part3_reply = ily_call_gemini_api_direct($api_keys, $prompt_content_part3, $max_tokens_chunk, false, $system_instructions);
@@ -2056,7 +2320,6 @@ Produce a raw content-aware JSON object with nothing else (no markdown wrapping 
             
             $replacement_html = '<div class="post-inline-image" style="margin: 25px 0; text-align: center;">' .
                 '<img class="lazyload rounded-lg shadow-lg" src="' . esc_url($final_img_src) . '" alt="' . esc_attr($parsed_title) . '" style="max-width: 100%; height: auto; border: 1px solid rgba(0,240,255,0.15); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35);" />' .
-                '<p style="color: #64748b; font-size: 11px; font-family: monospace; margin-top: 8px;">[চিত্র: ' . esc_html($inline_kw) . ']</p>' .
                 '</div>';
             $parsed_body = str_replace($inline_image_matches[0][$index], $replacement_html, $parsed_body);
         }
@@ -2195,7 +2458,8 @@ Produce a raw content-aware JSON object with nothing else (no markdown wrapping 
                 "@type" => "Person",
                 "name" => $display_name,
                 "jobTitle" => "Technology Specialist",
-                "description" => $bio
+                "description" => $bio,
+                "url" => get_author_posts_url($author_id ?: 1)
             ],
             "publisher" => [
                 "@type" => "Organization",
@@ -2426,17 +2690,71 @@ function ily_generate_post_stepwise_ajax_handler() {
 
         // Discover topic if empty
         if (empty($topic)) {
-            $trending_prompt = "Generate ONE highly engaging, trending, click-worthy, and completely professional technology, mobile trick, or online earning blog post topic/headline. Provide an appealing title context that would be popular in Bangladesh. Response must be a single line under 15 words.";
+            $recent_posts = get_posts([
+                'numberposts' => 20,
+                'post_status' => 'any',
+                'post_type'   => 'post',
+                'orderby'     => 'date',
+                'order'       => 'DESC'
+            ]);
+            $already_written_titles = [];
+            if (!empty($recent_posts)) {
+                foreach ($recent_posts as $rp) {
+                    $already_written_titles[] = get_the_title($rp->ID);
+                }
+            }
+            $already_written_context = !empty($already_written_titles) ? implode(" | ", array_slice($already_written_titles, 0, 15)) : "None yet";
+
+            $niche_categories = [
+                "Cyber Security & Ethical Systems Defense (Tips on social media account protection, anti-malware, secure device habits, two-factor optimization)",
+                "Linux, Termux & Advanced Terminal Utilities (Guides on commands, automation, shell scripting, hosting server administration basics)",
+                "Legal & High-Paying Online Earning (Freelancing guides, Google Adsense optimization, affiliate marketing, remote work tutorials, Fiverr, Upwork)",
+                "Mobile Hidden Settings & Device Productivity (Hidden Android settings, developer mode tips, iOS configurations, battery/CPU speed restoration solutions)",
+                "Google SEO & Advanced Blogging Methods (High rankings, indexing, premium schema graphs, search console insights, keyword strategies)",
+                "AI & Prompt Engineering Productivity Workflows (Tips on using ChatGPT, DeepSeek, Midjourney, automating daily business with AI agents, prompt engineering secrets)",
+                "Router, Wi-Fi Networks & Broadband Optimizations (Improving bandwidth speed, router security configurations, DNS/IP setting improvements, safety optimization)",
+                "Programming & Premium Code Customizations (Easy WordPress php templates, javascript snippets, backend API guides for beginners)",
+                "Premium Windows & Mac Power-User Shortcuts (Restoring sluggish laptops, advanced system registries, desktop custom software shortcuts)",
+                "Google Trending Search Queries & Viral Tech Issue (High search volume Bengali tech questions, viral smartphone issues, trending app configurations in Bangladesh)",
+                "Smart E-Learning & Education Technology (Guides on learning digital skills online, utilizing AI and tech portals for BCS, Bank Job, and competitive exam preparation, top e-learning platforms for students in Bangladesh, academic productivity apps, learning coding or English/IELTS as a student)",
+                "Top 10 Curated Best & Viral Lists (High CTR listicles: Top 10 most useful free AI tools in 2026, Top 10 viral study and productivity websites, Top 10 highest-paying freelance niches that will dominate, Top 10 government or utility portals in Bangladesh that make citizen life easier, Top 10 student essential apps)",
+                "Digital Citizen Services & Government Portals in Bangladesh (Easy step-by-step guides for NID card online correction, online birth certificate registration, checking passport status online, online utility bill payment tutorials, land tax online submission, e-mutation checks)",
+                "Viral Social Media Growth & Content Creation (Aesthetic guide to viral YouTube shorts & Facebook reels, high-quality video editing using CapCut/Premiere, legal monetization tricks, setting up Facebook pages and YouTube channels for fast AdSense approval, building personal brand online)",
+                "Tech Career & Professional Skill Development (Freelancing interviews, soft skills for remote workers, building a killer portfolio, getting clients directly on LinkedIn, working for international agencies, online payment systems like Payoneer/Wise)",
+                "Social Media Account Security, Policy & Disabled Recovery Guides (Extremely intensive, hand-holding, step-by-step walkthroughs on recovering disabled or locked Facebook accounts, restricted profiles/pages, submitting appeals, submitting identity verification, setting up dual keys, and step-by-step links click-by-click)"
+            ];
+
+            shuffle($niche_categories);
+            $assigned_niche_1 = $niche_categories[0];
+            $assigned_niche_2 = $niche_categories[1];
+
+            $trending_prompt = "You are a professional Senior Technological Content Strategist for the premium portal iloveyoubd.com (an elite tech, education, and online earning hub in Bangladesh).\n\n" .
+                "We must write ONE highly valuable, trending, click-worthy, and completely professional guide.\n\n" .
+                "LIST OF PREVIOUS ARTICLES WRITTEN (You must ABSOLUTELY AVOID these or similar themes to guarantee 100% variety across our articles): [" . $already_written_context . "]\n\n" .
+                "CHOSEN TARGET NICHES:\n" .
+                "- Primary target: \"" . $assigned_niche_1 . "\"\n" .
+                "- Alternate target: \"" . $assigned_niche_2 . "\"\n\n" .
+                "INSTRUCTIONS:\n" .
+                "1. Choose one of the core niches or synergize them.\n" .
+                "2. Identify a highly sought-after Googled keyword, trending challenge, or a high-value 'Top 10' or 'Best' list (e.g. related to smart learning, online preparation, top websites in Bangladesh, router speed, citizen services, online earnings, social growth).\n" .
+                "3. Generate ONE extremely clickable, professional, high-CTR article topic/headline.\n" .
+                "4. Ensure it has immense value, sounds human, and is 100% safe for Google AdSense policies (no malware, no cracked downloads, no hacking - focus strictly on legal cybersecurity defense, education, official apps, and actual settings).\n" .
+                "5. The headline can be bilingual (English + Bengali) e.g. 'Smart Study Guide: বিসিএস ও চাকরির প্রস্তুতির সেরা ৫টি মোবাইল অ্যাপস' or 'Top 10 AI Tools: ২০২৬ সালের সেরা ১০টি ফ্রি এআই টুলস যা আপনার জীবন বদলে দেবে' or 'NID Card Online: নতুন জাতীয় পরিচয়পত্র ডাউনলোড ও সংশোধনের সহজ নিয়ম'.\n\n" .
+                "Respond with ONLY the topic headline, no wrapping quotes, no introduction, single line under 15 words.";
+
             $generated_topic = ily_call_gemini_api_direct($api_keys, $trending_prompt, 300);
             if (!is_wp_error($generated_topic) && !empty($generated_topic)) {
                 $topic = trim($generated_topic, " \t\n\r\0\x0B\"'*#·-");
             } else {
                 $fallback_topics = [
-                    "How to earn money using mobile: ঘরে বসে মোবাইল দিয়ে ফ্রিল্যান্সিং করার আসল গাইডলাইন ২০২৬",
-                    "Android Battery Optimization: অ্যান্ড্রয়েড ব্যাটারি দ্বিগুণ করার ৫টি গোপন সেটিংস",
-                    "Website SEO Guide: ওয়ার্ডপ্রেস সাইটের জন্য গুগল অফ-পেজ এসইও করার সেরা উপায়",
-                    "Facebook Security Safeguard: ফেসবুক আইডি নিরাপদ ও অননুমোদিত অ্যাক্সেস প্রতিরোধী রাখার বাস্তব কৌশল",
-                    "Mobile Banking Safety: বিকাশ ও নগদ অ্যাকাউন্ট নিরাপদ রাখার শ্রেষ্ঠ গাইডলাইন"
+                    "Smart Study Guide: বিসিএস ও সরকারি চাকরির প্রস্তুতির সেরা ৫টি ফ্রি অনলাইন পোর্টাল",
+                    "Top 10 AI Tools: ২০২৬ সালের সেরা ১০টি কাজের এআই টুলস যা সবার জানা উচিত",
+                    "NID Card Online: নতুন জাতীয় পরিচয়পত্র অনলাইন থেকে ডাউনলোড ও সংশোধনের সহজ নিয়ম",
+                    "Linux Terminal Guide: লিনাক্স টার্মিনাল শেখার সহজ এবং পূর্ণাঙ্গ হ্যাকস",
+                    "Fiverr Freelancing 2026: ফাইভারে কাজ পাওয়ার গোপন টেকনিক ও প্রফেশনাল গাইড",
+                    "Advanced Router Settings: ইন্টারনেটের স্পিড ২ গুণ করার নিখুঁত রাউটার কনফিগারেশন",
+                    "Windows Registry Hacks: উইন্ডোজ পিসি সুপার ফাস্ট করার সেরা ৩টি রেজিস্ট্রি সেটিংস",
+                    "Top 10 Viral Websites: ছাত্র-ছাত্রীদের পড়াশোনা ও স্কিল ডেভেলপমেন্টের সেরা ১০টি ওয়েবসাইট"
                 ];
                 $topic = $fallback_topics[array_rand($fallback_topics)];
             }
@@ -2568,6 +2886,36 @@ function ily_generate_post_stepwise_ajax_handler() {
             $system_instructions .= " " . ILYBD_AI_Publishing_Engine_V2::get_instance()->get_intent_customized_system_instruction($topic, $intent, $display_name);
         }
 
+        $cyber_next_gen_directives = "\n\n" .
+            "CRITICAL MANDATES (NEXT-GEN UPDATE):\n" .
+            "1. EXTENSIVE WORD COUNT & DEPTH: To maximize Search Engine Rankings and Google AdSense premium compliance, the article MUST be an extremely thorough, exhaustive, and detailed guide. Write every sentence with absolute clarity, avoiding filler words, but expanding deeply into technical concepts, real-life examples, security protocols, and background science.\n" .
+            "2. LASER-FOCUSED TOPIC RELEVANCY (NO HALLUCINATIONS): You are STRICTLY FORBIDDEN from writing about unrelated categories, topics, or inserting irrelevant content just to increase word count. Every single paragraph, heading, and sentence MUST be 100% relevant to the main topic and title. Do not hallucinate or mix in other subjects. This is critical for SEO and AdSense approval.\n" .
+            "3. HANDS-ON STEP-BY-STEP NAVIGATOR: You must write step-by-step instructions like a patient, elite technical master (একদম হাতে কলমে ধরে বোঝানো). For every tutorial or process, specify exactly what link to visit, what text to enter, what button to look for, and what action to execute. Explain the exact user flow click-by-click.\n" .
+            "4. MOCK UI & SCREENSHOT WALKTHROUGHS (ইমেজে এডিটিং ও নির্দেশক): Since we need high CTR and ultimate user understanding, you MUST integrate simulated HTML/CSS mock screenshot components inside the body! Instead of generic text, format your steps with custom styled mock boxes that represent actual screens. For example, use the following responsive HTML structure when explaining crucial steps:\n" .
+            "   <div class='mock-screenshot-ui' style='border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 12px; background: #070b13; padding: 18px; margin: 25px 0; box-shadow: 0 8px 32px rgba(0,0,0,0.4);'>\n" .
+            "       <div class='mock-header' style='display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid rgba(0, 240, 255, 0.15); margin-bottom: 15px;'>\n" .
+            "           <span style='width: 10px; height: 10px; border-radius: 50%; background: #ff5f56;'></span>\n" .
+            "           <span style='width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e;'></span>\n" .
+            "           <span style='width: 10px; height: 10px; border-radius: 50%; background: #27c93f;'></span>\n" .
+            "           <span style='color: #64748b; font-size: 11px; margin-left: 12px; font-family: monospace; letter-spacing: 0.5px;'>[URL: https://www.facebook.com/help/contact/...]</span>\n" .
+            "       </div>\n" .
+            "       <div class='mock-body' style='font-size: 13.5px; color: #e2e8f0; line-height: 1.6;'>\n" .
+            "           <div style='background: rgba(0, 240, 255, 0.05); border-left: 4px solid #00f0ff; padding: 12px; border-radius: 6px; margin-bottom: 15px;'>\n" .
+            "               <strong style='color: #00f0ff; font-size: 14.5px;'>👉 🔍 ধাপ [X]: [ধাপের শিরোনাম]</strong>\n" .
+            "               <p style='margin: 8px 0 0 0;'>[এখানে বিস্তারিত বর্ণনা করুন যে কোথায় ক্লিক করতে হবে, কোন ফর্মে কী তথ্য লিখতে হবে]</p>\n" .
+            "           </div>\n" .
+            "           <div class='mock-interactive-area' style='border: 1px dashed rgba(0, 240, 255, 0.3); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);'>\n" .
+            "               <span style='font-family: monospace; color: #84cc16; font-weight: bold;'>[ACTION: Choose File / Submit Appeal]</span>\n" .
+            "               <span style='color: #00f0ff; font-weight: bold; animation: bounce 1.5s infinite; font-size: 14px;'>👈 [CLICK HERE / এখানে ক্লিক করুন]</span>\n" .
+            "           </div>\n" .
+            "       </div>\n" .
+            "   </div>\n" .
+            "   Customize this markup for the specific tutorial steps, changing the titles, mock URLs, actions, and texts to match the actual post topic dynamically! Use this to show a complete visual breakdown of how to solve the problem.\n" .
+            "4. HIGH-CONTRAST BENGALI & ENGLISH BALANCE: Write in flawless, native Bengali that connects with the reader emotionally, while keeping essential technical terms (like '2-Factor Authentication', 'Identity Verification', 'Appeal Form', 'Disabled Account') in clear English to aid professional understanding.\n" .
+            "5. ADSENSE COMPLIANCE: Do not promote any hacking, cracking, or unauthorized bypass tools. Focus 100% on legal recovery methods, official appeal channels, security lockdowns, and ethical practices.";
+
+        $system_instructions .= $cyber_next_gen_directives;
+
         $state_out = [
             'step' => 1,
             'topic' => $topic,
@@ -2596,7 +2944,7 @@ function ily_generate_post_stepwise_ajax_handler() {
         $topic = $state_in['topic'];
         $system_instructions = $state_in['system_instructions'];
 
-        $length_instruction_1 = "The content piece must be Part 1 of an extremely intensive, deep, and complete guide. Under no circumstances may you write less than 500 words. You must write approximately 800 to 1000 words in beautiful, professional Bangla, expanding each paragraph with background details, settings, and direct actions. Ensure it includes 1-2 inline images of format [INLINE_IMAGE: <description in english>].";
+        $length_instruction_1 = "The content piece must be Part 1 of an extremely intensive, deep, and complete guide. Under no circumstances may you write less than 1200 words. You must write approximately 1200 to 1800 words in beautiful, professional Bangla, expanding each paragraph with background details, settings, and direct actions. Ensure it includes 1-2 inline images of format [INLINE_IMAGE: <description in english>]. You MUST include the custom styled mock HTML/CSS screenshot components defined in the CRITICAL MANDATES to direct the user click-by-click.";
         
         $prompt_content_part1 = "Please write PART 1 of a comprehensive, beautifully styled post about \"" . $topic . "\".\n" . $length_instruction_1 . "\n" .
                           "Title Strategy: Create a click-worthy, professional high-CTR title. Apply variation randomly:\n" .
@@ -2606,7 +2954,7 @@ function ily_generate_post_stepwise_ajax_handler() {
                           "Strict Formatting Mandates for Part 1:\n" .
                           "1. Output your response in exactly this formatted structure:\n" .
                           "TITLE: <Your catch hook Title according to Title Strategy>\n" .
-                          "PART1: <The detailed introduction and first 2 H2 sections in beautiful HTML Bangla - must be around 800-1000 words. Keep it open-ended to continue. Include exactly 1 or 2 [INLINE_IMAGE: ...] tags inside>\n" .
+                          "PART1: <The detailed introduction and first 2 H2 sections in beautiful HTML Bangla - must be around 1200-1800 words. Keep it open-ended to continue. Include exactly 1 or 2 [INLINE_IMAGE: ...] tags inside>\n" .
                           "TAGS: <3-5 comma-separated tags relative to topic>\n\n" .
                           "2. Format utilizing high-quality styled HTML tags. Use H2, H3, lists, bold elements, blockquotes. Do not use plain markdown. Use target keywords to integrate anchor tags if relevant.\n" .
                           "Do not include any greeting or conversational prelude. Start immediately with TITLE:";
@@ -2663,14 +3011,14 @@ function ily_generate_post_stepwise_ajax_handler() {
         $parsed_tags = $state_in['part1_tags'];
         $system_instructions = $state_in['system_instructions'];
 
-        $length_instruction_2 = "Review the provided PART 1 of the article and write PART 2 (seamless continuation and completion) of about 800 to 1000 words in stylish, authority-driven Bangla. This Part 2 must write remaining 2 detailed sections/H2s, checklists, specific settings configurations, and end with a comprehensive FAQ section (3 to 4 helpful questions/answers) in Bangla. Ensure it includes 1 additional inline image of format [INLINE_IMAGE: <description in english>] and matches the styling rules perfectly.";
+        $length_instruction_2 = "Review the provided PART 1 of the article and write PART 2 (seamless continuation and completion) of about 1200 to 1800 words in stylish, authority-driven Bangla. This Part 2 must write remaining 2 detailed sections/H2s, checklists, specific settings configurations, and end with a comprehensive FAQ section (at least 5 helpful questions/answers) in Bangla. Ensure it includes 1 additional inline image of format [INLINE_IMAGE: <description in english>] and matches the styling rules perfectly. You MUST include custom styled mock HTML/CSS screenshot components to describe steps click-by-click as defined in the CRITICAL MANDATES.";
 
         $prompt_content_part2 = "Title: " . $parsed_title . "\n" .
                           "Part 1 written:\n---\n" . $parsed_part1 . "\n---\n\n" .
                           $length_instruction_2 . "\n\n" .
                           "Strict Formatting Mandates for Part 2:\n" .
                           "1. Output your response in exactly this formatted structure:\n" .
-                          "PART2: <The beautifully styled H2-H3 chapters, lists, details, warnings, FAQ section and conclusion - must be around 800-1000 words. Include exactly 1 inline related image tag: [INLINE_IMAGE: ...] inside>\n" .
+                          "PART2: <The beautifully styled H2-H3 chapters, lists, details, warnings, FAQ section and conclusion - must be around 1200-1800 words. Include exactly 1 inline related image tag: [INLINE_IMAGE: ...] inside>\n" .
                           "Do not write any introductory pleasantries or repeat Part 1. Start immediately with PART2:";
 
         $max_tokens_chunk = 3000;
@@ -2859,7 +3207,6 @@ function ily_generate_post_stepwise_ajax_handler() {
                 
                 $replacement_html = '<div class="post-inline-image" style="margin: 25px 0; text-align: center;">' .
                     '<img class="lazyload rounded-lg shadow-lg" src="' . esc_url($inline_img_url) . '" alt="' . esc_attr($parsed_title) . '" style="max-width: 100%; height: auto; border: 1px solid rgba(0,240,255,0.15); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.35);" />' .
-                    '<p style="color: #64748b; font-size: 11px; font-family: monospace; margin-top: 8px;">[চিত্র: ' . esc_html($inline_kw) . ']</p>' .
                     '</div>';
                 $parsed_body = str_replace($inline_image_matches[0][$index], $replacement_html, $parsed_body);
             }
@@ -3173,10 +3520,7 @@ function ily_seo_dashboard_render() {
     $links = get_option('ily_seo_internal_links');
     if (!is_array($links)) {
         $links = [
-            'এনআইডি'        => home_url('/nid-maker/'),
-            'NID'          => home_url('/nid-maker/'),
             'কোড'          => home_url('/tools-lab/'),
-            'ডাউনলোডার'     => home_url('/video-downloader/'),
             'অডিও'         => home_url('/audio-lab/'),
             'এআই'          => home_url('/maya-ai/'),
             'এডসেন্স'       => home_url('/category/seo-guide/'),
@@ -3388,7 +3732,7 @@ function ily_seo_dashboard_render() {
 
                                     <label style="display:block; font-size:10px; color:#94a3b8; text-transform:uppercase; margin-bottom:4px; font-family:monospace;">এআই বায়ো-অথর সিলেক্ট:</label>
                                 <select id="ai_agent_select" style="width:100%; background:#070b13; border:1px solid rgba(0,240,255,0.2); color:#fff; padding:8px; border-radius:4px; font-size:11px; outline:none;">
-                                    <option value="hacker">Asraful Islam (Cyber Hacker)</option>
+                                    <option value="hacker">Asraful Islam (Cyber Security Expert)</option>
                                     <option value="ninja">AdSense SEO Guru Marketer</option>
                                     <option value="maya" selected>Maya Neural Bot (ILoveYouBD)</option>
                                     <option value="guru">Premium Tech Guru</option>
@@ -5304,7 +5648,6 @@ function ily_seo_editor_optimize_ajax_handler() {
 
             $img_html = '<div class="post-inline-image" style="margin: 25px 0; text-align: center;">' .
                 '<img class="lazyload rounded-lg shadow-lg" src="' . esc_url($src) . '" alt="' . esc_attr($optimized_title) . '" style="max-width: 100%;\\ height: auto; border: 1.5px solid rgba(0,240,255,0.15); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" />' .
-                '<p style="color: #64748b; font-size: 11px; font-family: monospace; margin-top: 8px;">[চিত্র: ' . esc_html($inline_kw) . ']</p>' .
                 '</div>';
             $optimized_body = str_replace($inline_ims[0][$idx], $img_html, $optimized_body);
         }
@@ -5563,55 +5906,137 @@ function ily_run_autoseo_policy_editor_refinement($post_id) {
 
     if ($needs_expansion) {
         $clean_title = esc_html($title);
-        
-        $comparison_matrix = "\n\n<h2 style='color: #00f0ff; margin-top: 35px; border-bottom: 2px solid rgba(0,240,255,0.15); padding-bottom: 8px;'>📊 IBD Pro Security Comparison Matrix: " . $clean_title . "</h2>" .
-            "<p>এই টেকনিকটি ব্যবহারের সময় সাধারণ ইউজার কনফিগারেশন এবং আমাদের বিশেষজ্ঞ টিম দ্বারা প্রস্তাবিত হাই-লেভেল সিকিউরিটি আর্কিটেকচারের একটি তুলনামূলক পার্থক্য নিচে তুলে ধরা হলো:</p>" .
-            "<table style='width:100%; border-collapse:collapse; margin:25px 0; background:rgba(0,240,255,0.02); border:1px solid rgba(0,240,255,0.15); font-size:13px; color:#fff;'>" .
-            "<thead><tr style='background:rgba(0,240,255,0.06); border-bottom:2px solid rgba(0,240,255,0.35);'>" .
-            "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#00f0ff;'>তুলনীয় বিষয় (Metric)</th>" .
-            "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>সাধারণ পদ্ধতি (Normal Method)</th>" .
-            "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>আইবিডি সেফ গাইড (Recommended Hack)</th>" .
-            "</tr></thead><tbody>" .
-            "<tr>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>নিরাপত্তা ঝুঁকি (Privacy Risk)</td>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>থাড-পার্টি ক্র্যাক এবং অজানা এপিকে ব্যবহারের ফলে ৯৯% ম্যালওয়্যার সংক্রমন হতে পারে।</td>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>১০০% অফিশিয়াল রিপোজিটরি, সোর্স কোড ভেরিফিকেশন এবং অথরাইজড ডিএনএস প্রোটোকল ব্যবহার।</td>" .
-            "</tr>" .
-            "<tr>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>কার্যকারিতা ও স্পিড (Stability)</td>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>প্যাচ করা ফাইল হওয়ায় ঘন ঘন ক্র্যাশ করে এবং ডেটা ক্যাপাসিটি ব্লক হয়ে যায়।</td>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>ডিভাইসের কোর মেমোরি রেজিস্ট্রি অপ্টিমাইজেশনের মাধ্যমে স্পিড বুস্ট ও রিয়েল-টাইম রেন্ডারিং।</td>" .
-            "</tr>" .
-            "<tr>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>গুগল পলিসি সাপোর্ট (Compliance)</td>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>অবৈধ টুলস প্রমোট করায় ও পেনাল্টি পাওয়ার উচ্চ সম্ভাবনা থাকে।</td>" .
-            "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>সম্পূর্ণ শিক্ষামূলক এবং আইটি সুরক্ষার নিয়মানুযায়ী সংকলিত হওয়ায় ১০০% এডসেন্স বান্ধব।</td>" .
-            "</tr>" .
-            "</tbody></table>";
+        $api_keys = ily_get_all_rotated_api_keys();
+        $dynamic_eat_content = "";
 
-        $faq_structured_schema = "\n\n<h2 style='color: #00f0ff; margin-top: 35px; border-bottom: 2px solid rgba(0,240,255,0.15); padding-bottom: 8px;'>💡 [IBD Expert Guidelines] " . $clean_title . " FAQ - প্রায়শই জিজ্ঞাসিত প্রশ্ন ও উত্তর</h2>" .
-            "<p>টেক লাভার এবং অনলাইন আর্নিং মেম্বারদের মাঝে এই বিষয় নিয়ে যে সমস্ত সাধারণ প্রশ্নোত্তর ঘুরপাক খায়, সেগুলোর সাইন্টিফিক ও ব্যবহারিক গাইডলাইন নিচে তুলে ধরা হলো:</p>" .
-            "<div style='background:rgba(57,255,20,0.01); border:1px solid rgba(57,255,20,0.12); padding:20px; border-radius:8px; margin:20px 0;'>" .
-            "<h3 style='color:#39ff14; font-size:15px; margin-top:0;'>প্রশ্ন ১: এই পদ্ধতি অনুসরণের ক্ষেত্রে কোন বিশেষ রিকোয়ারমেন্টস প্রয়োজন?</h3>" .
-            "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: না, কোনো বিশেষ রুটেড ডিভাইস বা সিকিউরিটি টুলের প্রয়োজন নেই। শুধুমাত্র একটি সচল ইন্টারনেট কানেকশন, ব্রাউজারের স্ট্যান্ডার্ড ক্যাশে কন্ট্রোল সেটিংস এবং লিনাক্স টার্মিনাল টার্মাক্স (Termux) হলে প্রপার রান করা সম্ভব।</p>" .
-            "<hr style='border:none; border-top:1px solid rgba(255,255,255,0.05); margin:15px 0;'>" .
-            "<h3 style='color:#39ff14; font-size:15px;'>প্রশ্ন ২: আমরা কি কোনো থার্ড পার্টি মডেড ফাইল ডাউনলোড করতে উৎসাহিত করছি?</h3>" .
-            "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: একদমই না! iloveyoubd.com সবসময় অফিশিয়াল গুগোল প্লে স্টোর এবং ভেরিফাইড রিপোজিটরি ব্যবহারের পরামর্শ দিয়ে থাকে। আমরা এখানে শুধুমাত্র ওপেন সোর্স কোড ও আইটি আর্কিটেক্টদের তৈরি থিওরিটিক্যাল নেটওয়ার্কিং ফ্রেমওয়ার্ক আলোচনার টেকনিক বিশ্লেষণ করেছি।</p>" .
-            "<hr style='border:none; border-top:1px solid rgba(255,255,255,0.05); margin:15px 0;'>" .
-            "<h3 style='color:#39ff14; font-size:15px;'>`প্রশ্ন ৩: অনলাইন আর্নিং ও গুগল অ্যাডসেন্স অ্যাপপ্রভালের জন্য এই কন্টেনটি কিভাবে সফল?</h3>" .
-            "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: এই আর্টিকেলটি উচ্চ তথ্যবহুল, গুগল এনটিএল এবং সেমান্টিক এসইও প্রোটোকল মেনে ২ হাজারেরও বেশি শব্দ দিয়ে বিশ্লেষণ করা হয়েছে। এর স্ট্রাকচার্ড ডেটা ডাইরেক্ট গুগল Crawler-কে ভ্যালুয়েবল কন্টেন্ট হিসেবে মেসেজ পাঠায়, ফলে কোনোপ্রকার Thin Content পলিসি ভায়োলেশন আসার সুযোগ নেই।</p>" .
-            "</div>";
+        if (!empty($api_keys)) {
+            $prompt = "You are a professional technology senior editor for iloveyoubd.com. We have a post with Title: \"" . $title . "\".\n" .
+                "The current content discusses this topic. Your task is to generate three highly relevant, context-aware, 100% unique, value-driven, and engaging E-A-T sections in professional, pristine Bengali to expand the post's depth.\n" .
+                "Avoid generic cybersecurity, Modded APKs, or Termux references UNLESS the post is specifically about those topics. Make sure all content is perfectly matched to \"" . $title . "\". Do not write any meta-discussions or reference Google Crawlers, AdSense approvals, or bypass policies in public answers.\n\n" .
+                "Generate exactly these three components in styled HTML format:\n" .
+                "1. A H2 heading: '📊 [Topic-Specific Title] Comparison Matrix' followed by a brief, natural introduction and an elegant HTML comparison table (`<table style=\"width:100%; border-collapse:collapse; margin:25px 0; background:rgba(0,240,255,0.02); border:1px solid rgba(0,240,255,0.15); font-size:13px; color:#fff;\">`) with 3 rows comparing key metrics of different approaches or options relevant to \"" . $title . "\". Each row should have a `Metric`, a standard approach, and a professional recommended approach.\n" .
+                "2. A H2 heading: '💡 [Topic-Specific Title] FAQ - প্রায়শই জিজ্ঞাসিত প্রশ্ন ও উত্তর' followed by a brief intro and a structured block of exactly 3 highly relevant questions and detailed, helpful answers (using `<div style=\"background:rgba(57,255,20,0.01); border:1px solid rgba(57,255,20,0.12); padding:20px; border-radius:8px; margin:20px 0;\">`) about \"" . $title . "\".\n" .
+                "3. A security warnings or best practices block with a H3/strong title: '⚠️ [Topic-Specific Title] সিকিউরিটি বা ব্যবহারিক গাইডলাইন' followed by an HTML unordered list of 3 actionable best practices relevant to \"" . $title . "\".\n\n" .
+                "Format rules:\n" .
+                "- Do not include any preamble, conversational greeting, or markdown code blocks (like ```html). Start immediately with the HTML content.\n" .
+                "- Use electric cyan (#00f0ff) and rich emerald (#39ff14) accents in style attributes to match our 2040 cyber/neon aesthetic.";
 
-        $safety_checklist = "\n\n<div style='background:rgba(255,62,62,0.02); border:1px solid rgba(255,62,62,0.15); border-left:4px solid #ff3e3e; padding:15px; border-radius:6px; margin:25px 0;'>" .
-            "<strong style='color:#ff3e3e; font-size:14px; display:block; margin-bottom:5px;'>⚠️ সাইবার সিকিউরিটি সতর্কবার্তা ও ব্যবহারিক গাইড:</strong>" .
-            "<ul style='margin:0; padding-left:20px; color:#ddd; font-size:13px; line-height:1.5;'>" .
-            "<li>অপরিচিত সোর্স থেকে কোনো লিঙ্ক বা ব্যাচ স্ক্রিপ্ট আপনার পার্সোনাল সিস্টেমে রান করাবেন না।</li>" .
-            "<li>যেকোনো ট্রানজাকশন বা আইটি টুল ব্যবহারের সময় ডোমেইন স্পেলিং carefully চেক করে ডাবল ভেরিফিকেশন করুন।</li>" .
-            "<li>এডসেন্স প্রকাশক নীতি অনুযায়ী, এই ওয়েবসাইটে কোনো হ্যাকিং মেটেরিয়াল বিক্রয় বা শেয়ার করা হয় না। এটি শুধুমাত্র আত্মরক্ষামূলক নৈতিক আলোচনার জন্য সংকলিত।</li>" .
-            "</ul>" .
-            "</div>";
+            $dynamic_reply = ily_call_gemini_api_direct($api_keys, $prompt, 2000, false, "You are a professional technology editorial board member.");
+            if (!is_wp_error($dynamic_reply) && !empty($dynamic_reply)) {
+                $dynamic_reply = preg_replace('/```html/i', '', $dynamic_reply);
+                $dynamic_reply = preg_replace('/```/i', '', $dynamic_reply);
+                $dynamic_eat_content = trim($dynamic_reply);
+            }
+        }
 
-        $content = $content . $comparison_matrix . $faq_structured_schema . $safety_checklist;
+        // Elegant Topic-Aware Fallback if Gemini is offline or empty
+        if (empty($dynamic_eat_content)) {
+            $is_creative_topic = (stripos($title, 'video') !== false || stripos($title, 'reels') !== false || stripos($title, 'capcut') !== false || stripos($title, 'youtube') !== false || stripos($title, 'edit') !== false || stripos($title, 'design') !== false || stripos($title, 'content') !== false);
+            
+            if ($is_creative_topic) {
+                // Creative fallback (CapCut, Reels, etc.)
+                $comparison_matrix = "\n\n<h2 style='color: #00f0ff; margin-top: 35px; border-bottom: 2px solid rgba(0,240,255,0.15); padding-bottom: 8px;'>📊 IBD Pro Performance Matrix: " . $clean_title . "</h2>" .
+                    "<p>এই টেকনিকটি ব্যবহারের সময় সাধারণ মোবাইল এডিটিং এবং আমাদের এক্সপার্ট এডিটর টিম দ্বারা প্রস্তাবিত হাই-পারফরম্যান্স অপ্টিমাইজেশনের একটি তুলনামূলক পার্থক্য নিচে দেওয়া হলো:</p>" .
+                    "<table style='width:100%; border-collapse:collapse; margin:25px 0; background:rgba(0,240,255,0.02); border:1px solid rgba(0,240,255,0.15); font-size:13px; color:#fff;'> " .
+                    "<thead><tr style='background:rgba(0,240,255,0.06); border-bottom:2px solid rgba(0,240,255,0.35);'>" .
+                    "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#00f0ff;'>Metric (মানদণ্ড)</th>" .
+                    "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>সাধারণ মোবাইল এডিটিং (Standard)</th>" .
+                    "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>প্রো ক্রিয়েটর গাইড (Recommended)</th>" .
+                    "</tr></thead><tbody>" .
+                    "<tr>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>ভিডিও কোয়ালিটি ও বিটরেট</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>ডিফল্ট কম্প্রেশন ব্যবহারে রেজোলিউশন এবং ফ্রেম-রেট ড্রপ হয়।</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>হাই-বিটরেট ৪কে রেন্ডারিং এবং সঠিক কালার গ্রেডিং কনফিগারেশন।</td>" .
+                    "</tr>" .
+                    "<tr>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>অডিও সিঙ্ক ও সাউন্ড এফেক্ট</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>ডিফল্ট লাইব্রেরি ব্যবহারে কপিরাইট ইস্যু এবং নয়েজ আসার সম্ভাবনা থাকে।</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>কপিরাইট ফ্রি হাই-ফাই ট্র্যাকস এবং বিল্ট-ইন এআই নয়েজ ক্যান্সেলেশন।</td>" .
+                    "</tr>" .
+                    "<tr>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>রেন্ডারিং স্পিড ও অপ্টিমাইজেশন</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>ল্যাগিং এবং ব্যাকগ্রাউন্ড অ্যাপস মেমোরি কনজাম্পশন বেশি হয়।</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>কোর হার্ডওয়্যার এক্সিলারেশন ও জিপিইউ রেন্ডারিং অপ্টিমাইজেশন।</td>" .
+                    "</tr>" .
+                    "</tbody></table>";
+
+                $faq_structured_schema = "\n\n<h2 style='color: #00f0ff; margin-top: 35px; border-bottom: 2px solid rgba(0,240,255,0.15); padding-bottom: 8px;'>💡 [IBD Creator Guidelines] " . $clean_title . " FAQ - সাধারণ প্রশ্নোত্তর</h2>" .
+                    "<p>কনটেন্ট ক্রিয়েটর এবং ভিডিও এডিটর বন্ধুদের প্রায়শই জিজ্ঞাসিত প্রধান কয়েকটি প্রশ্নের সমাধান নিচে দেওয়া হলো:</p>" .
+                    "<div style='background:rgba(57,255,20,0.01); border:1px solid rgba(57,255,20,0.12); padding:20px; border-radius:8px; margin:20px 0;'>" .
+                    "<h3 style='color:#39ff14; font-size:15px; margin-top:0;'>প্রশ্ন ১: এই আর্টিকেলে উল্লেখিত এডিটিং ট্রিক্সগুলো কি সব ফোনে কাজ করবে?</h3>" .
+                    "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: হ্যাঁ, এই গাইডলাইনে উল্লেখিত সেটিংস এবং মেথডগুলো অ্যান্ড্রয়েড ও আইওএস (iOS) উভয় অপারেটিং সিস্টেমের যেকোনো আপডেট ডিভাইসে সমানভাবে কার্যকর।</p>" .
+                    "<hr style='border:none; border-top:1px solid rgba(255,255,255,0.05); margin:15px 0;'>" .
+                    "<h3 style='color:#39ff14; font-size:15px;'>প্রশ্ন ২: ভিডিও এডিটিং এর সময় এক্সপোর্ট ফেলড সমস্যা এড়ানোর উপায় কী?</h3>" .
+                    "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: এক্সপোর্ট করার পূর্বে ফোনের র‍্যাম (RAM) ক্লিয়ার করে নিন এবং ব্যাকগ্রাউন্ডের ভারী অ্যাপগুলো বন্ধ রাখুন। সর্বদা রিয়েল-টাইম হার্ডওয়্যার এনকোডিং চালু রাখবেন।</p>" .
+                    "<hr style='border:none; border-top:1px solid rgba(255,255,255,0.05); margin:15px 0;'>" .
+                    "<h3 style='color:#39ff14; font-size:15px;'>প্রশ্ন ৩: এই গাইডটি কি সম্পূর্ণ নিরাপদ এবং নিয়ম মেনে তৈরি?</h3>" .
+                    "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: অবশ্যই! iloveyoubd.com-এর প্রতিটি আর্টিকেল সম্পূর্ণ অরিজিনাল, প্রফেশনাল এবং কপিরাইট-ফ্রি মেথড নিয়ে বিস্তারিত আলোচনা করে, যা সম্পূর্ণভাবে অ্যাডসেন্স সেফ এবং সার্চ ফ্রেন্ডলি।</p>" .
+                    "</div>";
+
+                $safety_checklist = "\n\n<div style='background:rgba(0,240,255,0.02); border:1px solid rgba(0,240,255,0.15); border-left:4px solid #00f0ff; padding:15px; border-radius:6px; margin:25px 0;'>" .
+                    "<strong style='color:#00f0ff; font-size:14px; display:block; margin-bottom:5px;'>⚠️ ক্রিয়েটর সিকিউরিটি ও ভিডিও অপ্টিমাইজেশন গাইড:</strong>" .
+                    "<ul style='margin:0; padding-left:20px; color:#ddd; font-size:13px; line-height:1.5;'>" .
+                    "<li>অননুমোদিত বা আনঅফিসিয়াল ওয়েবসাইট থেকে মডেড বা ক্র্যাক করা সফটওয়্যার ইন্সটল করা থেকে বিরত থাকুন।</li>" .
+                    "<li>ভিডিও মেটেরিয়াল এবং মিউজিক ব্যবহারের ক্ষেত্রে সর্বদা রয়্যালটি-ফ্রি বা ওপেন-সোর্স লাইব্রেরি ব্যবহার করুন।</li>" .
+                    "<li>আপনার ক্রিয়েটিভ কাজের মূল ডেটা ও প্রজেক্ট ব্যাকআপ রাখতে নিয়মিত ক্লাউড স্টোরেজ ব্যবহার করুন।</li>" .
+                    "</ul>" .
+                    "</div>";
+
+                $dynamic_eat_content = $comparison_matrix . $faq_structured_schema . $safety_checklist;
+            } else {
+                // General/Tech Fallback
+                $comparison_matrix = "\n\n<h2 style='color: #00f0ff; margin-top: 35px; border-bottom: 2px solid rgba(0,240,255,0.15); padding-bottom: 8px;'>📊 IBD Pro System Comparison Matrix: " . $clean_title . "</h2>" .
+                    "<p>এই টেকনিকটি ব্যবহারের সময় সাধারণ কনফিগারেশন এবং আমাদের বিশেষজ্ঞ টিম দ্বারা প্রস্তাবিত হাই-লেভেল আর্কিটেকচারের একটি তুলনামূলক পার্থক্য নিচে দেওয়া হলো:</p>" .
+                    "<table style='width:100%; border-collapse:collapse; margin:25px 0; background:rgba(0,240,255,0.02); border:1px solid rgba(0,240,255,0.15); font-size:13px; color:#fff;'>" .
+                    "<thead><tr style='background:rgba(0,240,255,0.06); border-bottom:2px solid rgba(0,240,255,0.35);'>" .
+                    "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#00f0ff;'>তুলনীয় বিষয় (Metric)</th>" .
+                    "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>সাধারণ পদ্ধতি (Normal Method)</th>" .
+                    "<th style='padding:12px; text-align:left; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>আইবিডি সেফ গাইড (Recommended Guide)</th>" .
+                    "</tr></thead><tbody>" .
+                    "<tr>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>নিরাপত্তা ঝুঁকি (Privacy Risk)</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>আনভেরিফাইড থার্ড পার্টি রিসোর্স ব্যবহারের ফলে সিকিউরিটি এবং ডেটা প্রাইভেসির ঝুঁকি থাকে।</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>১০০% অফিশিয়াল সোর্স, সিকিউরড এপিআই এবং ভেরিফাইড প্রোটোকল ব্যবহার।</td>" .
+                    "</tr>" .
+                    "<tr>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>কার্যকারিতা ও স্পিড (Stability)</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>অপ্টিমাইজেশনের অভাবে পারফরম্যান্স ল্যাগ এবং লোডিং টাইম বৃদ্ধি পায়।</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>সিস্টেম কোর অপ্টিমাইজেশনের মাধ্যমে বুস্ট এবং রিয়েল-টাইম রেন্ডারিং।</td>" .
+                    "</tr>" .
+                    "<tr>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); font-weight:bold;'>গুগল পলিসি সাপোর্ট (Compliance)</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#ff3e3e;'>পলিসি ভায়োলেশনের কারণে গুগল থেকে পেনাল্টি পাওয়ার সম্ভাবনা থাকে।</td>" .
+                    "<td style='padding:12px; border:1px solid rgba(255,255,255,0.08); color:#39ff14;'>সম্পূর্ণ শিক্ষামূলক এবং আইটি সুরক্ষার নিয়মানুযায়ী সংকলিত হওয়ায় ১০০% এডসেন্স বান্ধব।</td>" .
+                    "</tr>" .
+                    "</tbody></table>";
+
+                $faq_structured_schema = "\n\n<h2 style='color: #00f0ff; margin-top: 35px; border-bottom: 2px solid rgba(0,240,255,0.15); padding-bottom: 8px;'>💡 [IBD Expert Guidelines] " . $clean_title . " FAQ - সাধারণ প্রশ্নোত্তর</h2>" .
+                    "<p>আমাদের ইউজারদের প্রায়শই জিজ্ঞাসিত প্রধান কয়েকটি প্রশ্নের সমাধান নিচে দেওয়া হলো:</p>" .
+                    "<div style='background:rgba(57,255,20,0.01); border:1px solid rgba(57,255,20,0.12); padding:20px; border-radius:8px; margin:20px 0;'>" .
+                    "<h3 style='color:#39ff14; font-size:15px; margin-top:0;'>প্রশ্ন ১: এই পদ্ধতি অনুসরণের ক্ষেত্রে কোন বিশেষ রিকোয়ারমেন্টস প্রয়োজন?</h3>" .
+                    "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: না, কোনো বিশেষ রুটেড ডিভাইস বা অতিরিক্ত প্রিপারেশনের প্রয়োজন নেই। একটি সচল ইন্টারনেট কানেকশন এবং ব্রাউজারের স্ট্যান্ডার্ড সেটিংস হলে প্রপারলি রান করা সম্ভব।</p>" .
+                    "<hr style='border:none; border-top:1px solid rgba(255,255,255,0.05); margin:15px 0;'>" .
+                    "<h3 style='color:#39ff14; font-size:15px;'>প্রশ্ন ২: আমরা কি কোনো থার্ড পার্টি মডেড ফাইল ব্যবহারে উৎসাহিত করি?</h3>" .
+                    "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: একদমই না! iloveyoubd.com সবসময় অফিশিয়াল স্টোর এবং ভেরিফাইড রিপোজিটরি ব্যবহারের পরামর্শ দিয়ে থাকে। আমরা এখানে শুধুমাত্র থিওরিটিক্যাল টেকনিক বিশ্লেষণ করেছি।</p>" .
+                    "<hr style='border:none; border-top:1px solid rgba(255,255,255,0.05); margin:15px 0;'>" .
+                    "<h3 style='color:#39ff14; font-size:15px;'>প্রশ্ন ৩: এই গাইডটি কি সম্পূর্ণ নিরাপদ এবং নিয়ম মেনে তৈরি?</h3>" .
+                    "<p style='color:#ccc; font-size:13.5px; line-height:1.6;'>উত্তর: হ্যাঁ, এই আর্টিকেলটি উচ্চ তথ্যবহুল এবং সম্পূর্ণ সঠিক প্রোটোকল মেনে বিশ্লেষণ করা হয়েছে, যা গুগল পলিসি ফ্রেন্ডলি এবং নিরাপদ।</p>" .
+                    "</div>";
+
+                $safety_checklist = "\n\n<div style='background:rgba(255,62,62,0.02); border:1px solid rgba(255,62,62,0.15); border-left:4px solid #ff3e3e; padding:15px; border-radius:6px; margin:25px 0;'>" .
+                    "<strong style='color:#ff3e3e; font-size:14px; display:block; margin-bottom:5px;'>⚠️ সিস্টেমে নিরাপত্তা সতর্কবার্তা ও ব্যবহারিক গাইড:</strong>" .
+                    "<ul style='margin:0; padding-left:20px; color:#ddd; font-size:13px; line-height:1.5;'>" .
+                    "<li>অপরিচিত বা আনঅফিসিয়াল সোর্স থেকে কোনো লিঙ্ক আপনার সিস্টেমে রান করাবেন না।</li>" .
+                    "<li>যেকোনো ট্রানজাকশন বা আইটি টুল ব্যবহারের সময় ডোমেইন স্পেলিং carefully চেক করে ডাবল ভেরিফিকেশন করুন।</li>" .
+                    "<li>আমাদের ওয়েবসাইটে কোনো ক্ষতিকর বা কপিরাইট লঙ্ঘিত কনটেন্ট শেয়ার করা হয় না। এটি শুধুমাত্র আত্মরক্ষামূলক নৈতিক আলোচনার জন্য সংকলিত।</li>" .
+                    "</ul>" .
+                    "</div>";
+
+                $dynamic_eat_content = $comparison_matrix . $faq_structured_schema . $safety_checklist;
+            }
+        }
+
+        $content = $content . $dynamic_eat_content;
         $changed = true;
     }
 
@@ -5756,6 +6181,15 @@ add_filter('the_content', function($content) {
     
     return $new_content;
 });
+
+// Custom document title parts for ilybd_question archive
+add_filter('document_title_parts', function($title_parts) {
+    if (is_post_type_archive('ilybd_question')) {
+        $title_parts['title'] = '💬 ফোরাম সেন্টার ও প্রশ্নোত্তর হাব';
+        $title_parts['tagline'] = 'Q&A Center';
+    }
+    return $title_parts;
+}, 15);
 
 
 

@@ -16,6 +16,16 @@
     -webkit-filter: none !important;
 }
 
+/* কমেন্টের ছদ্ম-উপাদান (pseudo-elements) যেমন ::after-এ থাকা নিয়ন চেজ ইফেক্ট পুরোপুরি নিষ্ক্রিয় করুন */
+.comment-body::after,
+.comment-list .comment-body::after,
+#comments .comment-body::after {
+    content: none !important;
+    display: none !important;
+    animation: none !important;
+    background: none !important;
+}
+
 /* =========================
    GLOBAL NEON BREATH
 ========================= */

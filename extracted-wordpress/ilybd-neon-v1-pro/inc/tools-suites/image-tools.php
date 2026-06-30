@@ -547,3 +547,41 @@ function ilybd_render_tool_base64_to_image_decoder() {
     </script>
     <?php
 }
+
+// 11. Neon QR Code Maker Lab
+function ilybd_render_tool_neon_qr_code_maker_lab() {
+    ?>
+    <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif;">
+        <label class="bento-label" style="color:#a855f7;">YOUR URL OR TEXT / লিংক বা লেখা দিন</label>
+        <input type="text" id="qrTextIn" value="https://iloveyoubd.com" class="cyan-glow-input" style="border-color:#a855f733; margin-bottom:15px;" onfocus="this.style.borderColor='#a855f7'">
+
+        <button onclick="makeQrCode();" class="cyber-action-btn" style="background:#a855f7; color:#fff; width:100%; margin-bottom:20px;" id="qrBtn">GENERATE NEON QR CODE ⚡</button>
+        
+        <div id="qrResultArea" style="display:none; text-align:center; margin-top:20px; border-top:1px solid rgba(255,255,255,0.06); padding-top:15px;">
+            <img id="qrImgOut" src="" alt="QR Code" style="background:#fff; padding:10px; border-radius:8px; width:180px; height:180px; display:inline-block; border: 3px solid #a855f7; box-shadow:0 0 20px rgba(168, 85, 247, 0.3);">
+            <p style="color:#a855f7; font-size:12px; margin-top:12px; font-weight:600;" class="bangla-font-siliguri">ডাউনলোড করতে কিউআর ছবির ওপর লং-প্রেস করুন অথবা রাইট ক্লিক করে সেভ করুন।</p>
+        </div>
+    </div>
+    <script>
+    function makeQrCode() {
+        const text = document.getElementById('qrTextIn').value.trim();
+        if (!text) {
+            alert("অনুগ্রহ করে কিছু লিখুন!");
+            return;
+        }
+        document.getElementById('qrBtn').innerText = 'Generating...';
+        const cleanTxt = encodeURIComponent(text);
+        const api = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${cleanTxt}`;
+        
+        setTimeout(() => {
+            document.getElementById('qrImgOut').src = api;
+            document.getElementById('qrResultArea').style.display = 'block';
+            document.getElementById('qrBtn').innerText = 'GENERATE NEON QR CODE ⚡';
+            if (typeof incrementToolUsage === 'function') {
+                incrementToolUsage('neon-qr-code-maker-lab');
+            }
+        }, 400);
+    }
+    </script>
+    <?php
+}

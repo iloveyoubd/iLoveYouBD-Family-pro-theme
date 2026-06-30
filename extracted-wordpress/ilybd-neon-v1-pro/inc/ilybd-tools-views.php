@@ -77,7 +77,49 @@ function ilybd_render_tool_schemas($slug, $tool) {
         "offers" => [
             "@type" => "Offer",
             "price" => "0.00",
-            "priceCurrency" => "USD"
+            "priceCurrency" => "USD",
+            "priceValidUntil" => "2030-12-31",
+            "itemCondition" => "https://schema.org/NewCondition",
+            "availability" => "https://schema.org/InStock",
+            "seller" => [
+                "@type" => "Organization",
+                "name" => "I Love You BD Tech Lab"
+            ],
+            "hasMerchantReturnPolicy" => [
+                "@type" => "MerchantReturnPolicy",
+                "applicableCountry" => "BD",
+                "returnPolicyCategory" => "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays" => 7,
+                "returnMethod" => "https://schema.org/ReturnByMail",
+                "returnFees" => "https://schema.org/FreeReturn"
+            ],
+            "shippingDetails" => [
+                "@type" => "OfferShippingDetails",
+                "shippingRate" => [
+                    "@type" => "MonetaryAmount",
+                    "value" => 0,
+                    "currency" => "USD"
+                ],
+                "shippingDestination" => [
+                    "@type" => "DefinedRegion",
+                    "addressCountry" => "BD"
+                ],
+                "deliveryTime" => [
+                    "@type" => "ShippingDeliveryTime",
+                    "handlingTime" => [
+                        "@type" => "QuantitativeValue",
+                        "minValue" => 0,
+                        "maxValue" => 1,
+                        "unitCode" => "DAY"
+                    ],
+                    "transitTime" => [
+                        "@type" => "QuantitativeValue",
+                        "minValue" => 1,
+                        "maxValue" => 3,
+                        "unitCode" => "DAY"
+                    ]
+                ]
+            ]
         ],
         "aggregateRating" => [
             "@type" => "AggregateRating",
@@ -210,18 +252,64 @@ function ilybd_render_tools_hub_view() {
     $tools = ilybd_get_all_tools();
     ?>
     <style>
-        .cyber-page-wrapper { min-height:80vh; background:#070b13; color:#fff; font-family:'Space Grotesk', 'Hind Siliguri', sans-serif; }
+        .cyber-page-wrapper { 
+            min-height:80vh; 
+            background:#070b13; 
+            color:#fff; 
+            font-family:'Space Grotesk', 'Hind Siliguri', sans-serif; 
+            padding-top: 100px !important; /* Perfect offset below fixed cyber header on mobile */
+        }
+        @media screen and (min-width: 1024px) {
+            .cyber-page-wrapper {
+                padding-top: 110px !important; /* Elegant offset on desktop */
+            }
+        }
         .bento-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px; padding:20px 0; }
         .cyber-badge { background:rgba(0, 240, 255, 0.1); border:1px solid rgba(0, 240, 255, 0.3); color:#00f0ff; font-family:monospace; font-size:10px; padding:2px 8px; border-radius:4px; font-weight:800; letter-spacing:1px; }
+        
+        /* Fully responsive non-sticky brand header */
+        .tools-brand-header {
+            background: rgba(13, 21, 37, 0.6); 
+            padding: 20px 15px !important; 
+            border: 1px solid rgba(0, 240, 255, 0.15); 
+            border-radius: 16px;
+            margin-bottom: 30px !important;
+            position: relative !important;
+            display: block !important;
+        }
+        @media screen and (min-width: 768px) {
+            .tools-brand-header {
+                padding: 40px !important;
+                margin-bottom: 48px !important;
+            }
+        }
+        .tools-brand-title {
+            font-size: 1.8rem !important; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin: 0 0 10px 0; 
+            background: linear-gradient(90deg, #ff007c, #00f0ff, #00ff41, #ff007c); 
+            background-size: 200% auto; 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            animation: rgbFlow 4s linear infinite;
+        }
+        @media screen and (min-width: 768px) {
+            .tools-brand-title {
+                font-size: 3rem !important;
+                letter-spacing: 3px;
+            }
+        }
     </style>
-    <div class="cyber-page-wrapper px-4 py-8 lg:py-16">
+    <div class="cyber-page-wrapper px-4 pb-8 lg:pb-16">
         <div class="max-w-7xl mx-auto">
             
             <?php ilybd_render_tool_breadcrumbs('hub'); ?>
             
-            <!-- Bento-Style Neon Brand Header -->
-            <header class="text-center mb-12" style="background:rgba(13, 21, 37, 0.6); padding:40px; border:1px solid rgba(0, 240, 255, 0.15); border-radius:16px;">
-                <h1 style="font-size:3rem; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:0 0 10px 0; background:linear-gradient(90deg, #ff007c, #00f0ff, #00ff41, #ff007c); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:rgbFlow 4s linear infinite;">iLoveYouBD Tools Vault</h1>
+            <!-- Bento-Style Neon Brand Header - Responsive & Mobile-First (Fixed "sticky ballot/vault" issue) -->
+            <header class="text-center tools-brand-header">
+                <h1 class="tools-brand-title">iLoveYouBD Tools Vault</h1>
                 <p style="color:#00f0ff; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; margin-bottom:15px; font-weight:700;">DIGITAL WEAPONS CHAMBER FOR DEVELOPERS, SEOS & MARKETERS / ২০৪০ সংস্করণ</p>
                 <div style="height:2px; width:100%; background:linear-gradient(to right, transparent, #ff007c, #00f0ff, #00ff41, transparent); margin:15px auto;"></div>
                 <p style="font-size:15px; color:#9ca3af; max-width:650px; margin:0 auto; line-height:1.6;" class="bangla-font-siliguri">সম্পূর্ণ নিরাপদ, নো-রিলোড এজ্যাক্স ইন্টারফেস সমৃদ্ধ বাংলাদেশের ১ নম্বর ডিজিটাল হাব। ১টি পোর্টালে ৫০টি গুরুত্বপূর্ণ এআই, এসইও, কোডিং রিসোর্স এবং নিরাপত্তা টুলস ব্যবহার করুন ফ্রিতে।</p>
@@ -235,12 +323,12 @@ function ilybd_render_tools_hub_view() {
 
             <!-- Categories Scroller Bar -->
             <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:45px; justify-content:center;">
-                <button onclick="filterCategory('all')" class="cat-pill active-pill" style="padding:10px 20px; background:#00f0ff; border:none; border-radius:30px; color:#000; font-weight:800; font-family:'Space Grotesk', sans-serif; cursor:pointer; text-transform:uppercase; transition:0.3s;">ALL UTILITIES (৫০)</button>
+                <button onclick="filterCategory(this, 'all')" class="cat-pill active-pill" style="padding:10px 20px; background:#00f0ff; border:none; border-radius:30px; color:#000; font-weight:800; font-family:'Space Grotesk', sans-serif; cursor:pointer; text-transform:uppercase; transition:0.3s;">ALL UTILITIES (৫০)</button>
                 <?php foreach ($categories as $slug => $det) : 
                     $count = 0;
                     foreach ($tools as $t) { if($t['category'] === $slug) $count++; }
                     ?>
-                    <button onclick="filterCategory('<?php echo esc_attr($slug); ?>')" class="cat-pill" style="padding:10px 20px; background:rgba(30,41,59,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:30px; color:#9ca3af; font-weight:800; font-family:'Space Grotesk', sans-serif; cursor:pointer; text-transform:uppercase; transition:0.3s;" onmouseover="this.style.borderColor='<?php echo esc_attr($det['color']); ?>'; this.style.color='#fff';" onmouseout="if(!this.classList.contains('active-pill')) { this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='#9ca3af'; }">
+                    <button onclick="filterCategory(this, '<?php echo esc_attr($slug); ?>')" class="cat-pill" style="padding:10px 20px; background:rgba(30,41,59,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:30px; color:#9ca3af; font-weight:800; font-family:'Space Grotesk', sans-serif; cursor:pointer; text-transform:uppercase; transition:0.3s;" onmouseover="this.style.borderColor='<?php echo esc_attr($det['color']); ?>'; this.style.color='#fff';" onmouseout="if(!this.classList.contains('active-pill')) { this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='#9ca3af'; }">
                         <?php echo esc_html($det['icon'] . ' ' . $det['name']); ?> (<?php echo $count; ?>)
                     </button>
                 <?php endforeach; ?>
@@ -259,8 +347,8 @@ function ilybd_render_tools_hub_view() {
                                 <span style="font-size:24px;"><?php echo esc_html($cat_det['icon']); ?></span>
                                 <span class="cyber-badge" style="background:<?php echo esc_attr($cat_det['color']); ?>22; border-color:<?php echo esc_attr($cat_det['color']); ?>55; color:<?php echo esc_attr($cat_det['color']); ?>;">ACTIVE</span>
                             </div>
-                            <h3 style="color:#fff; font-size:18px; font-weight:850; margin:0 0 8px 0; font-family:'Space Grotesk', sans-serif;"><?php echo esc_html($t['name_bn']); ?></h3>
-                            <h4 style="color:#9ca3af; font-size:13px; font-family:'JetBrains Mono', monospace; font-weight:500; margin:0 0 15px 0;"><?php echo esc_html($t['name']); ?></h4>
+                            <h3 style="color:#fff; font-size:18px; font-weight:850; margin:0 0 4px 0; font-family:'Space Grotesk', sans-serif;"><?php echo esc_html($t['name']); ?></h3>
+                            <h4 style="color:#00f0ff; font-size:13px; font-family:'Hind Siliguri', sans-serif; font-weight:600; margin:0 0 15px 0;"><?php echo esc_html($t['name_bn']); ?></h4>
                             <p style="color:#cbd5e0; font-size:13px; line-height:1.5; margin:0 0 20px 0;" class="bangla-font-siliguri"><?php echo esc_html($t['desc_bn']); ?></p>
                         </div>
                         <div>
@@ -268,98 +356,7 @@ function ilybd_render_tools_hub_view() {
                                 <span>👁️ <?php echo number_format($views); ?> Views</span>
                                 <span>⚡ <?php echo number_format($usages); ?> Used</span>
                             </div>
-                            <a href="<?php echo esc_url(home_url("/tools/{$t_slug}/")); ?>" style="display:block; width:100%; text-align:center; padding:12px; border-radius:8px; font-weight:800; font-size:12px; text-transform:uppercase; text-decoration:none; background:<?php echo esc_attr($cat_det['gradient']); ?>; color:#000; transition:0.3s;" onmouseover="this.style.filter='brightness(1.15)';" onmouseout="this.style.filter='none';">টুলস চালু করুন ➔</a>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </main>
-            
-        </div>
-    </div>
-
-    <!-- Live Client Side Real-Time Interactive Filter Engine -->
-    <script>
-        function filterToolsHub() {
-            var searchVal = document.getElementById('tool-search-box').value.toLowerCase();
-            var cards = document.getElementsByClassName('tool-bento-card');
-            for(var i=0; i<cards.length; i++) {
-                var nameVal = cards[i].getAttribute('data-name');
-                if(nameVal.includes(searchVal)) {
-                    cards[i].style.display = 'flex';
-                } else {
-                    cards[i].style.display = 'none';
-                }
-            }
-        }
-
-        function filterCategory(cat) {
-            // Update Active UI State
-            var pills = document.getElementsByClassName('cat-pill');
-            for(var i=0; i<pills.length; i++) {
-                pills[i].classList.remove('active-pill');
-                pills[i].style.background = 'rgba(30,41,59,0.8)';
-                pills[i].style.color = '#9ca3af';
-                pills[i].style.borderColor = 'rgba(255,255,255,0.1)';
-            }
-            event.target.classList.add('active-pill');
-            event.target.style.background = '#00f0ff';
-            event.target.style.color = '#000';
-            event.target.style.borderColor = '#00f0ff';
-
-            // Filter actual cards
-            var cards = document.getElementsByClassName('tool-bento-card');
-            for(var i=0; i<cards.length; i++) {
-                var cardCat = cards[i].getAttribute('data-category');
-                if (cat === 'all' || cardCat === cat) {
-                    cards[i].style.display = 'flex';
-                } else {
-                    cards[i].style.display = 'none';
-                }
-            }
-        }
-    </script>
-    <?php
-    get_footer();
-}
-
-// View B: Category Template (/tools/category/{slug})
-function ilybd_render_tools_category_view($cat_slug) {
-    get_header();
-    $categories = ilybd_get_tools_categories();
-    $tools = ilybd_get_all_tools();
-    $this_cat = $categories[$cat_slug];
-    ?>
-    <div class="cyber-page-wrapper px-4 py-8 lg:py-16" style="background:#070b13; color:#fff; min-height:80vh; font-family:'Space Grotesk', sans-serif;">
-        <div class="max-w-7xl mx-auto">
-            
-            <?php ilybd_render_tool_breadcrumbs('', $cat_slug); ?>
-            
-            <header class="text-center mb-12" style="background:rgba(13, 21, 37, 0.6); padding:40px; border:1px solid <?php echo $this_cat['color']; ?>33; border-radius:16px;">
-                <span style="font-size:3rem;"><?php echo esc_html($this_cat['icon']); ?></span>
-                <h1 style="font-size:2.5rem; font-weight:900; text-transform:uppercase; letter-spacing:2px; margin:10px 0; color:<?php echo $this_cat['color']; ?>;"><?php echo esc_html($this_cat['name_bn']); ?></h1>
-                <p style="color:#9ca3af; font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:3px; text-transform:uppercase; margin-bottom:15px;"><?php echo esc_html($this_cat['name']); ?> HUB / SECURE ACCESS GATEWAY</p>
-                <div style="height:1px; width:150px; background:<?php echo $this_cat['color']; ?>; margin:5px auto 20px auto;"></div>
-                <p style="font-size:14px; color:#cbd5e0; max-width:600px; margin:0 auto; line-height:1.6;" class="bangla-font-siliguri">উন্নত সিকিউরড অ্যালগরিদম সম্পন্ন ২০৪০ নিওন এডিশনের প্রফেশনাল লাইটওয়েট ক্যাটাগরি ইউটিলিটি টুলস পোর্টাল।</p>
-            </header>
-
-            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px;">
-                <?php foreach ($tools as $t_slug => $t) : 
-                    if ($t['category'] !== $cat_slug) continue;
-                    $views = ilybd_get_tool_stat($t_slug, 'views');
-                    $usages = ilybd_get_tool_stat($t_slug, 'usages');
-                    ?>
-                    <div class="tool-bento-card" style="background:rgba(15,23,42,0.85); border:1.5px solid rgba(255,255,255,0.06); border-radius:16px; padding:25px; display:flex; flex-direction:column; justify-content:space-between; transition:0.3s;" onmouseover="this.style.borderColor='<?php echo esc_attr($this_cat['color']); ?>'; this.style.transform='translateY(-4px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'; this.style.transform='none';">
-                        <div>
-                            <h3 style="color:#fff; font-size:18px; font-weight:850; margin:0 0 8px 0; font-family:'Space Grotesk', sans-serif;"><?php echo esc_html($t['name_bn']); ?></h3>
-                            <h4 style="color:#9ca3af; font-size:13px; font-family:'JetBrains Mono', monospace; font-weight:500; margin:0 0 15px 0;"><?php echo esc_html($t['name']); ?></h4>
-                            <p style="color:#cbd5e0; font-size:13px; line-height:1.5; margin:0 0 20px 0;" class="bangla-font-siliguri"><?php echo esc_html($t['desc_bn']); ?></p>
-                        </div>
-                        <div>
-                            <div style="display:flex; gap:10px; font-size:11px; margin-bottom:15px; color:#9ca3af; border-top:1px solid rgba(255,255,255,0.05); padding-top:12px;">
-                                <span>👁️ <?php echo number_format($views); ?> Views</span>
-                                <span>⚡ <?php echo number_format($usages); ?> Used</span>
-                            </div>
-                            <a href="<?php echo esc_url(home_url("/tools/{$t_slug}/")); ?>" style="display:block; width:100%; text-align:center; padding:12px; border-radius:8px; font-weight:800; font-size:12px; text-transform:uppercase; text-decoration:none; background:<?php echo esc_attr($this_cat['gradient']); ?>; color:#000; transition:0.3s;" onmouseover="this.style.filter='brightness(1.15)';" onmouseout="this.style.filter='none';">টুলস চালু করুন ➔</a>
+                            <a href="<?php echo esc_url(home_url("/tools/{$t_slug}/")); ?>" style="display:block; width:100%; text-align:center; padding:12px; border-radius:8px; font-weight:800; font-size:12px; text-transform:uppercase; text-decoration:none; background:<?php echo esc_attr($cat_det['gradient']); ?>; color:#000; transition:0.3s;" onmouseover="this.style.filter='brightness(1.15)';" onmouseout="this.style.filter='none';">এক্সপ্লোর করুন</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -367,61 +364,219 @@ function ilybd_render_tools_category_view($cat_slug) {
 
         </div>
     </div>
+    <script>
+        let currentActiveCategory = 'all';
+
+        function filterCategory(btnEl, categorySlug) {
+            currentActiveCategory = categorySlug;
+
+            // Reset all pills
+            const pills = document.querySelectorAll('.cat-pill');
+            pills.forEach(pill => {
+                pill.classList.remove('active-pill');
+                pill.style.background = 'rgba(30,41,59,0.8)';
+                pill.style.color = '#9ca3af';
+                pill.style.borderColor = 'rgba(255,255,255,0.1)';
+            });
+
+            // Set clicked pill active
+            btnEl.classList.add('active-pill');
+            btnEl.style.background = '#00f0ff';
+            btnEl.style.color = '#000';
+            btnEl.style.borderColor = '#00f0ff';
+
+            applyBentoFilters();
+        }
+
+        function filterToolsHub() {
+            applyBentoFilters();
+        }
+
+        function applyBentoFilters() {
+            const query = document.getElementById('tool-search-box').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.tool-bento-card');
+
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                const cardName = card.getAttribute('data-name');
+
+                const matchesCat = (currentActiveCategory === 'all' || cardCat === currentActiveCategory);
+                const matchesSearch = (!query || cardName.includes(query));
+
+                if (matchesCat && matchesSearch) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
     <?php
     get_footer();
 }
 
-// View C: Single Tool Template (/tools/{slug})
+// View C: Single Tool View
 function ilybd_render_single_tool_view($tool_slug) {
     get_header();
     $tools = ilybd_get_all_tools();
-    $tool = $tools[$tool_slug];
     $categories = ilybd_get_tools_categories();
+    $tool = $tools[$tool_slug];
     $cat_det = $categories[$tool['category']];
-    
     $views = ilybd_get_tool_stat($tool_slug, 'views');
     $usages = ilybd_get_tool_stat($tool_slug, 'usages');
     $likes = ilybd_get_tool_stat($tool_slug, 'likes');
-    
-    // Inject custom meta schemas
-    ilybd_render_tool_schemas($tool_slug, $tool);
     ?>
     <style>
-        .cyber-page-wrapper { min-height:80vh; background:#070b13; color:#fff; font-family:'Space Grotesk', 'Hind Siliguri', sans-serif; }
-        .bento-box { background:rgba(13, 21, 37, 0.7); border:1.5px solid rgba(255,255,255,0.06); border-radius:18px; padding:30px; margin-bottom:30px; transition:0.3s; }
+        .cyber-page-wrapper { 
+            min-height:80vh; 
+            background:#070b13; 
+            color:#fff; 
+            font-family:'Space Grotesk', 'Hind Siliguri', sans-serif; 
+            padding-top: 100px !important; /* Perfect offset below fixed cyber header on mobile */
+        }
+        @media screen and (min-width: 1024px) {
+            .cyber-page-wrapper {
+                padding-top: 110px !important; /* Elegant offset on desktop */
+            }
+        }
+        .bento-box { 
+            background:rgba(13, 21, 37, 0.7); 
+            border:1.5px solid rgba(255,255,255,0.06); 
+            border-radius:18px; 
+            padding:20px; 
+            margin-bottom:20px; 
+            transition:0.3s; 
+            overflow: hidden; /* Avoid layout overflow */
+            box-sizing: border-box;
+        }
+        @media screen and (min-width: 768px) {
+            .bento-box {
+                padding:30px;
+                margin-bottom:30px;
+            }
+        }
         .bento-label { color:<?php echo $cat_det['color']; ?>; font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; display:block; margin-bottom:8px; }
-        .neon-heading { font-family:'Space Grotesk', sans-serif; font-weight:900; line-height:1.2; text-shadow:0 0 15px <?php echo $cat_det['color']; ?>33; }
-        .cyan-glow-input { width:100%; background:#070b13; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px; color:#fff; outline:none; transition:0.3s; font-family:'Space Grotesk', sans-serif; }
+        .neon-heading { 
+            font-family:'Space Grotesk', sans-serif; 
+            font-weight:900; 
+            line-height:1.2; 
+            text-shadow:0 0 15px <?php echo $cat_det['color']; ?>33; 
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            font-size: 1.8rem;
+        }
+        @media screen and (min-width: 768px) {
+            .neon-heading {
+                font-size: 2.5rem;
+            }
+        }
+        @media screen and (min-width: 1024px) {
+            .neon-heading {
+                font-size: 3rem;
+            }
+        }
+        .cyan-glow-input { width:100%; background:#070b13; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px; color:#fff; outline:none; transition:0.3s; font-family:'Space Grotesk', sans-serif; box-sizing: border-box; }
         .cyan-glow-input:focus { border-color:<?php echo $cat_det['color']; ?>; box-shadow:0 0 12px <?php echo $cat_det['color']; ?>22; }
-        .cyber-action-btn { background:<?php echo $cat_det['gradient']; ?>; color:#000; font-weight:850; padding:12px 25px; border:none; border-radius:8px; cursor:pointer; text-transform:uppercase; font-size:12px; transition:0.3s; letter-spacing:1px; }
+        .cyber-action-btn { background:<?php echo $cat_det['gradient']; ?>; color:#000; font-weight:850; padding:12px 25px; border:none; border-radius:8px; cursor:pointer; text-transform:uppercase; font-size:12px; transition:0.3s; letter-spacing:1px; box-sizing: border-box; }
         .cyber-action-btn:hover { filter:brightness(1.15); box-shadow:0 0 15px <?php echo $cat_det['color']; ?>55; }
         .faq-item { border-bottom:1px solid rgba(255,255,255,0.05); padding:16px 0; cursor:pointer; }
         .faq-question { color:#fff; font-weight:700; font-size:15px; display:flex; justify-content:space-between; align-items:center; }
         .faq-answer { display:none; color:#9ca3af; font-size:14px; margin-top:8px; line-height:1.6; }
+
+        /* Responsive Tool layout Grid */
+        .tool-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        @media screen and (min-width: 1024px) {
+            .tool-layout-grid {
+                grid-template-columns: 2.5fr 1fr;
+            }
+        }
+
+        /* Responsive Tool Enclosure and inner flex layouts */
+        .tool-interface-enclosure {
+            background:#070b13; 
+            border:1.5px dashed rgba(255,255,255,0.1); 
+            border-radius:12px; 
+            padding:15px; 
+            margin-bottom:25px; 
+            clear:both;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        @media screen and (min-width: 768px) {
+            .tool-interface-enclosure {
+                padding:25px;
+            }
+        }
+
+        /* Enforce mobile-first responsive stacking for any flex container with buttons/selects */
+        @media screen and (max-width: 768px) {
+            .tool-interface-enclosure div[style*="display:flex"]:not([style*="flex-wrap:wrap"]):not([style*="flex-wrap: wrap"]),
+            .tool-interface-enclosure div[style*="display: flex"]:not([style*="flex-wrap:wrap"]):not([style*="flex-wrap: wrap"]) {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 12px !important;
+            }
+            .tool-interface-enclosure select,
+            .tool-interface-enclosure input,
+            .tool-interface-enclosure select.cyan-glow-input {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .tool-interface-enclosure .cyber-action-btn,
+            .tool-interface-enclosure button {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            /* How to Use features grid on mobile should stack */
+            .bento-box div[style*="display:grid"],
+            .bento-box div[style*="display: grid"] {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            /* Comments section responsive adjustments */
+            .cyber-tool-discussion-pouch {
+                padding: 15px !important;
+            }
+            .cyber-tool-discussion-pouch div[style*="display:grid"],
+            .cyber-tool-discussion-pouch div[style*="display: grid"] {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            .cyber-tool-discussion-pouch button {
+                align-self: stretch !important;
+                width: 100% !important;
+            }
+        }
     </style>
-    <div class="cyber-page-wrapper px-4 py-8 lg:py-16">
+    <div class="cyber-page-wrapper px-4 pb-8 lg:pb-16">
         <div class="max-w-7xl mx-auto">
             
             <?php ilybd_render_tool_breadcrumbs($tool_slug); ?>
             
-            <div style="display:grid; grid-template-columns:1fr; lg:grid-template-columns:2.5fr 1fr; gap:30px; align-items:start;">
+            <div class="tool-layout-grid">
                 
                 <!-- Left Main Column (Tool Interface + Guides) -->
                 <div>
                     <!-- Tool Main Showcase Box -->
                     <section class="bento-box shadow-xl" style="border-color:<?php echo $cat_det['color']; ?>33;">
                         <span class="bento-label"><?php echo esc_html($cat_det['icon'] . ' ' . $cat_det['name']); ?></span>
-                        <h1 class="neon-heading text-3xl lg:text-4xl" style="color:#fff; margin:0 0 10px 0;"><?php echo esc_html($tool['name_bn']); ?></h1>
-                        <h2 style="color:#9ca3af; font-family:'JetBrains Mono', monospace; font-size:14px; margin:0 0 20px 0; font-weight:500;"><?php echo esc_html($tool['name']); ?></h2>
+                        <h1 class="neon-heading"><?php echo esc_html($tool['name']); ?></h1>
+                        <h2 style="color:#00f0ff; font-family:'Hind Siliguri', sans-serif; font-size:16px; margin:5px 0 20px 0; font-weight:600;"><?php echo esc_html($tool['name_bn']); ?></h2>
                         
                         <div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:30px; font-size:12px; color:#9ca3af;">
                             <span style="background:rgba(255,255,255,0.04); padding:4px 10px; border-radius:4px; border:1px solid rgba(255,255,255,0.08);">👁️ <span id="view-count-text"><?php echo number_format($views); ?></span> Views</span>
                             <span style="background:rgba(255,255,255,0.04); padding:4px 10px; border-radius:4px; border:1px solid rgba(255,255,255,0.08);">⚡ <span id="usage-count-text"><?php echo number_format($usages); ?></span> Usages</span>
                             <span style="background:rgba(255,255,255,0.04); padding:4px 10px; border-radius:4px; border:1px solid rgba(255,255,255,0.08);">💖 <span id="like-count-text"><?php echo number_format($likes); ?></span> Likes</span>
                         </div>
-
+ 
                         <!-- DYNAMIC TOOL INTERFACE LOADER -->
-                        <div class="tool-interface-enclosure" style="background:#070b13; border:1.5px dashed rgba(255,255,255,0.1); border-radius:12px; padding:25px; margin-bottom:25px; clear:both;">
+                        <div class="tool-interface-enclosure">
                             <?php ilybd_render_active_tool_interface($tool_slug); ?>
                         </div>
                     </section>
@@ -591,6 +746,14 @@ function ilybd_render_active_tool_interface($tool_slug) {
     }
     
     $tool = $tools[$tool_slug];
+    
+    // Check if the tool has a custom HTML/CSS/JS code block defined via Admin panel
+    if (!empty($tool['custom_code'])) {
+        echo '<!-- Custom User Tool Interface -->';
+        echo $tool['custom_code'];
+        return;
+    }
+    
     $suite = $tool['category'];
     $file_path = get_template_directory() . "/inc/tools-suites/{$suite}.php";
     

@@ -114,6 +114,16 @@ export interface AdminSettings {
   referralXpReward?: number;   // XP points for both referrer and referee (e.g. 50 XP)
   refereeBonusTaka?: number;   // Bonus Taka for registered user (referee)
   refereeXpReward?: number;    // XP points for registered user (referee)
+  enableNewsSection?: boolean;
+  showNewsModule?: boolean;
+  newsDisplayType?: "latest" | "trending" | "breaking" | "manual" | "mixed";
+  newsDisplayCount?: number;
+  newsShowThumbnail?: boolean;
+  newsShowPublishTime?: boolean;
+  newsShowCategory?: boolean;
+  newsShowSummary?: boolean;
+  newsShowReadMore?: boolean;
+  newsButtonText?: string;
 }
 
 export interface LedgerEntry {

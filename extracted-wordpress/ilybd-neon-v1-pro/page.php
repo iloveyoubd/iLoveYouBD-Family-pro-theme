@@ -39,17 +39,14 @@ get_header(); ?>
         min-height: 100vh;
     }
 
-    /* ১. স্টিকি টাইটেল */
+    /* ১. পেজ টাইটেল (নন-স্টিকি ও ন্যাচারাল স্ক্রলিং) */
     .ultra-sticky-header {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        background: rgba(10, 10, 12, 0.98);
-        padding: 10px 0 0 0; /* নিচে প্যাডিং কমিয়ে লাইনের সাথে মিশিয়ে দেওয়া হয়েছে */
-        margin-bottom: 15px;
+        position: relative;
+        z-index: 10;
+        background: transparent;
+        padding: 10px 0 0 0;
+        margin-bottom: 25px;
         text-align: center;
-        backdrop-filter: blur(10px);
     }
 
     /* টাইটেল টেক্সট আরজিবি */
@@ -111,7 +108,7 @@ get_header(); ?>
 
     /* মোবাইলের জন্য ঠিক করা */
     @media (max-width: 768px) {
-        .ultra-sticky-header { top: 0; padding-top: 8px; }
+        .ultra-sticky-header { padding-top: 8px; margin-bottom: 15px; }
         .rgb-text-lighting { font-size: 1.2rem; }
         .slim-rgb-container { margin: 5px; border-radius: 20px; } 
         .inner-page-content { border-radius: 19px; padding: 5px; }

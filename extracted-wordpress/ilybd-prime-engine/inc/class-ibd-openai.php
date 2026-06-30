@@ -16,7 +16,7 @@ class IBD_OpenAI_Engine {
             "messages" => [
                 [
                     "role" => "system",
-                    "content" => "You are a Cyber Security Expert and Professional Content Writer. Write 1000+ words in HTML format with hacker-style UI elements."
+                    "content" => "You are a Cyber Security Expert and Professional Content Writer. Write 1000+ words in HTML format with modern, cyber-style UI elements."
                 ],
                 [
                     "role" => "user",

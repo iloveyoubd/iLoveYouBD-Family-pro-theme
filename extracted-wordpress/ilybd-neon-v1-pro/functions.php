@@ -47,7 +47,7 @@ add_action('after_setup_theme', function () {
         'cyber-ui-settings.php', 'user-dashboard.php', 'post-layouts.php', 'featured-control.php',
         'settings-core.php', 'settings-slider.php', 'settings-featured.php', 'settings-popular.php',
         'ily-admin-settings.php', 'cyber-layout-engine.php', 'cyber-render-engine.php', 'speed-optimizer.php', 'autonomous-publishing-v2.php', 'seo-engine.php', 'command-central-helpers.php',
-        'ilybd-tools-engine.php', 'ilybd-tools-views.php', 'cyber-social-hub.php', 'cyber-security-autopilot.php', 'google-services-integrator.php', 'cyber-biometric-honeypot.php', 'nextgen-autopilot-sections.php', 'qa-autopilot-engine.php'
+        'ilybd-tools-engine.php', 'ilybd-tools-views.php', 'cyber-social-hub.php', 'cyber-security-autopilot.php', 'google-services-integrator.php', 'nextgen-autopilot-sections.php', 'qa-autopilot-engine.php', 'news-autopilot.php'
     ];
     foreach ($modules as $file) {
         $path = get_template_directory() . '/inc/' . $file;
@@ -131,32 +131,45 @@ function ilybd_strip_pillar_text_from_excerpt($excerpt, $post) {
 
     // Check if the content contains our custom wrapper and EEAT blocks
     if (strpos($content, 'ilybd-unique-post-wrapper') !== false) {
-        // Extract content inside the unique wrapper
-        if (preg_match('/<div class="ilybd-unique-post-wrapper"[^>]*>(.*?)<\/div>\s*$/is', $content, $matches)) {
-            $excerpt_base = $matches[1];
-        } else {
-            $excerpt_base = $content;
+        
+        // Surgical removal of the EEAT meta box HTML BEFORE stripping tags
+        $eeat_start = strpos($content, '<div class="ilybd-eeat-meta-box"');
+        if ($eeat_start !== false) {
+            $wrapper_start = strpos($content, '<div class="ilybd-unique-post-wrapper"');
+            if ($wrapper_start !== false && $wrapper_start > $eeat_start) {
+                $content = substr_replace($content, '', $eeat_start, $wrapper_start - $eeat_start);
+            }
         }
 
-        // Strip known injected widget blocks to avoid showing them in excerpt previews
-        $excerpt_base = preg_replace('/<div class="ilybd-key-takeaways-box".*?<\/div>/is', '', $excerpt_base);
-        $excerpt_base = preg_replace('/<div class="ilybd-human-experience-box".*?<\/div>/is', '', $excerpt_base);
-        $excerpt_base = preg_replace('/<div class="ilybd-pros-cons-grid".*?<\/div>/is', '', $excerpt_base);
-        $excerpt_base = preg_replace('/<div class="ilybd-interactive-poll-box".*?<\/div>/is', '', $excerpt_base);
-        $excerpt_base = preg_replace('/<div class="ilybd-trusted-sources-block".*?<\/div>/is', '', $excerpt_base);
-        $excerpt_base = preg_replace('/<div class="ilybd-auto-comparison-table-wrapper".*?<\/div>/is', '', $excerpt_base);
-        $excerpt_base = preg_replace('/<div class="post-inline-image".*?<\/div>/is', '', $excerpt_base);
-        $excerpt_base = preg_replace('/<div class="ilybd-inline-recommendation".*?<\/div>/is', '', $excerpt_base);
-
-        // Strip HTML tags and normalize spaces
-        $clean_text = wp_strip_all_tags($excerpt_base);
+        // Strip HTML tags and normalize spaces from the FULL content directly to avoid complex DOM regex issues
+        $clean_text = wp_strip_all_tags($content);
         $clean_text = preg_replace('/\s+/u', ' ', $clean_text);
         
-        $excerpt = wp_trim_words($clean_text, 16, '...');
+        // Remove the EEAT Technical Reviewer block text (fallback if the HTML removal didn't work)
+        $clean_text = preg_replace('/(✍️\s*)?Technical Reviewer.*?অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:[^\.]*(\.|$)?/mui', '', $clean_text);
+        $clean_text = preg_replace('/🧬?\s*Topic Cluster Pillar Resource:.*?আমাদের প্রধান ক্যাটাগরি পিলারে ক্লিক করে এই বিষয়ের পূর্ণাঙ্গ বিবরণ পড়ুন:[^\.]*(\.|$)?/mui', '', $clean_text);
+        
+        $clean_text = preg_replace('/Technical Reviewer.*?Last Updated.*?(অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:|🛡️)/i', '', $clean_text);
+        $clean_text = preg_replace('/✍️.*?অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:.*?(?=\s)/i', '', $clean_text);
+        $clean_text = preg_replace('/Technical Reviewer.*?অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:.*?(?=[ক-য়অ-ঔ])/usi', '', $clean_text);
+        
+        if (preg_match('/Technical Reviewer.*অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:[^।\.]+[।\.]?/usi', $clean_text, $matches)) {
+            $clean_text = str_replace($matches[0], '', $clean_text);
+        }
+
+        // Remove Key Takeaways Header
+        $clean_text = str_replace('📌 মূল অংশসমূহের সারসংক্ষেপ (Key Takeaways)', '', $clean_text);
+
+        // Re-trim excerpt
+        $excerpt = trim($clean_text);
+        if (!empty($excerpt)) {
+            $excerpt = wp_trim_words($excerpt, 16, '...');
+        }
     } else {
         // Plain text fallback regex cleanup for older or legacy posts
         if (strpos($excerpt, 'Technical Reviewer') !== false || strpos($excerpt, 'অফিসিয়াল ইইএটি') !== false) {
             $excerpt = preg_replace('/(✍️\s*)?Technical Reviewer.*?অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:[^\.]*(\.|$)?/mui', '', $excerpt);
+            $excerpt = preg_replace('/Technical Reviewer.*অফিসিয়াল ইইএটি এন্ট্রি মন্তব্য:[^।\.]+[।\.]?/usi', '', $excerpt);
         }
         if (strpos($excerpt, 'Topic Cluster Pillar') !== false) {
             $excerpt = preg_replace('/🧬?\s*Topic Cluster Pillar Resource:.*?আমাদের প্রধান ক্যাটাগরি পিলারে ক্লিক করে এই বিষয়ের পূর্ণাঙ্গ বিবরণ পড়ুন:[^\.]*(\.|$)?/mui', '', $excerpt);
@@ -682,8 +695,8 @@ add_shortcode('ilybd_social_hub', function() {
 ===================================== */
 function ilybd_get_user_tier($user_id) {
     $points = (int)get_user_meta($user_id, 'ilybd_total_points', true);
-    if ($points >= 5000) return ['rank'=>'Cyber Overlord','color'=>'#ff003c','level'=>'Ultimate Power'];
-    if ($points >= 1000) return ['rank'=>'Elite Hacker','color'=>'#00ff41','level'=>'High Power'];
+    if ($points >= 5000) return ['rank'=>'Security Architect','color'=>'#ff003c','level'=>'Ultimate Power'];
+    if ($points >= 1000) return ['rank'=>'System Analyst','color'=>'#00ff41','level'=>'High Power'];
     if ($points >= 100)  return ['rank'=>'Technician','color'=>'#00d4ff','level'=>'Standard Power'];
     return ['rank' => 'Newbie', 'color' => '#8b949e', 'level' => 'Low Power'];
 }
@@ -2870,6 +2883,24 @@ function ilybd_cyber_tools_widget_shortcode($atts) {
     
     return $html;
 }
+
+/* =========================================================
+   Q&A FORUM ARCHIVE PAGINATION CONTROLLER (Admin Defined Limit)
+   ========================================================= */
+add_action('pre_get_posts', function($query) {
+    if (!is_admin() && $query->is_main_query()) {
+        if ($query->is_post_type_archive('ilybd_question') || 
+            ($query->is_tax('category') && isset($query->query_vars['post_type']) && $query->query_vars['post_type'] === 'ilybd_question') ||
+            ($query->is_tax('post_tag') && isset($query->query_vars['post_type']) && $query->query_vars['post_type'] === 'ilybd_question')) {
+            
+            $limit = intval(get_option('ilybd_questions_per_page', 10));
+            if ($limit < 1) {
+                $limit = 10;
+            }
+            $query->set('posts_per_page', $limit);
+        }
+    }
+});
 
 
 

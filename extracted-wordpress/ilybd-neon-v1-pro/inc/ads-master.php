@@ -139,11 +139,11 @@ function ilybd_ads_hub_settings_page() {
 
                 <div>
                     <label style="display:block; color:#fff; font-weight:bold; margin-bottom:8px; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">
-                        🕵️ Admin Preview Border Mode
+                        📏 Highlight Ad Positions
                     </label>
                     <select name="ilybd_hacker_mode" style="width:100%; background:#070a0f; color:#00e5ff; border:1px solid #334155; padding:10px 14px; border-radius:8px; font-weight:bold; outline:none;">
-                        <option value="yes" <?php selected($hacker_mode, 'yes'); ?>>ON (অ্যাডমিনদের জন্য ডট বর্ডার দিয়ে বিজ্ঞাপন স্লট পজিশন মার্ক করুন)</option>
-                        <option value="no" <?php selected($hacker_mode, 'no'); ?>>OFF (ভিজিটরদের মতো স্বাভাবিক ক্লিয়ার প্যানেল রাখুন)</option>
+                        <option value="yes" <?php selected($hacker_mode, 'yes'); ?>>ON (বিজ্ঞাপন পজিশন হাইলাইট করুন)</option>
+                        <option value="no" <?php selected($hacker_mode, 'no'); ?>>OFF (সাধারণ মোড রাখুন)</option>
                     </select>
                     <small style="color:#8b949e; display:block; margin-top:5px; font-size:11.5px;">চালু থাকলে অ্যাডমিন হিসেবে লগইন করা অবস্থায় বর্ডারসহ বিজ্ঞাপনের স্থান চিহ্নিত হবে।</small>
                 </div>

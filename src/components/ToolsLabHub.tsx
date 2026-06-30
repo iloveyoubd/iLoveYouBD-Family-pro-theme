@@ -98,36 +98,6 @@ export default function ToolsLabHub({ onSelectTab, onSelectSubTool }: ToolsLabHu
 
   const tools: ToolItem[] = [
     {
-      id: "nid-maker",
-      classNameLabel: "NID-CARD",
-      icon: Layout,
-      nameBangla: "স্মার্ট এনআইডি কার্ড জেনারেটর প্রো 📱",
-      nameEnglish: "Smart NID Card Generator",
-      tagline: "নিজের ফটো, স্বাক্ষর ও এআই ব্যাকগ্রাউন্ড রিমুভারসহ স্মার্ট কার্ড মেকার",
-      description: "বাংলাদেশি প্রযুক্তিক্ষেত্রে সবচেয়ে সাড়া জাগানো স্মার্ট এনআইডি কার্ড বা ডিজিটাল কাস্টম আইডি তৈরির অফলাইন-লাইক ইউটিলিটি।",
-      instructions: "বাংলা/ইংরেজি নাম, এনআইডি নম্বর ও জন্মতারিখ লিখে নিজের ছবি ও এআই রেডি সিগনেচার আপলোড করুন এবং হাই-কোয়ালিটি পিএনজি ইমেজ জেনারেট করুন।",
-      badge: "ACTIVE V3.0",
-      badgeColors: "bg-emerald-950 text-emerald-400 border-emerald-800",
-      buttonLabel: "এনআইডি মেকার ওপেন করুন ➔",
-      hotkey: "CTRL+N",
-      action: () => onSelectTab("nid")
-    },
-    {
-      id: "nid-key",
-      classNameLabel: "NID-KEY",
-      icon: ShieldCheck,
-      nameBangla: "এনআইডি সিকিউরিটি কি জেনারেটর 🔑",
-      nameEnglish: "NID Security Key Generator",
-      tagline: "এনআইডি ডাউনলোড সিকিউরিটি ও আইডেন্টিটি এনক্রিপশন প্রুফ কি",
-      description: "আপনার এনআইডি কার্ড তৈরি ও ডাউনলোডের প্রক্রিয়াকে শতভাগ নিরাপদ রাখতে গ্লোবাল ১০-ডিজিটের অ্যাক্সেস কোড তৈরি করার এআই ইঞ্জিন।",
-      instructions: "নিজের আংশিক এনআইডি নম্বর বা মোবাইল নম্বর দিয়ে ভেরিফাইড গেটওয়ে চালুর মাধ্যমে সিকিউরিটি জেনারেটর ক্র্যাফট প্রুফ ফাইল লক ও কপি করার জন্য উপযোগী।",
-      badge: "LIVE CORE",
-      badgeColors: "bg-cyan-950 text-cyan-400 border-cyan-800",
-      buttonLabel: "ইন্টারেক্টিভ কি জেনারেটর ⚡",
-      hotkey: "CTRL+K",
-      action: () => setShowKeyGen(true)
-    },
-    {
       id: "ai-maya",
       classNameLabel: "AI-MAYA",
       icon: Cpu,
@@ -360,7 +330,7 @@ export default function ToolsLabHub({ onSelectTab, onSelectSubTool }: ToolsLabHu
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-5 h-5 text-cyan-400" />
                   <span className="font-mono text-xs font-extrabold uppercase tracking-widest text-[#00f0ff]">
-                    NID SECURE ACCESS GATEWAY KEY
+                    SECURITY ACCESS GATEWAY KEY
                   </span>
                 </div>
                 <button
@@ -382,14 +352,14 @@ export default function ToolsLabHub({ onSelectTab, onSelectSubTool }: ToolsLabHu
                     ক্রিপ্টোগ্রাফিক সিকিউরিটি কি তৈরি ড্যাশবোর্ড 🛡️
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                    আপনার নিজের এনআইডি নম্বর এখানে যুক্ত করে টানেল এনক্রিপশন লকিং কি তৈরি করুন। এটি ডাউনলোডার সিকিউরিটি রিকোয়েস্ট ইন্টিগ্রিটি ও মেম্বার ভেরিফিকেশনে ব্যবহৃত হয়।
+                    আপনার নিজের লাইসেন্স নম্বর এখানে যুক্ত করে টানেল এনক্রিপশন লকিং কি তৈরি করুন। এটি ডাউনলোডার সিকিউরিটি রিকোয়েস্ট ইন্টিগ্রিটি ও মেম্বার ভেরিফিকেশনে ব্যবহৃত হয়।
                   </p>
                 </div>
 
                 <div className="space-y-3.5">
                   <div className="space-y-1.5">
                     <label className="block text-[11px] font-mono text-cyan-400 font-bold uppercase">
-                      ১০ বা ১৭-ডিজিট স্মার্ট এনআইডি নং (NID Number)
+                      ১০ বা ১৭-ডিজিট স্মার্ট সিকিউরিটি নং (Security Number)
                     </label>
                     <input
                       type="text"

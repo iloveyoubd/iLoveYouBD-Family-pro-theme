@@ -6,7 +6,7 @@ class IBD_Gemini_Engine {
         if (!$api_key) return false;
 
         // Auto-assign specific expert personas based on keywords
-        $persona = "Elite Bengali Ethical Hacker and Full-Stack Developer";
+        $persona = "Elite Bengali Cyber Security Expert and Full-Stack Developer";
         if (strpos(strtolower($topic), 'seo') !== false || strpos(strtolower($topic), 'blogging') !== false) {
             $persona = "Elite Digital Marketer and Senior SEO Strategist";
         } elseif (strpos(strtolower($topic), 'finance') !== false || strpos(strtolower($topic), 'earn') !== false) {

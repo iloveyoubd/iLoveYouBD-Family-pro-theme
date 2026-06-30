@@ -16,77 +16,67 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
 
 <article class="pro-post-card<?php echo ($mobile_post_layout === 'classic_compact_wapka') ? ' mobile-classic-compact' : ''; ?>">
 
-    <div class="post-media">
-        <a href="<?php echo $post_link; ?>" aria-label="<?php the_title(); ?>">
-            <?php if (has_post_thumbnail()) : ?>
-                <?php the_post_thumbnail('medium', ['alt' => esc_attr(get_the_title())]); ?>
-            <?php else : ?>
-                <div class="no-thumb">ILYBD PRO</div>
-            <?php endif; ?>
+    <div class="post-card-body-row">
+        <div class="post-media">
+            <a href="<?php echo $post_link; ?>" aria-label="<?php the_title(); ?>">
+                <?php if (has_post_thumbnail()) : ?>
+                    <?php the_post_thumbnail('medium', ['alt' => esc_attr(get_the_title())]); ?>
+                <?php else : ?>
+                    <div class="no-thumb">ILYBD PRO</div>
+                <?php endif; ?>
 
-            <span class="cat-badge">
-                <?php
-                $categories = get_the_category();
-                echo !empty($categories) ? esc_html($categories[0]->name) : 'Tech';
-                ?>
-            </span>
-        </a>
-        
-        <!-- High Tech Cognitive TTS Card Button (2040 Cyber style) -->
-        <button class="card-tts-trigger" 
-                data-title="<?php echo esc_attr(get_the_title()); ?>" 
-                data-excerpt="<?php echo esc_attr(wp_strip_all_tags(get_the_excerpt() ?: get_the_content())); ?>" 
-                title="পোস্টটি শুনুন (Listen to summary)" 
-                onclick="toggleCardPlayback(this, event)"
-                style="position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: rgba(4, 7, 12, 0.85); border: 1.5px solid <?php echo $neon; ?>; display: flex; align-items: center; justify-content: center; color: <?php echo $neon; ?>; font-size: 14px; cursor: pointer; transition: all 0.3s; z-index: 55; box-shadow: 0 0 12px <?php echo $neon; ?>55; backdrop-filter: blur(4px);"
-                onmouseover="this.style.background='<?php echo $neon; ?>'; this.style.color='#000'; this.style.boxShadow='0 0 18px <?php echo $neon; ?>';" 
-                onmouseout="if(!this.classList.contains('playing')){ this.style.background='rgba(4, 7, 12, 0.85)'; this.style.color='<?php echo $neon; ?>'; this.style.boxShadow='0 0 12px <?php echo $neon; ?>55'; }">
-            <i class="fa-solid fa-volume-high"></i>
-        </button>
+                <span class="cat-badge">
+                    <?php
+                    $categories = get_the_category();
+                    echo !empty($categories) ? esc_html($categories[0]->name) : 'Tech';
+                    ?>
+                </span>
+            </a>
+        </div>
+
+        <div class="post-info">
+            <h2 class="post-title">
+                <a href="<?php echo $post_link; ?>">
+                    <?php echo esc_html(wp_trim_words(get_the_title(), 11, '...')); ?>
+                </a>
+            </h2>
+
+            <p class="post-excerpt">
+                <?php echo esc_html(wp_trim_words(get_the_excerpt(), 28, '...')); ?>
+            </p>
+
+            <div class="rgb-divider"></div>
+        </div>
     </div>
 
-    <div class="post-info">
-        <h2 class="post-title">
-            <a href="<?php echo $post_link; ?>">
-                <?php echo esc_html(wp_trim_words(get_the_title(), 11, '...')); ?>
+    <div class="meta-footer">
+        <div class="meta-wrapper">
+            
+            <a href="<?php echo esc_url(get_author_posts_url($author_id)); ?>" class="meta-link author-group">
+                <?php echo get_avatar($author_id, 22, '', 'Author Avatar', array('class' => 'round-avatar')); ?>
+                <span class="author-name"><?php the_author(); ?></span>
             </a>
-        </h2>
 
-        <p class="post-excerpt">
-            <?php echo esc_html(wp_trim_words(get_the_excerpt(), 16, '...')); ?>
-        </p>
-
-        <div class="rgb-divider"></div>
-
-        <div class="meta-footer">
-            <div class="meta-wrapper">
-                
-                <a href="<?php echo esc_url(get_author_posts_url($author_id)); ?>" class="meta-link author-group">
-                    <?php echo get_avatar($author_id, 22, '', 'Author Avatar', array('class' => 'round-avatar')); ?>
-                    <span class="author-name"><?php the_author(); ?></span>
-                </a>
-
-                <div class="meta-link no-click" title="Total Views">
-                    <i class="fa-regular fa-eye" style="color: <?php echo $neon; ?>;"></i> 
-                    <span><?php echo esc_html($view_count); ?></span>
-                </div>
-
-                <a href="<?php echo $comment_link; ?>" class="meta-link" title="Comments">
-                    <i class="fa-regular fa-comment" style="color: <?php echo $neon; ?>;"></i> 
-                    <span><?php echo get_comments_number(); ?></span>
-                </a>
-                
-                <a href="<?php echo $post_link; ?>#ilybd-like-container" class="meta-link like-btn" title="Total Likes">
-                    <i class="fa-regular fa-heart" style="color: <?php echo $neon; ?>;"></i> 
-                    <span><?php echo esc_html($like_count); ?></span>
-                </a>
-
-                <a href="<?php echo $post_link; ?>" class="meta-link" title="Published Time">
-                    <i class="fa-regular fa-clock" style="color: <?php echo $neon; ?>;"></i> 
-                    <span><?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> ago</span>
-                </a>
-
+            <div class="meta-link no-click" title="Total Views">
+                <i class="fa-regular fa-eye" style="color: <?php echo $neon; ?>;"></i> 
+                <span><?php echo esc_html($view_count); ?></span>
             </div>
+
+            <a href="<?php echo $comment_link; ?>" class="meta-link" title="Comments">
+                <i class="fa-regular fa-comment" style="color: <?php echo $neon; ?>;"></i> 
+                <span><?php echo get_comments_number(); ?></span>
+            </a>
+            
+            <a href="<?php echo $post_link; ?>#ilybd-like-container" class="meta-link like-btn" title="Total Likes">
+                <i class="fa-regular fa-heart" style="color: <?php echo $neon; ?>;"></i> 
+                <span><?php echo esc_html($like_count); ?></span>
+            </a>
+
+            <a href="<?php echo $post_link; ?>" class="meta-link" title="Published Time">
+                <i class="fa-regular fa-clock" style="color: <?php echo $neon; ?>;"></i> 
+                <span><?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> ago</span>
+            </a>
+
         </div>
     </div>
 
@@ -138,7 +128,9 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
 
 @keyframes rgb-move { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
 
+.post-card-body-row { display: block; }
 .post-info { padding: 15px; }
+.meta-footer { padding: 0 15px 15px 15px; }
 .post-title { font-size: 17px; margin-bottom: 8px; line-height: 1.4; font-weight: 600; }
 .post-title a { color: #ffffff; text-decoration: none; transition: 0.2s; }
 .post-title a:hover { color: <?php echo $neon; ?>; }
@@ -243,18 +235,26 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
 @media screen and (max-width: 768px) {
     .pro-post-card.mobile-classic-compact {
         display: flex !important;
-        flex-direction: row !important;
-        align-items: flex-start !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
         padding: 12px !important;
         margin-bottom: 14px !important;
         background: #0d1321 !important;
         background-image: none !important;
         border: 1.5px solid rgba(0, 240, 255, 0.2) !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05) !important;
-        gap: 14.5px !important;
+        gap: 8px !important;
         border-radius: 14px !important;
         overflow: hidden !important;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    }
+
+    .pro-post-card.mobile-classic-compact .post-card-body-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        gap: 14.5px !important;
+        width: 100% !important;
     }
     
     .pro-post-card.mobile-classic-compact:hover {
@@ -293,14 +293,6 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
         background: <?php echo $neon; ?> !important;
         color: #000 !important;
         font-weight: 800 !important;
-    }
-    
-    .pro-post-card.mobile-classic-compact .card-tts-trigger {
-        top: 4px !important;
-        right: 4px !important;
-        width: 24px !important;
-        height: 24px !important;
-        font-size: 9px !important;
     }
     
     .pro-post-card.mobile-classic-compact .post-info {
@@ -344,7 +336,7 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
         margin: 0 !important;
         line-height: 1.45 !important;
         display: -webkit-box !important;
-        -webkit-line-clamp: 2 !important;
+        -webkit-line-clamp: 3 !important;
         -webkit-box-orient: vertical !important;
         overflow: hidden !important;
         text-align: left !important;
@@ -357,19 +349,28 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
     .pro-post-card.mobile-classic-compact .meta-footer {
         margin-top: 4px !important;
         width: 100% !important;
-        border-top: 1px dashed rgba(255, 255, 255, 0.08) !important;
-        padding-top: 6px !important;
+        border-top: 1px dashed rgba(0, 240, 255, 0.2) !important;
+        padding-top: 8px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-bottom: 0 !important;
     }
     
     .pro-post-card.mobile-classic-compact .meta-wrapper {
         display: flex !important;
         flex-direction: row !important;
-        flex-wrap: wrap !important;
-        gap: 6px 12px !important;
-        overflow-x: visible !important;
+        flex-wrap: nowrap !important;
+        gap: 6px 10px !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
         justify-content: flex-start !important;
         align-items: center !important;
         width: 100% !important;
+    }
+    
+    .pro-post-card.mobile-classic-compact .meta-wrapper::-webkit-scrollbar {
+        display: none !important;
     }
     
     .pro-post-card.mobile-classic-compact .meta-link {
@@ -383,6 +384,7 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
         line-height: 1.2 !important;
         padding: 8px 6px !important; /* Touch target fix */
         margin: -8px -2px !important;
+        flex-shrink: 0 !important; /* Prevent squeezing */
     }
     
     .pro-post-card.mobile-classic-compact .meta-link i {
@@ -404,10 +406,11 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
     }
     
     .pro-post-card.mobile-classic-compact .author-group {
-        height: 16px !important;
+        height: auto !important; /* Let height adjust dynamically */
         display: inline-flex !important;
         align-items: center !important;
-        gap: 4.5px !important;
+        gap: 6px !important; /* Elegant spacing between avatar and name */
+        flex-shrink: 0 !important; /* Prevent container squeezing */
     }
     
     .pro-post-card.mobile-classic-compact .author-name {
@@ -415,7 +418,7 @@ $mobile_post_layout = get_option('ilybd_mobile_post_layout', 'modern_card');
         font-size: 11px !important;
         font-weight: 700 !important;
         color: #ffffff !important;
-        white-space: normal !important; /* Allow names to display fully */
+        white-space: nowrap !important; /* Force name to single line to stop overlaps */
     }
 }
 </style>

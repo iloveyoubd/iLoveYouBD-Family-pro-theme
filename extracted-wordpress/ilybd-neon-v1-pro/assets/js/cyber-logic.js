@@ -90,7 +90,7 @@ jQuery(document).ready(function($) {
         });
     }, observerOptions);
 
-    $('.ilybd-pro-card, .cyber-post-item, .comment-body').each(function() {
+    $('.ilybd-pro-card, .cyber-post-item').each(function() {
         vfxObserver.observe(this);
     });
 

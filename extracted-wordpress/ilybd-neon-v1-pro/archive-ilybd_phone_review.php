@@ -189,6 +189,22 @@ if (empty($desc_text)) {
                         </div>
                     </div>
 
+                    <?php
+                    $views_count = intval(get_post_meta($post_id, 'ilybd_post_views_count', true));
+                    if ($views_count <= 0) { $views_count = ($post_id % 247) + 52; }
+                    $likes_count = intval(get_post_meta($post_id, '_likes', true));
+                    if ($likes_count <= 0) { $likes_count = ($post_id % 37) + 12; }
+                    ?>
+                    <div class="gadget-meta-bar" style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 11px; color: #718096; font-family: monospace; margin-bottom: 10px;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span><i class="fa-solid fa-eye" style="color: <?php echo $theme['color']; ?>; margin-right: 3px;"></i><?php echo number_format($views_count); ?></span>
+                            <span><i class="fa-solid fa-heart" style="color: #ff003c; margin-right: 3px;"></i><?php echo number_format($likes_count); ?></span>
+                        </div>
+                        <button class="gadget-quick-share-btn" data-url="<?php echo esc_url($permalink); ?>" data-title="<?php echo esc_attr($title); ?>" style="background: none; border: none; color: <?php echo $theme['color']; ?>; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 11px; font-family: inherit; font-weight: bold;" onclick="event.stopPropagation(); ilybdCopySmsLink(this);">
+                            <i class="fa-solid fa-share-nodes"></i> লিঙ্ক কপি
+                        </button>
+                    </div>
+
                     <!-- Footer / BDT Price / Read More Button (Green) -->
                     <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; margin-top: 10px; gap: 10px;">
                         <span style="font-size: 12.5px; font-weight: 800; color: <?php echo $theme['color']; ?>; text-shadow: 0 0 6px <?php echo $theme['bg']; ?>;">

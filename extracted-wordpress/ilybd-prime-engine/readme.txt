@@ -1,17 +1,16 @@
 === ILYBD Prime Engine ===
 Contributors: ILYBD Master
-Tags: 4k downloader, ai assistant, revenue share, seo factory, money making tools
+Tags: ai assistant, revenue share, seo factory, money making tools
 Requires at least: 5.0
 Tested up to: 6.4
 Stable tag: 1.5.0
 License: GPLv2 or later
 
 == Description ==
-The core engine for iloveyoubd.com. This plugin powers a high-tech ecosystem of 4K video downloaders, AI-driven content generation, and a unique user revenue-sharing system.
+The core engine for iloveyoubd.com. This plugin powers a high-tech ecosystem of AI-driven content generation, and a unique user revenue-sharing system.
 
 == Key Features ==
 * **AI Assistant:** 3D floating chatbot powered by Gemini API.
-* **4K Downloader:** Advanced multi-server 4K video extraction engine.
 * **SEO Factory:** Automatically generates 2000+ words high-CPC articles.
 * **Wallet System:** Real-time earnings tracking with Bkash/Nagad payout support.
 * **API Balancer:** Intelligent rotation of 50+ API keys to prevent limits.

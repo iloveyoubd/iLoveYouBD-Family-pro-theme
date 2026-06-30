@@ -64,11 +64,7 @@ $neon = get_option('ilybd_main_color', '#00ff41');
                     <div class="sitemap-card">
                         <h3><i class="fa-solid fa-toolbox"></i> Engineering Tools Lab</h3>
                         <ul class="sitemap-links">
-                            <li><a href="<?php echo home_url('/tv/'); ?>"><i class="fa-solid fa-tv"></i> IBD Cyber TV Streams (লাইভ টিভি চ্যানেল)</a></li>
                             <li><a href="<?php echo home_url('/tools-lab/'); ?>"><i class="fa-solid fa-flask"></i> Interactive Coding Playground (টুলস ল্যাব)</a></li>
-                            <li><a href="<?php echo home_url('/cricket/'); ?>"><i class="fa-solid fa-baseball"></i> Live Cricket Telemetry Widgets (লাইভ ক্রিকেট স্কোর)</a></li>
-                            <li><a href="<?php echo home_url('/freenet-config/'); ?>"><i class="fa-solid fa-wifi"></i> Freenet Config Generators (ফ্রি ইন্টারনেট কনফিগ)</a></li>
-                            <li><a href="<?php echo home_url('/proxy/'); ?>"><i class="fa-solid fa-network-wired"></i> Anonymous Proxy Server List (ফ্রি প্রক্সি সার্ভার)</a></li>
                         </ul>
                     </div>
 

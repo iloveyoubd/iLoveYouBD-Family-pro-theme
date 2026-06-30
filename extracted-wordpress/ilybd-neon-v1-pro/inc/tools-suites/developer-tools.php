@@ -240,7 +240,7 @@ function ilybd_render_tool_js_minifier_beautifier() {
             var raw = document.getElementById('js-raw-codes').value;
             if(!raw) { alert('জাভাস্ক্রিপ্ট কোড দিন!'); return; }
             
-            // Simulating a fast client-side whitespace and comment remover
+            // Fast client-side whitespace and comment remover
             var mini = raw.replace(/\/\*[\s\S]*?\*\//g, "") // comments
                           .replace(/\/\/.*/g, "") // line comments
                           .replace(/\s+/g, " ")
@@ -254,65 +254,33 @@ function ilybd_render_tool_js_minifier_beautifier() {
     <?php
 }
 
-// 7. MD5 Hash Generator
-function ilybd_render_tool_md5_hash_generator() {
+// 7. SHA-256 Hash Generator (Safe, Modern Replacement)
+function ilybd_render_tool_md5_generator() {
     ?>
     <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif;">
-        <label class="bento-label" style="color:#00f0ff;">INPUT RAW STRING / কনসেপ্ট টেক্সট</label>
+        <label class="bento-label" style="color:#00f0ff;">INPUT RAW STRING / টেক্সট দিন</label>
         <input type="text" id="md5-raw" class="cyan-glow-input" placeholder="e.g. MyPassword123" style="margin-bottom:15px;">
 
-        <button onclick="generateMD5()" class="cyber-action-btn" style="width:100%; margin-bottom:20px;">GENERATE CRYPTOGRAPHIC MD5 HASH ➔</button>
+        <button onclick="generateHash()" class="cyber-action-btn" style="width:100%; margin-bottom:20px;">GENERATE CRYPTOGRAPHIC SHA-256 HASH ➔</button>
 
         <div id="md5-output-con" style="display:none;">
-            <label class="bento-label" style="color:#00ff41;">MD5 HASH (32 CHARACTERSHEX)</label>
+            <label class="bento-label" style="color:#00ff41;">SHA-256 HASH RESULT</label>
             <input type="text" id="md5-result" class="cyan-glow-input" style="font-family:monospace; color:#00ff41;" readonly>
         </div>
     </div>
-    <!-- Simple Fast Clean MD5 Javascript Inline Engine -->
     <script>
-        // Simple client side md5 impl
-        function md5cycle(x, k) {
-            var a = x[0], b = x[1], c = x[2], d = x[3];
-            a = ff(a, b, c, d, k[0], 7, -680876936);
-            d = ff(d, a, b, c, k[1], 12, -389564586);
-            c = ff(c, d, a, b, k[2], 17,  606105819);
-            b = ff(b, c, d, a, k[3], 22, -1044525330);
-            a = ff(a, b, c, d, k[4], 7, -176418897);
-            d = ff(d, a, b, c, k[5], 12,  1200080426);
-            c = ff(c, d, a, b, k[6], 17, -1473231341);
-            b = ff(b, c, d, a, k[7], 22, -45705983);
-            a = ff(a, b, c, d, k[8], 7,  1770035416);
-            d = ff(d, a, b, c, k[9], 12, -1958414417);
-            c = ff(c, d, a, b, k[10], 17, -42063);
-            b = ff(b, c, d, a, k[11], 22, -1990404162);
-            a = ff(a, b, c, d, k[12], 7,  1804603682);
-            d = ff(d, a, b, c, k[13], 12, -40341101);
-            c = ff(c, d, a, b, k[14], 17, -1502002290);
-            b = ff(b, c, d, a, k[15], 22,  1236535329);
-            x[0] = add32(a, x[0]); x[1] = add32(b, x[1]); x[2] = add32(c, x[2]); x[3] = add32(d, x[3]);
-        }
-        function ff(a,b,c,d,x,s,t) { return add32(rotateleft(add32(add32(a, (b & c) | (~b & d)), add32(x, t)), s), b); }
-        function rotateleft(lValue, iShiftBits) { return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits)); }
-        function add32(x, y) { return (x + y) & 0xFFFFFFFF; }
-        
-        function generateMD5() {
+        async function generateHash() {
             var raw = document.getElementById('md5-raw').value;
             if(!raw) { alert('টেক্সট দিন!'); return; }
             
-            // Simulating hash calculations for quick local developer environments representation
-            var hash = "827ccb0eea8a706c4c34a16891f84e7b"; // Fast mock MD5 shell for password inputs validation
-            if(raw === '123456') hash = "e10adc3949ba59abbe56e057f20f883e";
-            else {
-                // simple custom pseudo-md5 hash algorithm representation
-                var charSum = 0;
-                for(var i=0; i<raw.length; i++) { charSum += raw.charCodeAt(i); }
-                hash = "fca99b7b" + charSum.toString(16) + "e10adc3949ba59ab" + (charSum*2).toString(16);
-                if(hash.length > 32) hash = hash.substring(0, 32);
-            }
+            const msgBuffer = new TextEncoder().encode(raw);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             
-            document.getElementById('md5-result').value = hash;
+            document.getElementById('md5-result').value = hashHex;
             document.getElementById('md5-output-con').style.display = 'block';
-            if(typeof incrementToolUsage === 'function') incrementToolUsage('md5-hash-generator');
+            if(typeof incrementToolUsage === 'function') incrementToolUsage('md5-generator');
         }
     </script>
     <?php
@@ -446,6 +414,49 @@ function ilybd_render_tool_binary_translator() {
                 if(typeof incrementToolUsage === 'function') incrementToolUsage('binary-translator');
             } catch(e) { alert('❌ ভুল বাইনারি বিন্যাস!'); }
         }
+    </script>
+    <?php
+}
+
+// 11. Neon Music Synthesizer 2040
+function ilybd_render_tool_neon_music_synthesizer_2040() {
+    ?>
+    <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif; text-align:center;">
+        <p style="color:#8b949e; font-size:13px; margin-bottom:20px;" class="bangla-font-siliguri">নিচের নিওন কিগুলোতে টাচ করে ব্রাউজার থেকে সরাসরি হাই ফ্রিকোয়েন্সি সাইবার টিউন বাজান।</p>
+        
+        <div style="display:flex; justify-content:center; gap:8px; margin:20px 0; max-width:400px; margin-left:auto; margin-right:auto;">
+            <button onclick="playSynthFrequency(261.63);" style="flex:1; height:80px; background:#04070c; border:1.5px solid #22c55e; border-radius:8px; color:#22c55e; font-weight:900; font-size:14px; cursor:pointer; font-family:monospace; transition:0.1s;" onmousedown="this.style.background='#22c55e'; this.style.color='#000';" onmouseup="this.style.background='#04070c'; this.style.color='#22c55e';" onmouseleave="this.style.background='#04070c'; this.style.color='#22c55e';">C4</button>
+            <button onclick="playSynthFrequency(293.66);" style="flex:1; height:80px; background:#04070c; border:1.5px solid #00f0ff; border-radius:8px; color:#00f0ff; font-weight:900; font-size:14px; cursor:pointer; font-family:monospace; transition:0.1s;" onmousedown="this.style.background='#00f0ff'; this.style.color='#000';" onmouseup="this.style.background='#04070c'; this.style.color='#00f0ff';" onmouseleave="this.style.background='#04070c'; this.style.color='#00f0ff';">D4</button>
+            <button onclick="playSynthFrequency(329.63);" style="flex:1; height:80px; background:#04070c; border:1.5px solid #ec4899; border-radius:8px; color:#ec4899; font-weight:900; font-size:14px; cursor:pointer; font-family:monospace; transition:0.1s;" onmousedown="this.style.background='#ec4899'; this.style.color='#000';" onmouseup="this.style.background='#04070c'; this.style.color='#ec4899';" onmouseleave="this.style.background='#04070c'; this.style.color='#ec4899';">E4</button>
+            <button onclick="playSynthFrequency(349.23);" style="flex:1; height:80px; background:#04070c; border:1.5px solid #fbbf24; border-radius:8px; color:#fbbf24; font-weight:900; font-size:14px; cursor:pointer; font-family:monospace; transition:0.1s;" onmousedown="this.style.background='#fbbf24'; this.style.color='#000';" onmouseup="this.style.background='#04070c'; this.style.color='#fbbf24';" onmouseleave="this.style.background='#04070c'; this.style.color='#fbbf24';">F4</button>
+            <button onclick="playSynthFrequency(392.00);" style="flex:1; height:80px; background:#04070c; border:1.5px solid #a855f7; border-radius:8px; color:#a855f7; font-weight:900; font-size:14px; cursor:pointer; font-family:monospace; transition:0.1s;" onmousedown="this.style.background='#a855f7'; this.style.color='#000';" onmouseup="this.style.background='#04070c'; this.style.color='#a855f7';" onmouseleave="this.style.background='#04070c'; this.style.color='#a855f7';">G4</button>
+        </div>
+        <p style="color:#e2e8f0; font-size:11px; font-family:'JetBrains Mono', monospace; margin-top:20px; letter-spacing:1px;">WEB AUDIO API SYNCH PORT ACTIVE (PURE SINE WAVE)</p>
+    </div>
+    <script>
+    let audioCtx = null;
+    function playSynthFrequency(freq) {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+            if (typeof incrementToolUsage === 'function') {
+                incrementToolUsage('neon-music-synthesizer-2040');
+            }
+        } catch(e) {}
+    }
     </script>
     <?php
 }

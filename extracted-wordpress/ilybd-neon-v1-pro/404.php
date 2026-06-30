@@ -6,7 +6,7 @@
 get_header(); ?>
 
 <div class="cyber-404-container">
-    <div class="hacker-matrix-bg"></div>
+    <div class="cyber-matrix-bg"></div>
 
     <div class="error-box-wrapper animate-glow">
         <div class="cyber-alert-header">
@@ -49,9 +49,6 @@ get_header(); ?>
                     <a href="<?php echo esc_url(home_url('/custom-qa')); ?>" class="portal-btn neon-blue-btn">
                         <i class="fa-solid fa-comments"></i> কমিউনিটি ফোরাম
                     </a>
-                    <a href="<?php echo esc_url(home_url('/cricket')); ?>" class="portal-btn neon-purple-btn">
-                        <i class="fa-solid fa-tv"></i> লাইভ খেলাধুলা
-                    </a>
                 </div>
             </div>
         </div>
@@ -88,7 +85,7 @@ get_header(); ?>
 }
 
 /* Matrix Binary Background Rain */
-.hacker-matrix-bg {
+.cyber-matrix-bg {
     position: absolute;
     inset: 0;
     opacity: 0.03;

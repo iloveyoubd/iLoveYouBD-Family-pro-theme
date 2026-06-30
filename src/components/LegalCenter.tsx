@@ -377,13 +377,13 @@ export default function LegalCenter({ initialTab, onChangeTab }: LegalCenterProp
                     <div className="p-5 rounded-2xl bg-amber-950/10 border border-amber-950/30 hover:border-amber-500/20 transition-all space-y-2">
                       <h3 className="text-white font-bold flex items-center gap-2">
                         <FileText className="w-5 h-5 text-amber-400" />
-                        <span>২. স্মার্ট এনআইডি মেকার এবং অন্যান্য টুলস (NID Card Demo & Simulation Tools)</span>
+                        <span>২. ওয়েব টুলস এবং এআই অ্যানালাইসিস (Web Tools & AI Analysis)</span>
                       </h3>
                       <p className="text-xs text-slate-400 leading-relaxed pl-1">
-                        আমাদের ডেমো কার্ড জেনারেটর বা "এনআইডি মেকার" টুলটি শুধুমাত্র লেআউট টেস্টিং, ডেমো সাইন ডিজাইন এবং ইন্টারফেস টেস্টিং এর মতো ডিজাইনিং শেখার প্রোটোটাইপিং কাজের জন্য তৈরি। এটি দ্বারা তৈরিকৃত কোনো ডকুমেন্টকে আসল জাতীয় পরিচয়পত্র হিসেবে কোনো আনুষ্ঠানিক ডাটাবেইসে বা আর্থিক ট্রানজ্যাকশনে ব্যবহার করা আইনত সম্পূর্ণ নিষেধ। এই নিয়ম লঙ্ঘনের জন্য কেবল দায়ী থাকবেন ব্যবহারকারী স্বয়ং।
+                        আমাদের প্ল্যাটফর্মে প্রদানকৃত সকল এসইও অডিট, কন্টেন্ট স্ক্যানার এবং ভিডিও ডাউনলোডার টুলস সম্পূর্ণভাবে ব্যবহারকারীদের ব্যক্তিগত সাহায্য এবং ওয়েব প্রজেক্টের পারফরম্যান্স টেস্ট করার উদ্দেশ্যে দেওয়া হয়েছে। এই টুলসগুলো কোনো থার্ড-পার্টি প্ল্যাটফর্মের প্রাইভেসি পলিসি লঙ্ঘন করার উদ্দেশ্যে তৈরি করা হয়নি।
                       </p>
                       <p className="text-xs text-slate-500 leading-relaxed font-mono pl-1 border-l border-slate-800">
-                        Notice: The online NID design generator is programmed solely for design layout simulation and instructional testing. It cannot be presented as official governmental identification, and we assume no responsibilities for illicit claims.
+                        Notice: All web tools and AI analyzers provided on this platform are meant strictly for personal productivity and performance testing. They are not intended to bypass or violate third-party security guidelines.
                       </p>
                     </div>
 

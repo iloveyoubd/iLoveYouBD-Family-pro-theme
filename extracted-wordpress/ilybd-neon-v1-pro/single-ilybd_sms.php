@@ -195,10 +195,19 @@ $tag_taxonomy = 'sms_tag';
                     </span>
                 </div>
 
-                <!-- Title -->
+                <!-- SMS Title -->
                 <h1 style="color: #fff; font-size: clamp(22px, 5vw, 32px); line-height: 1.35; font-weight: 800; margin-top: 0; margin-bottom: 25px; text-shadow: 0 0 15px rgba(0,240,255,0.15); text-align: left; border-left: 4px solid #00f0ff; padding-left: 15px;">
                     <?php the_title(); ?>
                 </h1>
+
+                <!-- Dynamic Featured Image Banner with Title Baked In (Google SEO & Image Indexer Optimized) -->
+                <div class="sms-featured-banner" style="margin-bottom: 25px; border-radius: 12px; overflow: hidden; border: 1.5px solid rgba(0, 240, 255, 0.25); box-shadow: 0 8px 32px rgba(0,0,0,0.45); height: clamp(250px, 40vh, 380px); position: relative;">
+                    <?php if (has_post_thumbnail()) : ?>
+                        <?php the_post_thumbnail('large', array('style' => 'width:100%; height:100%; display:block; object-fit:cover;')); ?>
+                    <?php else : ?>
+                        <img src="<?php echo esc_url(get_template_directory_uri() . '/inc/dynamic-image-generator-sms.php?post_id=' . get_the_ID()); ?>" style="width:100%; height:100%; display:block; object-fit:cover;" alt="<?php the_title_attribute(); ?>" />
+                    <?php endif; ?>
+                </div>
 
                 <!-- SMS Text Content Body -->
                 <div class="sms-article-body" style="font-size: 18px; line-height: 1.85; color: #cbd5e0; margin-bottom: 30px;">
@@ -371,6 +380,21 @@ $tag_taxonomy = 'sms_tag';
                     <a href="<?php echo esc_url(get_post_type_archive_link('ilybd_sms')); ?>" class="category-scroller-btn">
                         <i class="fa-solid fa-layer-group"></i> সব ক্যাটাগরি
                     </a>
+                    <?php 
+                    $all_terms = get_terms(['taxonomy' => $cat_taxonomy, 'hide_empty' => false]);
+                    if (!is_wp_error($all_terms) && !empty($all_terms)) :
+                        foreach ($all_terms as $term) :
+                            $is_current = ($cat_slug === $term->slug);
+                            ?>
+                            <a href="<?php echo esc_url(get_term_link($term)); ?>" class="category-scroller-btn" style="<?php echo $is_current ? 'border-color: #00f0ff; color: #00f0ff; background: rgba(0, 240, 255, 0.1);' : ''; ?>">
+                                <?php echo esc_html($term->name); ?> (<?php echo $term->count; ?>)
+                            </a>
+                            <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </div>
+            </section>
               <!-- 6. RECOMMENDED RELATED SMS SECTION (মিনিমাম ৩ টি রেকমেন্ডেট) -->
             <section class="sms-related-recommendations" style="margin-bottom: 40px;">
                 <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; text-align: left;">

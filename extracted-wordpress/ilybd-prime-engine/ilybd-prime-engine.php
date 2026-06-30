@@ -44,12 +44,12 @@ function ilybd_prime_init() {
         'ai-assistant/ai-logic.php',
         'seo-factory/ghost-seo.php',
         'seo-factory/Auto-content.php',
+        'seo-factory/seo-intent-analyzer.php',
         'user-stats/tracker.php',
-        'downloader/downloader-core.php',
-        'downloader/rebrander.php',
         'ad-gate/locker.php',
         'daily-rewards/bonus.php',
         'layout-engine/cpt-logic.php',
+        'layout-engine/infinite-scroll.php',
         'site-structure/interlinking.php',
         'security/shield.php',
         'speed-cache/speed-cache.php'
@@ -69,9 +69,6 @@ function ilybd_prime_init() {
         }
         if ( file_exists( ILYBD_PLUGIN_DIR . 'admin/payout-handler.php' ) ) {
             require_once ILYBD_PLUGIN_DIR . 'admin/payout-handler.php';
-        }
-        if ( file_exists( ILYBD_PLUGIN_DIR . 'admin/nid-control.php' ) ) {
-            require_once ILYBD_PLUGIN_DIR . 'admin/nid-control.php';
         }
         
         add_action('admin_enqueue_scripts', function() {
@@ -113,34 +110,6 @@ add_action( 'wp_enqueue_scripts', 'ilybd_enqueue_engine_assets' );
  * সেকশন ৫: শর্টকোড ইঞ্জিন (নিরাপদ আউটপুট)
  */
 
-// এনআইডি জেনারেটর V2 শর্টকোড [ibd_nid_v2]
-add_shortcode('ibd_nid_v2', function() {
-    ob_start();
-    $v2_path = ILYBD_PLUGIN_DIR . 'modules/nid-pro-v2/index.php';
-    if ( file_exists( $v2_path ) ) {
-        include $v2_path;
-    } else {
-        return "NID V2 Module Not Found!";
-    }
-    return ob_get_clean();
-});
-
-// কি (Key) জেনারেটর শর্টকোড [ibd_nid_key_gen]
-add_shortcode('ibd_nid_key_gen', function() {
-    $master_key = get_option('ibd_nid_unlock_key', 'IBD71');
-    ob_start();
-    ?>
-    <div style="text-align: center; padding: 40px; background: #fff; border: 2px solid #006b3c; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-        <h2 style="color: #006b3c;">আপনার ভেরিফিকেশন কি (Key)</h2>
-        <div style="font-size: 35px; font-weight: bold; color: #da291c; margin: 20px 0; border: 2px dashed #da291c; display: inline-block; padding: 15px 40px; background: #fff5f5;">
-            <?php echo esc_html($master_key); ?>
-        </div>
-        <p style="color: #666;">এটি কপি করে এনআইডি পেজে বসিয়ে আনলক করুন।</p>
-    </div>
-    <?php
-    return ob_get_clean();
-});
-
 /**
  * সেকশন ৬: অ্যাডমিন মেনু ও ড্যাশবোর্ড
  */
@@ -158,15 +127,6 @@ add_action('admin_menu', function() {
         'manage_options',
         'ibd-super-assistant',
         'ibd_super_assistant_dashboard'
-    );
-
-    add_submenu_page(
-        'ibd-api-settings',
-        'NID Control',
-        'NID Security',
-        'manage_options',
-        'ilybd-nid-control',
-        (class_exists('ILYBD_NID_Control') ? [new ILYBD_NID_Control(), 'render_nid_control_page'] : null)
     );
 
     add_submenu_page(

@@ -27,7 +27,7 @@ body{
 }
 
 /* HEADER FIXED */
-header{
+header#ilybd-main-header{
     position:fixed !important;
     top:0 !important;
     left:0 !important;
@@ -422,7 +422,7 @@ header{
 
 <body <?php body_class(); ?>>
 
-<header>
+<header id="ilybd-main-header">
 
 <div class="rgb-line"></div>
 

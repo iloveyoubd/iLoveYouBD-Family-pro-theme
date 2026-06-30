@@ -7,7 +7,12 @@ jQuery(document).ready(function($){
     ========================= */
     function checkNotifications(){
 
-        $.post(ilybd_ajax.ajaxurl, {
+        let ajax_url = (typeof ilybd_vars !== 'undefined' && ilybd_vars.ajax_url) 
+            || (typeof ilybd_ai_vars !== 'undefined' && ilybd_ai_vars.ajax_url)
+            || (typeof ilybd_vfx !== 'undefined' && ilybd_vfx.ajax_url)
+            || (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
+
+        $.post(ajax_url, {
             action: 'ilybd_get_notifications'
         }, function(res){
 

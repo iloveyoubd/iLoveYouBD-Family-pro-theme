@@ -631,3 +631,55 @@ function ilybd_render_tool_keyword_clustering_tool() {
     </script>
     <?php
 }
+
+// 11. Search Engine Metadata & CSS Glow Factory
+function ilybd_render_tool_meta_css_glow_factory() {
+    ?>
+    <div style="font-family:'Space Grotesk', 'Hind Siliguri', sans-serif;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
+            <div>
+                <label class="bento-label" style="color:#f43f5e;">APP OR SITE TITLE / সাইট শিরোনাম</label>
+                <input type="text" id="seoTitle" value="bKash APK" class="cyan-glow-input" style="border-color:#f43f5e33;">
+            </div>
+            <div>
+                <label class="bento-label" style="color:#f43f5e;">PACKAGE ID OR SLUG / স্ল্যাগ বা লিঙ্ক</label>
+                <input type="text" id="seoSlug" value="com.bKash.customerapp" class="cyan-glow-input" style="border-color:#f43f5e33;">
+            </div>
+        </div>
+        <div style="margin-bottom:20px;">
+            <label class="bento-label" style="color:#f43f5e;">DESCRIPTION / সাইট বিবরণ</label>
+            <input type="text" id="seoDesc" value="নিরাপদে ও দ্রুত ডাউনলোড করুন বিকাশের অফিসিয়াল এপিকে সবচেয়ে সুরক্ষিত সার্ভার থেকে।" class="cyan-glow-input" style="border-color:#f43f5e33;">
+        </div>
+
+        <button onclick="generateSeoCode();" class="cyber-action-btn" style="background:#f43f5e; color:#fff; width:100%; margin-bottom:20px;">GENERATE META & GLOW CODE ⚡</button>
+        
+        <div id="seoResultArea" style="display:none; margin-top:15px; border-top:1px solid rgba(255,255,255,0.06); padding-top:12px;">
+            <label class="bento-label" style="color:#00ff41;">📋 GOOGLE CRITICAL HEAD METATAGS</label>
+            <textarea id="seoOutMeta" readonly rows="6" class="cyan-glow-input" style="border-color:rgba(244,63,94,0.3); color:#00ff41; font-family:monospace; font-size:12px; outline:none; resize:none; margin-bottom:15px;" onclick="this.select();"></textarea>
+            
+            <button onclick="navigator.clipboard.writeText(document.getElementById('seoOutMeta').value); alert('মেটা ট্যাগ ক্লিপবোর্ডে কপি হয়েছে!');" class="cyber-action-btn" style="background:rgba(0,255,65,0.12); color:#00ff41; border:1px solid #00ff41; width:100%;">কপি কোড প্যাচ 📋</button>
+        </div>
+    </div>
+    <script>
+    function generateSeoCode() {
+        const t = document.getElementById('seoTitle').value.trim();
+        const s = document.getElementById('seoSlug').value.trim();
+        const d = document.getElementById('seoDesc').value.trim();
+        
+        const metatags = `<!-- Google Index Tags for ${t} by iloveyoubd.com -->
+<title>${t} APK Download Free for Android - iloveyoubd.com</title>
+<meta name="description" content="নিরাপদে ডাউনলোড করুন ${t} সরাসরি গুগল প্লে স্টোর থেকে। ${d.substring(0, 150)}...">
+<meta name="keywords" content="${t} apk, ${t} free download, ${s}, download ${t} play store, iloveyoubd">
+<meta property="og:title" content="${t} APK Free Download - iloveyoubd">
+<meta property="og:image" content="https://iloveyoubd.com/fav.png">
+<meta property="og:url" content="https://iloveyoubd.com/tools-lab">`;
+        
+        document.getElementById('seoOutMeta').value = metatags;
+        document.getElementById('seoResultArea').style.display = 'block';
+        if (typeof incrementToolUsage === 'function') {
+            incrementToolUsage('meta-css-glow-factory');
+        }
+    }
+    </script>
+    <?php
+}

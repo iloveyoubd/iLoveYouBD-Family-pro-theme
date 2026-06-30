@@ -156,6 +156,13 @@
                     </a>
                 </div>
             </div>
+
+            <!-- 💬 Forum Store / Forum Center Archive Portal Link -->
+            <div style="margin-top: 25px; text-align: center;">
+                <a href="<?php echo esc_url(home_url('/question/')); ?>" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #00ff41 0%, #00e5ff 100%); border: none; color: #000000; padding: 12px 30px; border-radius: 30px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 255, 65, 0.6)'; this.style.background='linear-gradient(135deg, #ffffff 0%, #00e5ff 100%)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 255, 65, 0.3)'; this.style.background='linear-gradient(135deg, #00ff41 0%, #00e5ff 100%)';">
+                    <span>💬 ফোরাম সেন্টার / Forum Store</span> <i class="fa-solid fa-circle-arrow-right" style="font-size: 16px; color: #000000; transition: color 0.25s;"></i>
+                </a>
+            </div>
         </section>
         <?php endif; ?>
 
@@ -473,7 +480,10 @@
         </style>
 
         <?php
-        // 🚀 NEXT-GEN CYBER ECOSYSTEM MODULAR SECTIONS (SMS, STORIES, PHONE REVIEWS)
+        // 🚀 NEXT-GEN CYBER ECOSYSTEM MODULAR SECTIONS (NEWS, SMS, STORIES, PHONE REVIEWS)
+        if (get_option('ilybd_enable_news_section', '1') !== '0' && get_option('ilybd_show_news_module', '1') !== '0') {
+            do_action('ilybd_render_news_section');
+        }
         if (get_option('ilybd_enable_sms_section', 'yes') !== 'no') {
             do_action('ilybd_render_sms_section');
         }

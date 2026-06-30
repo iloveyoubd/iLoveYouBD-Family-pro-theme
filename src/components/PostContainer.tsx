@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ThumbsUp, Eye, MessageSquare, Send, Award, Clock, Heart, CornerDownRight } from "lucide-react";
+import { ThumbsUp, Eye, MessageSquare, Send, Award, Clock, Heart, CornerDownRight, Volume2, Square } from "lucide-react";
 import type { Post } from "../types";
 
 export interface PostContainerProps {
@@ -15,6 +15,7 @@ export default function PostContainer({ post, onLike, onComment, onMessageAuthor
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isLiked, setIsLiked] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const handlePostComment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +28,20 @@ export default function PostContainer({ post, onLike, onComment, onMessageAuthor
     setIsLiked(true);
     onLike(post.id);
     setTimeout(() => setIsLiked(false), 500); // Pulse effect state reset
+  };
+
+  const toggleSpeech = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    } else {
+      const textToSpeak = `${post.title}. ${post.content}`;
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = "bn-BD";
+      utterance.onend = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
+    }
   };
 
   return (
@@ -112,9 +127,25 @@ export default function PostContainer({ post, onLike, onComment, onMessageAuthor
           <h3 className="text-base font-bold tracking-tight text-white line-clamp-2 hover:text-cyan-400 leading-snug transition-colors duration-250 cursor-pointer">
             {post.title}
           </h3>
-          <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mt-2 pl-0.5 border-l-2 border-cyan-950 group-hover:border-cyan-500/30 transition-colors">
-            {post.excerpt}
-          </p>
+          <div className="flex justify-between items-start mt-2">
+            <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed pl-0.5 border-l-2 border-cyan-950 group-hover:border-cyan-500/30 transition-colors">
+              {post.excerpt}
+            </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSpeech();
+              }}
+              className={`ml-3 shrink-0 p-1.5 rounded-full border transition-all ${
+                isSpeaking
+                  ? "bg-cyan-950 border-cyan-400 text-cyan-400 animate-pulse shadow-[0_0_8px_rgba(0,240,255,0.4)]"
+                  : "bg-slate-900 border-cyan-900/50 text-slate-400 hover:text-cyan-300 hover:border-cyan-700"
+              }`}
+              title={isSpeaking ? "থামুন" : "শুনুন (TTS)"}
+            >
+              {isSpeaking ? <Square className="w-3.5 h-3.5" fill="currentColor" /> : <Volume2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
 
         {/* Dynamic Action Metrics Toolbar */}

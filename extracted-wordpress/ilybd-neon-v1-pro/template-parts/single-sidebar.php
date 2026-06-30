@@ -18,7 +18,7 @@ $current_post_id = get_the_ID();
         <div style="display: flex; flex-direction: column; gap: 12px;">
             <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 10px; border-radius: 8px;">
                 <span style="font-size: 9px; color: #00f0ff; font-family: monospace; font-weight: bold; display: block; margin-bottom: 3px;">SOLVED [REWARD COMPLETED]</span>
-                <a href="<?php echo esc_url(home_url('/ask-question/?q=nid-correction')); ?>" style="color: #eceff1; font-size: 12.5px; text-decoration: none; font-weight: bold; line-height: 1.4; display: block;">এনআইডি কার্ডে নামের বানান ভুল কিভাবে সংশোধন করব?</a>
+                <a href="<?php echo esc_url(home_url('/ask-question/?q=wordpress-speed')); ?>" style="color: #eceff1; font-size: 12.5px; text-decoration: none; font-weight: bold; line-height: 1.4; display: block;">ওয়ার্ডপ্রেস ওয়েবসাইটের স্পিড কিভাবে বাড়াবো?</a>
                 <span style="font-size: 10px; color: #8b949e; display: block; margin-top: 5px;"><i class="fa-solid fa-circle-check" style="color: #00ff41;"></i> ১২ জন উত্তরদাতা • ৩ দিন আগে</span>
             </div>
             
@@ -68,14 +68,6 @@ $current_post_id = get_the_ID();
         </h4>
         
         <div style="display: flex; flex-direction: column; gap: 12px;">
-            <!-- Simple Tool item -->
-            <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #00ff41; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                    <span style="color: #fff; font-size: 12.5px; font-weight: bold; display: block;">স্মার্ট এনআইডি মেকার</span>
-                    <span style="color: #8b949e; font-size: 10px;">বাংলাদেশে তৈরি ডিজিটাল ভোটার আইডি</span>
-                </div>
-                <a href="<?php echo esc_url(home_url('/nid-card-generator/')); ?>" style="background: #00ff41; color:#000; border-radius:4px; padding: 4px 8px; font-size: 10.5px; font-weight: 850; text-decoration: none;">তৈরি করুন</a>
-            </div>
 
             <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #00f0ff; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
                 <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -83,14 +75,6 @@ $current_post_id = get_the_ID();
                     <span style="color: #8b949e; font-size: 10px;">অ্যালগরিদম সমস্যা সমাধানকারী বোট</span>
                 </div>
                 <a href="<?php echo esc_url(home_url('/tools/')); ?>" style="background: #00f0ff; color:#000; border-radius:4px; padding: 4px 8px; font-size: 10.5px; font-weight: 850; text-decoration: none;">আলাপন</a>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #f43f5e; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                    <span style="color: #fff; font-size: 12.5px; font-weight: bold; display: block;">সোশ্যাল ভিডিও ডাউনলোডার</span>
-                    <span style="color: #8b949e; font-size: 10px;">১ ক্লিকে এইচডি মিডিয়া স্টোরেজ</span>
-                </div>
-                <a href="<?php echo esc_url(home_url('/tools/')); ?>" style="background: #f43f5e; color:#fff; border-radius:4px; padding: 4px 8px; font-size: 10.5px; font-weight: 850; text-decoration: none;">চালান</a>
             </div>
         </div>
 

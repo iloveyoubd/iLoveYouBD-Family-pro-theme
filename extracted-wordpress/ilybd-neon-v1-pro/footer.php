@@ -76,8 +76,8 @@ $rgb_style = get_option('ilybd_rgb_style', 'classic_neo');
             <a href="<?php echo home_url(); ?>" class="nav-item" aria-label="Home Link">
                 <span class="n-icon">🏠</span><span class="n-text">Home</span>
             </a>
-            <a href="<?php echo home_url('/tv'); ?>" class="nav-item" aria-label="Live TV Channel">
-                <span class="n-icon">📺</span><span class="n-text">Live TV</span>
+            <a href="<?php echo home_url('/tools/'); ?>" class="nav-item" aria-label="Tools Center">
+                <span class="n-icon">🛠️</span><span class="n-text">Tools</span>
             </a>
         </div>
 
@@ -93,8 +93,8 @@ $rgb_style = get_option('ilybd_rgb_style', 'classic_neo');
         </div>
 
         <div class="nav-group-side">
-            <a href="<?php echo home_url('/tools-lab'); ?>" class="nav-item" aria-label="System Tools Lab">
-                <span class="n-icon">🧪</span><span class="n-text">Tools Lab</span>
+            <a href="<?php echo home_url('/question/'); ?>" class="nav-item" aria-label="Q&A Discussion Forums">
+                <span class="n-icon">💬</span><span class="n-text">Forums</span>
             </a>
             <a href="<?php echo home_url('/dashboard?action=profile'); ?>" class="nav-item" aria-label="User Account Profile">
                 <span class="n-icon">👤</span><span class="n-text">Profile</span>

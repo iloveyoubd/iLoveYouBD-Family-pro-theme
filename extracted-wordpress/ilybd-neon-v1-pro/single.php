@@ -1107,20 +1107,6 @@ $title_len = mb_strlen($title_main);
     $matched_tools = array();
 
     $tools_collection = array(
-        'nid_maker' => array(
-            'name' => 'স্মার্ট এনআইডি কার্ড জেনারেটর প্রো',
-            'desc' => 'নিজের তথ্য দিয়ে সম্পূর্ণ এইচডি বাংলাদেশের স্মার্ট এনআইডি কার্ড তৈরি করার টুলস।',
-            'icon' => '📱',
-            'link' => home_url('/nid-card-generator/'),
-            'tags' => array('nid', 'এনআইডি', 'ভোটার', 'স্মার্ট', 'কার্ড', 'card', 'id', 'জাতীয় পরিচয়পত্র')
-        ),
-        'nid_key' => array(
-            'name' => 'এনআইডি সিকিউরিটি কি জেনারেটর',
-            'desc' => 'স্মার্ট এনআইডি কার্ড ক্রিপ্টো সিকিউরিটি পোর্টালে সিকিউরিটি কি জেনারেট করার ল্যাব।',
-            'icon' => '🔑',
-            'link' => home_url('/tools/'),
-            'tags' => array('security', 'key', 'কি', 'পাসওয়ার্ড', 'লক', 'ক্রিপ্টো')
-        ),
         'ai_maya' => array(
             'name' => 'এআই মায়া ক্লাউড অ্যাসিস্ট্যান্ট',
             'desc' => 'অনর্গল চমৎকার খাঁটি বাংলায় কথা বলতে ও যেকোনো কোডিং বাগ সলভ করতে সক্ষম এআই।',
@@ -1162,13 +1148,6 @@ $title_len = mb_strlen($title_main);
             'icon' => '💬',
             'link' => home_url('/ask-question/'),
             'tags' => array('প্রশ্ন', 'উত্তর', 'ফোরাম', 'ইনকাম', 'টাকা', 'বিকাশ', 'forum', 'ask')
-        ),
-        'downloader' => array(
-            'name' => 'সোশ্যাল ভিডিও ডাউনলোডার প্রো',
-            'desc' => 'ফ্রি সার্ভার ব্যবহার করে টিকток, ফেসবুক ও ইউটিউব থেকে ১-ক্লিকে এইচডি ভিডিও ডাউনলোড।',
-            'icon' => '📥',
-            'link' => home_url('/tools/'),
-            'tags' => array('ভিডিও', 'ডাউনলোড', 'ইউটিউব', 'ফেসবুক', 'টিকток', 'download', 'video', 'fb', 'yt')
         )
     );
 
@@ -1328,6 +1307,17 @@ get_template_part('single-search');
         font-size: 16px !important;
         line-height: 1.8 !important;
         color: #e6edf3 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+    .entry-content-main span,
+    .entry-content-main div:not([class*="ilybd-"]):not(.wp-block-code):not(.adsbox),
+    .entry-content-main ul:not([class*="ilybd-"]),
+    .entry-content-main ol:not([class*="ilybd-"]),
+    .entry-content-main li:not([class*="ilybd-"]) {
+        background: transparent !important;
+        background-color: transparent !important;
+        color: inherit !important;
     }
     .entry-content-main h1, 
     .entry-content-main h2, 
@@ -1339,6 +1329,8 @@ get_template_part('single-search');
         margin-bottom: 16px !important; 
         line-height: 1.4 !important;
         font-family: 'Rajdhani', sans-serif !important;
+        background: transparent !important;
+        background-color: transparent !important;
     }
     .entry-content-main h1 { font-size: 26px !important; }
     .entry-content-main h2 { font-size: 22px !important; position: relative; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); }

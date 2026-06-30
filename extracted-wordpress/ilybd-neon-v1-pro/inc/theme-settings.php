@@ -360,7 +360,7 @@ function ilybd_render_content_panel() {
     <form method="post" action="options.php">
         <?php settings_fields('ilybd_content_group'); ?>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:10px;">
 
             <div>
                 <label>Latest Posts</label>
@@ -380,6 +380,13 @@ function ilybd_render_content_panel() {
                 <label>Featured Posts</label>
                 <input type="number" name="ilybd_featured_count"
                     value="<?php echo esc_attr(get_option('ilybd_featured_count',5)); ?>"
+                    style="width:100%;">
+            </div>
+
+            <div>
+                <label>Questions Per Page (Q&A)</label>
+                <input type="number" name="ilybd_questions_per_page"
+                    value="<?php echo esc_attr(get_option('ilybd_questions_per_page',10)); ?>"
                     style="width:100%;">
             </div>
 
@@ -484,10 +491,10 @@ function ilybd_render_ads_panel() {
             </div>
 
             <div>
-                <label style="color:#fff; font-weight:bold; font-size:12.5px; display:block; margin-bottom:5px;">Hacker/Admin Preview mode</label>
+                <label style="color:#fff; font-weight:bold; font-size:12.5px; display:block; margin-bottom:5px;">Highlight Ad Positions (বিজ্ঞাপন পজিশন হাইলাইট)</label>
                 <select name="ilybd_hacker_mode" style="width:100%; background:#0b0f14; color:#00e5ff; border:1px solid #30363d; padding:8px; border-radius:6px; font-weight:bold; height:auto;">
-                    <option value="yes" <?php selected(get_option('ilybd_hacker_mode'),'yes'); ?>>ON (প্রিভিউ বর্ডার দেখান)</option>
-                    <option value="no" <?php selected(get_option('ilybd_hacker_mode'),'no'); ?>>OFF (ভিজিটর মোড)</option>
+                    <option value="yes" <?php selected(get_option('ilybd_hacker_mode'),'yes'); ?>>ON (হাইলাইট সচল করুন)</option>
+                    <option value="no" <?php selected(get_option('ilybd_hacker_mode'),'no'); ?>>OFF (সাধারণ মোড)</option>
                 </select>
             </div>
 
@@ -526,6 +533,7 @@ add_action('admin_init', function() {
     register_setting('ilybd_content_group', 'ilybd_latest_count');
     register_setting('ilybd_content_group', 'ilybd_trending_count');
     register_setting('ilybd_content_group', 'ilybd_featured_count');
+    register_setting('ilybd_content_group', 'ilybd_questions_per_page');
     register_setting('ilybd_content_group', 'ilybd_featured_ids');
     register_setting('ilybd_content_group', 'ilybd_enable_stories');
     register_setting('ilybd_content_group', 'ilybd_enable_feedback_widget');
